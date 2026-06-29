@@ -486,42 +486,105 @@ Customers place an order and are shown payment instructions:
 ### Requirements
 - Node.js 18+
 - PostgreSQL database
-- pnpm
+- pnpm (`npm install -g pnpm`)
 
-### Environment Variables
-Create a `.env` file at the project root:
-```
-DATABASE_URL="postgresql://user:password@localhost:5432/volcanoarts"
-NEXTAUTH_SECRET="your-random-secret-string"
-NEXTAUTH_URL="http://localhost:3000"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-UPLOADTHING_SECRET="..."
-UPLOADTHING_APP_ID="..."
-```
+---
 
-### Running the app
+### Step 1 — Clone & install
+
 ```bash
-# Install dependencies
+git clone https://github.com/dian-king/Volcano_art_center.git
+cd Volcano_art_center
 pnpm install
+```
 
-# Run database migrations
+---
+
+### Step 2 — Environment variables
+
+Copy the example file and fill in your values:
+
+```bash
+cp .env.example .env.local
+```
+
+Open `.env.local` and set each variable:
+
+| Variable | Required | Where to get it |
+|---|---|---|
+| `DATABASE_URL` | ✅ | Your PostgreSQL connection string |
+| `NEXTAUTH_URL` | ✅ | `http://localhost:3000` for local dev |
+| `NEXTAUTH_SECRET` | ✅ | Run `openssl rand -base64 32` |
+| `GOOGLE_CLIENT_ID` | ⚠️ Google login | See Google OAuth setup below |
+| `GOOGLE_CLIENT_SECRET` | ⚠️ Google login | See Google OAuth setup below |
+| `UPLOADTHING_SECRET` | ⚠️ Image uploads | [uploadthing.com](https://uploadthing.com) → create app |
+| `UPLOADTHING_APP_ID` | ⚠️ Image uploads | Same as above |
+| `RESEND_API_KEY` | ⚠️ Emails | [resend.com](https://resend.com) → API Keys |
+| `RESEND_FROM_EMAIL` | ⚠️ Emails | Verified sender email in Resend |
+| `NEXT_PUBLIC_APP_URL` | ✅ | `http://localhost:3000` for local dev |
+
+**Minimum to get the app running:** `DATABASE_URL`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, `NEXT_PUBLIC_APP_URL`.
+
+---
+
+### Step 3 — Google OAuth setup (for social login)
+
+Allows users to sign in with their Google account.
+
+1. Go to [console.cloud.google.com](https://console.cloud.google.com)
+2. Create a new project (or select an existing one)
+3. Go to **APIs & Services → OAuth consent screen**
+   - Choose **External**
+   - Fill in app name, support email, developer email → Save
+4. Go to **APIs & Services → Credentials → Create Credentials → OAuth 2.0 Client ID**
+   - Application type: **Web application**
+   - Name: `Volcano Arts Center`
+   - Under **Authorised redirect URIs**, add:
+     ```
+     http://localhost:3000/api/auth/callback/google
+     ```
+   - Click **Create**
+5. Copy the **Client ID** and **Client Secret** into your `.env.local`:
+   ```
+   GOOGLE_CLIENT_ID="your-client-id.apps.googleusercontent.com"
+   GOOGLE_CLIENT_SECRET="GOCSPX-your-secret"
+   ```
+
+> **For production:** Add your live domain redirect URI too:
+> `https://yourdomain.com/api/auth/callback/google`
+
+---
+
+### Step 4 — Database setup
+
+```bash
+# Create the database tables
 pnpm prisma migrate deploy
 
-# Seed the database with test data and accounts
+# Seed with test accounts and sample data
 pnpm prisma db seed
+```
 
-# Start the development server
+---
+
+### Step 5 — Run the app
+
+```bash
 pnpm dev
 ```
 
-The app runs at `http://localhost:3000`.
+The app runs at **http://localhost:3000**.
+Admin panel at **http://localhost:3000/admin**.
+
+---
 
 ### Useful commands
+
 ```bash
 pnpm prisma studio        # Visual database browser at localhost:5555
 pnpm prisma db seed       # Re-seed test data
 pnpm build                # Production build check
-pnpm tsc --noEmit         # TypeScript type check (0 errors expected)
+pnpm tsc --noEmit         # TypeScript type check
 ```
 
 ---
