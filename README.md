@@ -16,7 +16,8 @@
 7. [Super Admin — Full Guide](#7-super-admin)
 8. [Client Account — What Customers Can Do](#8-client-account)
 9. [Other Account Types](#9-other-account-types)
-10. [Development Setup](#10-development-setup)
+10. [Codebase Structure](#10-codebase-structure)
+11. [Development Setup](#11-development-setup)
 
 ---
 
@@ -481,7 +482,94 @@ Customers place an order and are shown payment instructions:
 
 ---
 
-## 10. Development Setup
+## 10. Codebase Structure
+
+```
+vac-app/
+│
+├── app/                          # Next.js App Router — pages & layouts
+│   ├── layout.tsx                # Root layout (fonts, providers)
+│   ├── globals.css               # All styles — design tokens, components
+│   ├── (public)/                 # Public-facing pages
+│   │   ├── page.tsx              # Home page
+│   │   ├── art-store/            # Shop & product detail
+│   │   ├── experiences/          # Experience listings & detail
+│   │   ├── conservation/         # Conservation campaigns
+│   │   ├── talent/               # Talent profiles & apply
+│   │   ├── blog/                 # Blog & stories
+│   │   └── contact/              # Contact page
+│   ├── (auth)/                   # Auth pages (login, register)
+│   ├── (client)/                 # Logged-in client pages
+│   │   └── client/dashboard/     # Client dashboard (orders, bookings)
+│   ├── admin/                    # Admin panel
+│   │   ├── page.tsx              # Main dashboard (Ops + Super Admin)
+│   │   ├── layout.tsx            # Admin shell (sidebar + topbar)
+│   │   ├── content/dashboard/    # Content Manager dashboard
+│   │   ├── products/             # Art catalog management
+│   │   ├── experiences/          # Experience management
+│   │   ├── bookings/             # Booking management
+│   │   ├── orders/               # Order management
+│   │   ├── inquiries/            # Contact inquiry management
+│   │   ├── blog/                 # Blog post management
+│   │   ├── talent/               # Talent profile management
+│   │   ├── conservation/         # Campaign management
+│   │   ├── reviews/              # Review moderation
+│   │   ├── users/                # Staff & user accounts
+│   │   └── settings/             # Platform settings
+│   └── api/                      # API routes (auth, uploadthing, webhooks)
+│
+├── components/                   # Reusable React components
+│   ├── admin/                    # Admin UI (sidebar, topbar, charts)
+│   ├── public/                   # Public UI (hero, cards, forms)
+│   ├── layout/                   # Site-wide layout (nav, footer)
+│   ├── forms/                    # Shared form components
+│   └── ui/                       # Generic UI (RevealSection, providers)
+│
+├── actions/                      # Server Actions (backend logic)
+│   ├── auth.ts                   # Login, register, password reset
+│   ├── cart.ts                   # Cart operations
+│   ├── checkout.ts               # Order creation
+│   ├── contact.ts                # Contact form submission
+│   ├── products.ts               # Product CRUD
+│   ├── reviews.ts                # Review submission
+│   ├── wishlist.ts               # Wishlist operations
+│   ├── donations.ts              # Conservation donations
+│   ├── talent-apply.ts           # Talent programme applications
+│   ├── newsletter.ts             # Newsletter subscription
+│   ├── profile.ts                # User profile updates
+│   └── admin-content.ts          # Admin content management
+│
+├── lib/                          # Shared utilities & services
+│   ├── db.ts                     # Prisma database client
+│   ├── auth.ts                   # NextAuth configuration
+│   ├── mailer.ts                 # Email sending (SMTP/Resend)
+│   ├── uploadthing.ts            # File upload configuration
+│   ├── audit.ts                  # Admin audit log writer
+│   ├── rate-limit.ts             # Rate limiting utility
+│   └── utils.ts                  # General helpers
+│
+├── store/                        # Client-side state (Zustand)
+│   ├── cart-store.ts             # Shopping cart state
+│   └── toast-store.ts            # Toast notification state
+│
+├── prisma/                       # Database
+│   ├── schema.prisma             # Full database schema (all models)
+│   ├── seed.ts                   # Test data & default accounts
+│   └── migrations/               # Database migration history
+│
+├── public/                       # Static files served as-is
+│   └── images/                   # All site images & logos
+│
+├── middleware.ts                 # Route protection (auth guards)
+├── auth.config.ts                # NextAuth provider config
+├── next.config.ts                # Next.js configuration
+├── .env.example                  # Environment variable template
+└── .gitignore                    # Files excluded from git
+```
+
+---
+
+## 11. Development Setup
 
 ### Requirements
 - Node.js 18+
