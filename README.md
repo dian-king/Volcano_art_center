@@ -484,6 +484,18 @@ Customers place an order and are shown payment instructions:
 
 ## 10. Codebase Structure
 
+| Layer | Tech | Folder |
+|---|---|---|
+| **Frontend** | Next.js 15 + React + CSS | `app/` `components/` |
+| **Backend** | Next.js Server Actions + NextAuth | `actions/` `app/api/` `middleware.ts` |
+| **Database** | PostgreSQL + Prisma ORM | `prisma/` `lib/db.ts` |
+| **State** | Zustand | `store/` |
+| **File Uploads** | UploadThing | `lib/uploadthing.ts` |
+| **Email** | Resend + SMTP | `lib/mailer.ts` `lib/resend.ts` |
+| **Utilities** | TypeScript helpers | `lib/` |
+
+
+
 ```
 vac-app/
 │
