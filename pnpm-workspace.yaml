@@ -1,6 +1,9 @@
+ignoredBuiltDependencies:
+  - msgpackr-extract
+
 onlyBuiltDependencies:
-  - "@prisma/engines"
-  - "@prisma/client"
+  - '@prisma/engines'
+  - '@prisma/client'
   - esbuild
   - prisma
   - sharp
