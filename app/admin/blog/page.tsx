@@ -1,9 +1,12 @@
+export const dynamic = "force-dynamic"
+export const runtime = "nodejs";
+
 import { DeleteButton } from "@/components/admin/DeleteButton"
 import { AdminFilters, AdminPageHeader, AdminPagination } from "@/components/admin/AdminPageChrome"
 import { db } from "@/lib/db"
 import Link from "next/link"
 
-export const dynamic = "force-dynamic"
+
 const PAGE_SIZE = 12
 
 async function feature(fd: FormData) {
