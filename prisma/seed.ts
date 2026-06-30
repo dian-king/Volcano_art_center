@@ -6,6 +6,7 @@ const db = new PrismaClient()
 
 async function main() {
   const pw = await bcrypt.hash("Test1234!", 12)
+  const adminPw = await bcrypt.hash("Admin@VAC2026!", 12)
 
   // â”€â”€ Users â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   await db.user.upsert({ where: { email: "client@volcanoarts.rw" }, update: {}, create: { email: "client@volcanoarts.rw", firstName: "Test", lastName: "Client", password: pw, role: "REGISTERED_CLIENT" } })
@@ -13,7 +14,19 @@ async function main() {
   await db.user.upsert({ where: { email: "operator@volcanoarts.rw" }, update: {}, create: { email: "operator@volcanoarts.rw", firstName: "Safari", lastName: "Tours", password: pw, role: "TOUR_OPERATOR" } })
   await db.user.upsert({ where: { email: "content@volcanoarts.rw" }, update: {}, create: { email: "content@volcanoarts.rw", firstName: "Content", lastName: "Manager", password: pw, role: "CONTENT_MANAGER" } })
   await db.user.upsert({ where: { email: "ops@volcanoarts.rw" }, update: {}, create: { email: "ops@volcanoarts.rw", firstName: "Ops", lastName: "Manager", password: pw, role: "OPS_MANAGER" } })
-  await db.user.upsert({ where: { email: "admin@volcanoarts.rw" }, update: {}, create: { email: "admin@volcanoarts.rw", firstName: "Super", lastName: "Admin", password: pw, role: "SUPER_ADMIN" } })
+  await db.user.upsert({
+    where: { email: "admin@volcanoarts.rw" },
+    update: { password: adminPw, role: "SUPER_ADMIN", isActive: true },
+    create: { email: "admin@volcanoarts.rw", firstName: "Super", lastName: "Admin", password: adminPw, role: "SUPER_ADMIN" },
+  })
+  const operatorUser = await db.user.findUnique({ where: { email: "operator@volcanoarts.rw" } })
+  if (operatorUser) {
+    await db.tourOperator.upsert({
+      where: { userId: operatorUser.id },
+      update: { companyName: "Safari Tours Rwanda", contactName: "Safari Tours", email: "operator@volcanoarts.rw", country: "Rwanda" },
+      create: { userId: operatorUser.id, companyName: "Safari Tours Rwanda", contactName: "Safari Tours", email: "operator@volcanoarts.rw", country: "Rwanda" },
+    })
+  }
 
   // â”€â”€ Categories â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [paintings, sculpture, textiles, photography] = await Promise.all([

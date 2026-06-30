@@ -2,10 +2,12 @@ import { db } from "@/lib/db"
 import { ReviewCard } from "@/components/public/ReviewCard"
 import { ExperienceTabs } from "@/components/public/ExperienceTabs"
 import { formatPrice, formatDate } from "@/lib/utils"
+import { auth } from "@/lib/auth"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { AuthGuardButton } from "@/components/public/AuthGuardButton"
+import { BookingForm } from "@/components/public/BookingForm"
 import type { Metadata } from "next"
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -26,6 +28,7 @@ const SLOT_COLOR: Record<string, string> = {
 
 export default async function ExperienceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
+  const session = await auth()
   const experience = await db.experience.findUnique({
     where: { slug },
     include: {
@@ -34,10 +37,24 @@ export default async function ExperienceDetailPage({ params }: { params: Promise
     },
   })
   if (!experience || experience.status !== "PUBLISHED") notFound()
+  const currentUser = session?.user?.id
+    ? await db.user.findUnique({
+        where: { id: session.user.id },
+        select: { firstName: true, lastName: true, email: true, phone: true },
+      })
+    : null
 
   const price = experience.pricePerPerson ? Number(experience.pricePerPerson) : null
   const groupPrice = experience.groupPrice ? Number(experience.groupPrice) : null
   const duration = experience.durationHours ? Number(experience.durationHours) : null
+  const bookingSlots = experience.slots.map(slot => ({
+    id: slot.id,
+    date: slot.date.toISOString().slice(0, 10),
+    label: formatDate(slot.date),
+    status: slot.status,
+    remaining: Math.max(0, slot.capacity - slot.booked),
+  }))
+  const defaultGuestName = `${currentUser?.firstName ?? ""} ${currentUser?.lastName ?? ""}`.trim() || session?.user?.name || ""
 
   const section = (title: string, items: string[], color?: string) => (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
@@ -192,13 +209,28 @@ export default async function ExperienceDetailPage({ params }: { params: Promise
               ))}
             </div>
 
-            <AuthGuardButton
-              href={`/contact?subject=Booking: ${encodeURIComponent(experience.title)}`}
-              className="btn btn--primary"
-              style={{ textAlign: "center", width: "100%", justifyContent: "center", display: "flex" }}
-            >
-              {experience.bookingType === "INQUIRY" ? "Request a Quote" : "Book Now"}
-            </AuthGuardButton>
+            {session?.user?.id ? (
+              <BookingForm
+                experienceId={experience.id}
+                minGroupSize={experience.minGroupSize}
+                maxGroupSize={experience.maxGroupSize}
+                languages={experience.languages}
+                slots={bookingSlots}
+                defaults={{
+                  guestName: defaultGuestName,
+                  guestEmail: currentUser?.email ?? session.user.email ?? "",
+                  guestPhone: currentUser?.phone,
+                }}
+              />
+            ) : (
+              <AuthGuardButton
+                href={`/experiences/${experience.slug}`}
+                className="btn btn--primary"
+                style={{ textAlign: "center", width: "100%", justifyContent: "center", display: "flex" }}
+              >
+                Sign in to Book
+              </AuthGuardButton>
+            )}
 
             <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)", textAlign: "center", fontFamily: "var(--font-ui)" }}>
               Free cancellation up to 48h before

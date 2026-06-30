@@ -30,7 +30,7 @@ export default async function AdminDashboard() {
     recentOrders, recentBookings, recentApplications, recentInquiries,
     newUsersThisWeek, totalRevenue, totalDonations,
   ] = await Promise.all([
-    isContent ? db.product.count() : Promise.resolve(0),
+    isOps ? db.product.count() : Promise.resolve(0),
     isContent ? db.experience.count() : Promise.resolve(0),
     isContent ? db.conservationCampaign.count() : Promise.resolve(0),
     isContent ? db.blogPost.count() : Promise.resolve(0),
@@ -92,7 +92,7 @@ export default async function AdminDashboard() {
           <p>Platform-wide performance and operational status.</p>
         </div>
         <div className="admin-page-header__actions">
-          {isContent && <Link href="/admin/products/new" className="btn btn--primary btn--sm">+ New Product</Link>}
+          {isOps && <Link href="/admin/products/new" className="btn btn--primary btn--sm">+ New Product</Link>}
           {isOps     && <Link href="/admin/bookings"     className="btn btn--primary btn--sm">Bookings Queue</Link>}
         </div>
       </header>
@@ -110,7 +110,6 @@ export default async function AdminDashboard() {
       {/* Content KPIs */}
       {isContent && (
         <KpiGrid cards={[
-          { icon: Palette,  label: "Products",    value: totalProducts,    href: "/admin/products"                     },
           { icon: Map,      label: "Experiences", value: totalExperiences, href: "/admin/experiences"                  },
           { icon: Leaf,     label: "Campaigns",   value: totalCampaigns,   href: "/admin/conservation", green: true    },
           { icon: Feather,  label: "Posts",       value: totalPosts,       href: "/admin/blog"                         },
@@ -122,6 +121,7 @@ export default async function AdminDashboard() {
       {/* Ops KPIs */}
       {isOps && (
         <KpiGrid cards={[
+          { icon: Palette,       label: "Products",     value: totalProducts,      href: "/admin/products"                 },
           { icon: CalendarCheck, label: "Bookings",     value: pendingBookings,    href: "/admin/bookings",     amber: true },
           { icon: Package,       label: "Orders",       value: pendingOrders,      href: "/admin/orders",       amber: true },
           { icon: FileText,      label: "Applicants",   value: pendingApplications,href: "/admin/applications", amber: true },
@@ -246,12 +246,12 @@ export default async function AdminDashboard() {
         <div className="admin-card__body">
           <div className="vac-quick-actions-grid">
             {isContent && <>
-              <Link href="/admin/products/new"    className="vac-action-btn"><Palette  size={20} /><span>New Product</span></Link>
               <Link href="/admin/experiences/new" className="vac-action-btn"><Map      size={20} /><span>New Experience</span></Link>
               <Link href="/admin/blog/new"        className="vac-action-btn"><Feather  size={20} /><span>New Blog Post</span></Link>
               <Link href="/admin/conservation/new"className="vac-action-btn"><Leaf     size={20} /><span>New Campaign</span></Link>
             </>}
             {isOps && <>
+              <Link href="/admin/products/new" className="vac-action-btn"><Palette size={20} /><span>New Product</span></Link>
               <Link href="/admin/slots/new"  className="vac-action-btn"><CalendarCheck size={20} /><span>Add Slot</span></Link>
               <Link href="/admin/orders"     className="vac-action-btn"><Package       size={20} /><span>Process Orders</span></Link>
               <Link href="/admin/bookings"   className="vac-action-btn"><CalendarCheck size={20} /><span>Bookings</span></Link>

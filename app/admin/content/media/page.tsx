@@ -73,7 +73,7 @@ export default async function MediaLibraryPage() {
                     </a>
                   <button
                     onClick={undefined}
-                    style={{ fontSize: "10px", color: "var(--green)", fontFamily: "var(--font-ui)", background: "none", border: "none", cursor: "pointer", padding: "2px 6px", border: "1px solid var(--green)", borderRadius: "var(--radius-sm)" } as React.CSSProperties}
+                    style={{ fontSize: "10px", color: "var(--green)", fontFamily: "var(--font-ui)", background: "none", cursor: "pointer", padding: "2px 6px", border: "1px solid var(--green)", borderRadius: "var(--radius-sm)" } as React.CSSProperties}
                     title="Click to copy URL"
                     data-url={f.url}
                   >

@@ -1,8 +1,10 @@
+import { DeleteButton } from "@/components/admin/DeleteButton"
+import { AdminFilters, AdminPageHeader, AdminPagination } from "@/components/admin/AdminPageChrome"
 import { db } from "@/lib/db"
 import Link from "next/link"
-import { DeleteButton } from "@/components/admin/DeleteButton"
 
 export const dynamic = "force-dynamic"
+const PAGE_SIZE = 12
 
 async function feature(fd: FormData) {
   "use server"
@@ -29,73 +31,73 @@ async function del(fd: FormData) {
 export default async function AdminBlogPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const sp = await searchParams
   const q = sp.q ?? ""
-  const catFilter = sp.category ?? ""
+  const category = sp.category ?? ""
+  const status = sp.status ?? ""
+  const page = Math.max(1, Number(sp.page ?? 1))
 
   const where: any = {}
-  if (catFilter) where.category = catFilter
+  if (category) where.category = category
+  if (status === "PUBLISHED") where.published = true
+  if (status === "DRAFT") where.published = false
   if (q) where.title = { contains: q, mode: "insensitive" }
 
-  const posts = await db.blogPost.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true, title: true, excerpt: true, category: true, tags: true,
-      viewCount: true, featuredImageUrl: true, featured: true,
-      published: true, createdAt: true,
-    },
-  })
+  const [posts, total] = await Promise.all([
+    db.blogPost.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+      select: { id: true, title: true, excerpt: true, category: true, tags: true, viewCount: true, featuredImageUrl: true, featured: true, published: true },
+    }),
+    db.blogPost.count({ where }),
+  ])
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--space-6)" }}>
-        <h1 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: 600 }}>Blog & Stories</h1>
-        <Link href="/admin/blog/new" className="btn btn--primary btn--sm">+ New Post</Link>
-      </div>
+      <AdminPageHeader eyebrow="Editorial" title="Blog & Stories" description="Draft, publish, feature, and organize stories across the public site." actionHref="/admin/blog/new" actionLabel="+ New Post" />
 
-      <form method="GET" style={{ display: "flex", gap: "var(--space-3)", marginBottom: "var(--space-6)", flexWrap: "wrap" }}>
-        <input name="q" defaultValue={q} placeholder="Search posts…" style={{ height: 40, padding: "0 var(--space-3)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", background: "var(--surface-raised)", color: "var(--text-primary)", fontSize: "var(--text-small)", fontFamily: "var(--font-ui)", flex: 1, minWidth: 180 }} />
-        <select name="category" defaultValue={catFilter} style={{ height: 40, padding: "0 var(--space-3)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", background: "var(--surface-raised)", color: "var(--text-primary)", fontSize: "var(--text-small)", fontFamily: "var(--font-ui)" }}>
-          <option value="">All Categories</option>
+      <AdminFilters clearHref="/admin/blog" active={Boolean(q || category || status)}>
+        <input name="q" defaultValue={q} placeholder="Search posts..." />
+        <select name="category" defaultValue={category}>
+          <option value="">All categories</option>
+          <option value="UPDATE">Update</option>
+          <option value="EVENT">Event</option>
           <option value="STORY">Story</option>
           <option value="CULTURE">Culture</option>
           <option value="CONSERVATION">Conservation</option>
-          <option value="EVENT">Event</option>
-          <option value="UPDATE">Update</option>
+          <option value="TESTIMONIAL">Testimonial</option>
         </select>
-        <button type="submit" className="btn btn--primary btn--sm">Search</button>
-        {(q || catFilter) && <a href="/admin/blog" className="btn btn--ghost btn--sm">Clear</a>}
-      </form>
+        <select name="status" defaultValue={status}>
+          <option value="">All statuses</option>
+          <option value="PUBLISHED">Published</option>
+          <option value="DRAFT">Draft</option>
+        </select>
+      </AdminFilters>
 
-      <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-caption)", color: "var(--text-muted)", marginBottom: "var(--space-4)" }}>{posts.length} posts</p>
+      <div className="admin-results-bar"><span>{total} post{total === 1 ? "" : "s"}</span><span>{q || category || status ? "Filtered view" : "All records"}</span></div>
 
       {posts.length === 0 ? (
-        <p style={{ color: "var(--text-muted)" }}>No posts found. <Link href="/admin/blog/new">Write your first post →</Link></p>
+        <p style={{ color: "var(--text-muted)" }}>No posts found. <Link href="/admin/blog/new">Write your first post</Link></p>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "var(--space-4)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "var(--space-4)" }}>
           {posts.map((p) => (
-            <div key={p.id} className="card card--interactive" style={{ display: "flex", flexDirection: "column" }}>
+            <div key={p.id} className="card card--interactive" style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
               <div style={{ position: "relative", aspectRatio: "4/3", background: "var(--green-tint)" }}>
                 {p.featuredImageUrl && <img src={p.featuredImageUrl} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
                 <span className={`chip ${p.published ? "chip--success" : "chip--neutral"}`} style={{ position: "absolute", top: "var(--space-2)", left: "var(--space-2)" }}>{p.published ? "Published" : "Draft"}</span>
-                {p.featured && <span style={{ position: "absolute", top: "var(--space-2)", right: "var(--space-2)", fontSize: "1.1rem" }}>⭐</span>}
+                {p.featured && <span className="chip chip--warning" style={{ position: "absolute", top: "var(--space-2)", right: "var(--space-2)" }}>Featured</span>}
               </div>
               <div style={{ padding: "var(--space-4)", flex: 1, display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
-                <p style={{ fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: "var(--text-small)", color: "var(--text-primary)" }}>{p.title}</p>
-                {p.excerpt && <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{p.excerpt.slice(0, 60)}{p.excerpt.length > 60 ? "…" : ""}</p>}
+                <p style={{ fontFamily: "var(--font-ui)", fontWeight: 700, color: "var(--text-primary)" }}>{p.title}</p>
+                {p.excerpt && <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{p.excerpt.slice(0, 80)}{p.excerpt.length > 80 ? "..." : ""}</p>}
                 <span className="chip chip--neutral" style={{ alignSelf: "flex-start", fontSize: "10px" }}>{p.category}</span>
-                <div style={{ display: "flex", gap: "var(--space-1)", flexWrap: "wrap" }}>
-                  {(p.tags as string[] | null ?? []).slice(0, 2).map(t => (
-                    <span key={t} style={{ fontSize: "10px", background: "var(--green-tint)", color: "var(--green)", borderRadius: "var(--radius-pill)", padding: "1px 6px" }}>{t}</span>
-                  ))}
-                </div>
-                <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>👁 {p.viewCount ?? 0}</p>
+                <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>{p.viewCount ?? 0} views</p>
                 <div style={{ display: "flex", gap: "var(--space-2)", marginTop: "auto", flexWrap: "wrap" }}>
-                  <a href={`/admin/blog/${p.id}/edit`} className="btn btn--ghost btn--sm">Edit</a>
+                  <Link href={`/admin/blog/${p.id}/edit`} className="btn btn--ghost btn--sm">Edit</Link>
                   <form action={p.featured ? unfeature : feature}>
                     <input type="hidden" name="id" value={p.id} />
-                    <button type="submit" className="btn btn--ghost btn--sm" style={{ color: p.featured ? "#F59E0B" : "var(--text-muted)" }}>
-                      {p.featured ? "★ Unfeature" : "☆ Feature"}
-                    </button>
+                    <button type="submit" className="btn btn--ghost btn--sm">{p.featured ? "Unfeature" : "Feature"}</button>
                   </form>
                   <DeleteButton action={del} id={p.id} itemName={p.title} />
                 </div>
@@ -104,6 +106,8 @@ export default async function AdminBlogPage({ searchParams }: { searchParams: Pr
           ))}
         </div>
       )}
+
+      <AdminPagination page={page} pages={pages} total={total} basePath="/admin/blog" query={{ q, category, status }} />
     </div>
   )
 }

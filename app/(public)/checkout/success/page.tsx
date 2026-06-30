@@ -43,7 +43,7 @@ export default async function CheckoutSuccessPage({ searchParams }: { searchPara
         </div>
 
         <div style={{ display: "flex", gap: "var(--space-3)", flexWrap: "wrap", justifyContent: "center" }}>
-          <Link href="/client/dashboard?tab=orders" className="btn btn--primary">View My Orders</Link>
+          <Link href="/client/dashboard/orders" className="btn btn--primary">View My Orders</Link>
           <a
             href={`https://wa.me/250780000000?text=${encodeURIComponent(`Hi, I just placed order ${ref} on Volcano Arts Center. Please confirm my payment.`)}`}
             target="_blank"

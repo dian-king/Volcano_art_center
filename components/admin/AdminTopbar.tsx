@@ -1,8 +1,15 @@
 "use client"
 import { useEffect, useState } from "react"
-import { Menu, Sun, Moon, X } from "lucide-react"
+import Link from "next/link"
+import { Menu, Sun, Moon, X, Bell, Search, Plus } from "lucide-react"
 
-export function AdminTopbar() {
+export function AdminTopbar({
+  unread = 0,
+  user,
+}: {
+  unread?: number
+  user?: { name: string; email?: string | null; image?: string | null; role?: string }
+}) {
   const [open, setOpen] = useState(false)
   const [theme, setTheme] = useState<"light" | "dark">("light")
 
@@ -64,7 +71,40 @@ export function AdminTopbar() {
         </span>
       </div>
 
+      <form action="/admin/products" className="admin-topbar__search">
+        <Search size={16} />
+        <input name="q" placeholder="Search products, bookings, content..." />
+      </form>
+
       <div className="admin-topbar__right">
+        <Link className="btn btn--primary btn--sm admin-topbar__new" href="/admin/experiences/new">
+          <Plus size={16} />
+          New
+        </Link>
+        <Link
+          className="icon-btn"
+          href="/admin/inquiries"
+          aria-label={unread > 0 ? `${unread} unread notifications` : "Notifications"}
+          style={{ position: "relative" }}
+        >
+          <Bell size={18} />
+          {unread > 0 && (
+            <span style={{ position: "absolute", top: -4, right: -4, minWidth: 16, height: 16, borderRadius: "999px", background: "var(--green)", color: "#fff", fontSize: 10, display: "grid", placeItems: "center", fontFamily: "var(--font-mono)" }}>
+              {unread > 9 ? "9+" : unread}
+            </span>
+          )}
+        </Link>
+        {user && (
+          <div className="admin-topbar__user" title={user.email ?? user.name}>
+            <div className="admin-topbar__avatar">
+              {user.image ? <img src={user.image} alt={user.name} /> : user.name.charAt(0).toUpperCase()}
+            </div>
+            <div className="admin-topbar__user-info">
+              <span className="admin-topbar__user-name">{user.name}</span>
+              <span className="admin-topbar__user-role">{user.role?.replaceAll("_", " ")}</span>
+            </div>
+          </div>
+        )}
         <button
           className="icon-btn"
           onClick={toggleTheme}

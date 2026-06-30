@@ -18,12 +18,11 @@ function formatRelativeTime(date: Date): string {
 }
 
 function editHref(item: Item): string {
-  if (item.type === "Product") return `/admin/products/${item.id}/edit`
   if (item.type === "Experience") return `/admin/experiences/${item.id}/edit`
   return `/admin/blog/${item.id}/edit`
 }
 
-const TYPE_LABEL: Record<string, string> = { Product: "Product", Experience: "Experience", BlogPost: "Blog Post" }
+const TYPE_LABEL: Record<string, string> = { Experience: "Experience", BlogPost: "Blog Post" }
 const STATUS_CHIP: Record<string, string> = { PUBLISHED: "chip--success", DRAFT: "chip--neutral", ARCHIVED: "chip--danger" }
 
 export function RecentContentTable({ items }: { items: ContentDashboardData["recentlyUpdatedContent"] }) {
@@ -33,7 +32,7 @@ export function RecentContentTable({ items }: { items: ContentDashboardData["rec
         <div className="admin-card__header-row">
           <div>
             <h3 id="recent-content-title">Recently Updated</h3>
-            <p>Latest edits across products, experiences, and posts.</p>
+            <p>Latest edits across experiences and posts.</p>
           </div>
         </div>
       </div>
@@ -51,7 +50,7 @@ export function RecentContentTable({ items }: { items: ContentDashboardData["rec
                   <td colSpan={5} style={{ textAlign: "center", padding: "48px 24px", color: "var(--text-muted)" }}>
                     <Inbox size={32} style={{ margin: "0 auto var(--space-3)", opacity: 0.4 }} />
                     <p style={{ marginBottom: "var(--space-3)" }}>No content has been updated yet.</p>
-                    <a href="/admin/products/new" className="btn btn--primary btn--sm">Add your first product</a>
+                    <a href="/admin/blog/new" className="btn btn--primary btn--sm">Write your first post</a>
                   </td>
                 </tr>
               ) : items.map(item => (

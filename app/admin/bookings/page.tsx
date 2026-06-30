@@ -1,78 +1,106 @@
-﻿import Link from "next/link"
 import { redirect } from "next/navigation"
-import { db } from "@/lib/db"
 import { updateBookingStatus } from "@/actions/admin-content"
-import { F, TH, TD, STATUS_COLORS, statusBadge } from "@/components/admin/AdminForm"
+import { F, STATUS_COLORS, statusBadge } from "@/components/admin/AdminForm"
+import { AdminFilters, AdminPageHeader, AdminPagination } from "@/components/admin/AdminPageChrome"
+import { db } from "@/lib/db"
 
 export const dynamic = "force-dynamic"
+const PAGE_SIZE = 12
 
 async function setStatus(fd: FormData) {
   "use server"
-  await updateBookingStatus(fd.get("id") as string, fd.get("status") as string)
+  await updateBookingStatus(fd.get("id") as string, fd.get("status") as string, (fd.get("adminNote") as string) || undefined)
   redirect("/admin/bookings")
 }
 
-export default async function BookingsPage() {
-  const bookings = await db.booking.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { experience: { select: { title: true } } },
-  })
+export default async function BookingsPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+  const sp = await searchParams
+  const q = sp.q ?? ""
+  const status = sp.status ?? ""
+  const page = Math.max(1, Number(sp.page ?? 1))
+
+  const where: any = {}
+  if (status) where.status = status
+  if (q) {
+    where.OR = [
+      { reference: { contains: q, mode: "insensitive" } },
+      { guestName: { contains: q, mode: "insensitive" } },
+      { guestEmail: { contains: q, mode: "insensitive" } },
+      { experience: { is: { title: { contains: q, mode: "insensitive" } } } },
+    ]
+  }
+
+  const [bookings, total] = await Promise.all([
+    db.booking.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+      include: { experience: { select: { title: true } } },
+    }),
+    db.booking.count({ where }),
+  ])
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--space-6)" }}>
-        <h1 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-h2)" }}>Bookings</h1>
-        <a href="/api/admin/export?type=bookings" className="btn btn--ghost btn--sm" download>↓ Export CSV</a>
+      <AdminPageHeader eyebrow="Operations" title="Bookings" description="Review booking requests, approve or reject dates, and keep guest-facing status accurate." actionHref="/api/admin/export?type=bookings" actionLabel="Export CSV" />
+
+      <AdminFilters clearHref="/admin/bookings" active={Boolean(q || status)}>
+        <input name="q" defaultValue={q} placeholder="Search reference, guest, email, experience..." />
+        <select name="status" defaultValue={status}>
+          <option value="">All statuses</option>
+          <option value="PENDING">Pending</option>
+          <option value="CONFIRMED">Confirmed</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="CANCELLED">Cancelled</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+      </AdminFilters>
+
+      <div className="admin-card">
+        <div className="admin-card__header">
+          <div className="admin-card__header-row">
+            <div><h3>Booking Queue</h3><p>{total} booking{total === 1 ? "" : "s"} found</p></div>
+          </div>
+        </div>
+        <div className="admin-card__body admin-card__body--flush">
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead><tr><th>Reference</th><th>Guest</th><th>Experience</th><th>Date</th><th>Group</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody>
+                {bookings.map((b) => (
+                  <tr key={b.id}>
+                    <td><span className="td-ref">{b.reference}</span></td>
+                    <td>
+                      <strong>{b.guestName ?? "No name"}</strong>
+                      <div className="td-sub">{b.guestEmail}</div>
+                      {b.guestPhone && <div className="td-sub">{b.guestPhone}</div>}
+                    </td>
+                    <td>{b.experience?.title ?? "Custom"}</td>
+                    <td>{b.preferredDate.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</td>
+                    <td>{b.groupSize}</td>
+                    <td>{statusBadge(b.status, STATUS_COLORS)}</td>
+                    <td>
+                      <form action={setStatus} style={{ display: "grid", gridTemplateColumns: "150px 180px auto", gap: "var(--space-2)", minWidth: 430 }}>
+                        <input type="hidden" name="id" value={b.id} />
+                        <select name="status" defaultValue={b.status} style={F.sel}>
+                          {["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED", "REJECTED"].map(s => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                        <input name="adminNote" defaultValue={b.adminNote ?? b.cancelReason ?? ""} placeholder="Staff note" style={F.inp} />
+                        <button type="submit" className="btn btn--primary btn--sm">Save</button>
+                      </form>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {bookings.length === 0 && <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "var(--space-8)" }}>No bookings match this filter.</p>}
+          </div>
+        </div>
       </div>
-      <div style={{ overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th style={TH}>Reference</th>
-              <th style={TH}>Experience</th>
-              <th style={TH}>Guest</th>
-              <th style={TH}>Date</th>
-              <th style={TH}>Group</th>
-              <th style={TH}>Status</th>
-              <th style={TH}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bookings.map((b) => {
-              const d = b.preferredDate
-              const formatted = d
-                ? `${String(d.getDate()).padStart(2, "0")} ${d.toLocaleString("en-GB", { month: "short" })} ${d.getFullYear()}`
-                : "—"
-              return (
-                <tr key={b.id}>
-                  <td style={TD}><code style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--green)" }}>{b.id.slice(0, 8)}</code></td>
-                  <td style={TD}>{b.experience?.title ?? "—"}</td>
-                  <td style={TD}>{b.guestName ?? b.guestEmail ?? "—"}</td>
-                  <td style={TD}>{formatted}</td>
-                  <td style={TD}>{b.groupSize}</td>
-                  <td style={TD}>{statusBadge(b.status, STATUS_COLORS)}</td>
-                  <td style={TD}>
-                    <form action={setStatus} style={{ display: "flex", gap: "var(--space-2)", alignItems: "center" }}>
-                      <input type="hidden" name="id" value={b.id} />
-                      <select name="status" defaultValue={b.status} style={{ ...F.sel, width: "160px" }}>
-                        {["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED", "REJECTED"].map((s) => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
-                      <button type="submit" style={{ padding: "0 var(--space-3)", height: "36px", background: "var(--green)", color: "#fff", border: "none", borderRadius: "var(--radius-md)", cursor: "pointer", fontSize: "var(--text-small)", fontFamily: "var(--font-ui)", whiteSpace: "nowrap" }}>
-                        Save
-                      </button>
-                    </form>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-        {bookings.length === 0 && (
-          <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "var(--space-8)" }}>No bookings yet.</p>
-        )}
-      </div>
+
+      <AdminPagination page={page} pages={pages} total={total} basePath="/admin/bookings" query={{ q, status }} />
     </div>
   )
 }

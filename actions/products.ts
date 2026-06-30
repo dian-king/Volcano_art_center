@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
+import { OPS_ROLES, requireRole } from "@/lib/permissions"
 
 function toSlug(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
@@ -10,9 +11,7 @@ function toSlug(name: string) {
 
 export async function createProduct(formData: FormData) {
   const session = await auth()
-  if (!["SUPER_ADMIN", "OPS_MANAGER", "CONTENT_MANAGER"].includes(session?.user?.role as string)) {
-    throw new Error("Unauthorized")
-  }
+  requireRole(session?.user?.role as string | undefined, OPS_ROLES)
 
   const name = formData.get("name") as string
   const price = parseFloat(formData.get("price") as string)
@@ -47,9 +46,7 @@ export async function createProduct(formData: FormData) {
 
 export async function updateProduct(id: string, formData: FormData) {
   const session = await auth()
-  if (!["SUPER_ADMIN", "OPS_MANAGER", "CONTENT_MANAGER"].includes(session?.user?.role as string)) {
-    throw new Error("Unauthorized")
-  }
+  requireRole(session?.user?.role as string | undefined, OPS_ROLES)
 
   const data = {
     name: formData.get("name") as string,

@@ -1,12 +1,14 @@
 "use server"
-import { auth } from "@/lib/auth"
+import { auth, signIn } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { generateTalentRef } from "@/lib/references"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { z } from "zod"
+import bcrypt from "bcryptjs"
 
 const schema = z.object({
+  program: z.string().min(1, "Please select a programme"),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   email: z.string().email(),
@@ -21,24 +23,54 @@ const schema = z.object({
   availability: z.string().optional(),
   accessibilityNeeds: z.string().optional(),
   preferredContact: z.string().optional(),
+  password: z.string().optional(),
+  confirmPassword: z.string().optional(),
 })
 
 export async function submitTalentApplication(fd: FormData) {
   const session = await auth()
-  if (!session?.user?.id) return { error: "You must be signed in" }
-
-  // Check for existing application
-  const existing = await db.talentApplication.findUnique({ where: { userId: session.user.id } })
-  if (existing) return { error: "You have already submitted an application" }
-
   const parsed = schema.safeParse(Object.fromEntries(fd))
-  if (!parsed.success) return { error: parsed.error.errors[0].message }
+  if (!parsed.success) redirect(`/talent/apply?error=${encodeURIComponent(parsed.error.issues[0].message)}`)
 
   const d = parsed.data
+  let userId = session?.user?.id
+  const isNewApplicant = !userId
+
+  if (userId) {
+    const existing = await db.talentApplication.findUnique({ where: { userId } })
+    if (existing) redirect("/talent/dashboard")
+  } else {
+    if (!d.password || d.password.length < 8) {
+      redirect("/talent/apply?error=Password%20must%20be%20at%20least%208%20characters")
+    }
+    if (d.password !== d.confirmPassword) {
+      redirect("/talent/apply?error=Passwords%20do%20not%20match")
+    }
+    const existingUser = await db.user.findUnique({ where: { email: d.email } })
+    if (existingUser) {
+      redirect(`/login?next=/talent/apply&error=${encodeURIComponent("An account already exists for this email. Please sign in to apply.")}`)
+    }
+
+    const hashed = await bcrypt.hash(d.password, 12)
+    const user = await db.user.create({
+      data: {
+        email: d.email,
+        firstName: d.firstName,
+        lastName: d.lastName,
+        phone: d.phone || null,
+        password: hashed,
+        role: "TALENT_APPLICANT",
+      },
+      select: { id: true },
+    })
+    userId = user.id
+  }
+
   await db.talentApplication.create({
     data: {
       reference: generateTalentRef(),
-      userId: session.user.id,
+      userId,
+      program: d.program,
       firstName: d.firstName,
       lastName: d.lastName,
       email: d.email,
@@ -53,12 +85,28 @@ export async function submitTalentApplication(fd: FormData) {
       availability: d.availability || null,
       accessibilityNeeds: d.accessibilityNeeds || null,
       preferredContact: d.preferredContact || null,
-    },
+    } as any,
   })
 
-  // Upgrade role to TALENT_APPLICANT
-  await db.user.update({ where: { id: session.user.id }, data: { role: "TALENT_APPLICANT" } })
+  if (!isNewApplicant) {
+    await db.user.update({
+      where: { id: userId },
+      data: {
+        firstName: d.firstName,
+        lastName: d.lastName,
+        phone: d.phone || null,
+        role: "TALENT_APPLICANT",
+      },
+    })
+  }
 
   revalidatePath("/talent/dashboard")
+  if (isNewApplicant) {
+    await signIn("credentials", {
+      email: d.email,
+      password: d.password,
+      redirectTo: "/talent/dashboard",
+    })
+  }
   redirect("/talent/dashboard")
 }

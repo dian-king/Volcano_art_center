@@ -24,7 +24,7 @@ export async function updateProfile(formData: FormData) {
     country: formData.get("country"),
     profileImageUrl: formData.get("profileImageUrl"),
   })
-  if (!parsed.success) return { error: parsed.error.errors[0].message }
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
 
   const { firstName, lastName, phone, country, profileImageUrl } = parsed.data
   await db.user.update({

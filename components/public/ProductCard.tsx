@@ -39,7 +39,7 @@ export function ProductCard({ product }: ProductCardProps) {
     }
     setSaved(s => !s)
     const result = await toggleSavedItem(product.id)
-    if ("saved" in result) setSaved(result.saved)
+    if (typeof result.saved === "boolean") setSaved(result.saved)
   }
 
   return (

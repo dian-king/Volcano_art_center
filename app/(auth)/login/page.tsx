@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { signIn } from "next-auth/react"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { useState } from "react"
 import { Loader2 } from "lucide-react"
@@ -26,6 +26,7 @@ const OAUTH_ERRORS: Record<string, string> = {
 }
 
 export default function LoginPage() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const next = searchParams.get("next") ?? "/"
   const oauthError = searchParams.get("error")
@@ -42,7 +43,8 @@ export default function LoginPage() {
     if (result?.error) {
       setError("Invalid email or password. Try: client@volcanoarts.rw / Test1234!")
     } else {
-      window.location.href = next
+      router.replace(next)
+      router.refresh()
     }
   }
 

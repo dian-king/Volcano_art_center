@@ -1,8 +1,10 @@
+import { DeleteButton } from "@/components/admin/DeleteButton"
+import { AdminFilters, AdminPageHeader, AdminPagination } from "@/components/admin/AdminPageChrome"
 import { db } from "@/lib/db"
 import Link from "next/link"
-import { DeleteButton } from "@/components/admin/DeleteButton"
 
 export const dynamic = "force-dynamic"
+const PAGE_SIZE = 12
 
 async function feature(fd: FormData) {
   "use server"
@@ -29,75 +31,74 @@ async function del(fd: FormData) {
 export default async function AdminTalentPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const sp = await searchParams
   const q = sp.q ?? ""
-  const areaFilter = sp.talentArea ?? ""
+  const talentArea = sp.talentArea ?? ""
+  const status = sp.status ?? ""
+  const page = Math.max(1, Number(sp.page ?? 1))
 
   const where: any = {}
-  if (areaFilter) where.talentArea = areaFilter
+  if (talentArea) where.talentArea = talentArea
+  if (status === "PUBLISHED") where.published = true
+  if (status === "DRAFT") where.published = false
   if (q) where.displayName = { contains: q, mode: "insensitive" }
 
-  const profiles = await db.talentProfile.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    include: { user: { select: { email: true } } },
-  })
+  const [profiles, total] = await Promise.all([
+    db.talentProfile.findMany({ where, orderBy: { createdAt: "desc" }, skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE, include: { user: { select: { email: true } } } }),
+    db.talentProfile.count({ where }),
+  ])
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--space-6)" }}>
-        <h1 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: 600 }}>Talent Profiles</h1>
-        <Link href="/admin/talent/new" className="btn btn--primary btn--sm">+ New Profile</Link>
-      </div>
+      <AdminPageHeader eyebrow="Community" title="Talent Profiles" description="Curate public talent profiles, featured artists, bios, and portfolio visibility." actionHref="/admin/talent/new" actionLabel="+ New Profile" />
 
-      <form method="GET" style={{ display: "flex", gap: "var(--space-3)", marginBottom: "var(--space-6)", flexWrap: "wrap" }}>
-        <input name="q" defaultValue={q} placeholder="Search talent…" style={{ height: 40, padding: "0 var(--space-3)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", background: "var(--surface-raised)", color: "var(--text-primary)", fontSize: "var(--text-small)", fontFamily: "var(--font-ui)", flex: 1, minWidth: 180 }} />
-        <select name="talentArea" defaultValue={areaFilter} style={{ height: 40, padding: "0 var(--space-3)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", background: "var(--surface-raised)", color: "var(--text-primary)", fontSize: "var(--text-small)", fontFamily: "var(--font-ui)" }}>
-          <option value="">All Areas</option>
-          <option value="VISUAL_ARTS">Visual Arts</option>
-          <option value="PERFORMING_ARTS">Performing Arts</option>
-          <option value="MUSIC">Music</option>
-          <option value="CRAFT">Craft</option>
-          <option value="CULINARY">Culinary</option>
+      <AdminFilters clearHref="/admin/talent" active={Boolean(q || talentArea || status)}>
+        <input name="q" defaultValue={q} placeholder="Search talent..." />
+        <select name="talentArea" defaultValue={talentArea}>
+          <option value="">All areas</option>
+          <option value="TRADITIONAL_DANCE">Traditional Dance</option>
           <option value="STORYTELLING">Storytelling</option>
+          <option value="CULTURAL_PERFORMANCE">Cultural Performance</option>
+          <option value="MUSIC">Music</option>
+          <option value="VISUAL_ARTS">Visual Arts</option>
+          <option value="CRAFTS">Crafts</option>
           <option value="OTHER">Other</option>
         </select>
-        <button type="submit" className="btn btn--primary btn--sm">Search</button>
-        {(q || areaFilter) && <a href="/admin/talent" className="btn btn--ghost btn--sm">Clear</a>}
-      </form>
+        <select name="status" defaultValue={status}>
+          <option value="">All statuses</option>
+          <option value="PUBLISHED">Published</option>
+          <option value="DRAFT">Draft</option>
+        </select>
+      </AdminFilters>
 
-      <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-caption)", color: "var(--text-muted)", marginBottom: "var(--space-4)" }}>{profiles.length} profiles</p>
+      <div className="admin-results-bar"><span>{total} profile{total === 1 ? "" : "s"}</span><span>{q || talentArea || status ? "Filtered view" : "All records"}</span></div>
 
       {profiles.length === 0 ? (
-        <p style={{ color: "var(--text-muted)" }}>No profiles found. <Link href="/admin/talent/new">Add your first profile →</Link></p>
+        <p style={{ color: "var(--text-muted)" }}>No profiles found. <Link href="/admin/talent/new">Add your first profile</Link></p>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "var(--space-4)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "var(--space-4)" }}>
           {profiles.map((p) => (
             <div key={p.id} className="card card--interactive" style={{ display: "flex", flexDirection: "column" }}>
               <div style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)", flex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-                  <div style={{ width: 80, height: 80, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "var(--green-tint)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {p.imageUrl
-                      ? <img src={p.imageUrl} alt={p.displayName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      : <span style={{ fontFamily: "var(--font-display)", color: "var(--green)", fontSize: "1.8rem" }}>{p.displayName.charAt(0)}</span>
-                    }
+                  <div style={{ width: 72, height: 72, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "var(--green-tint)", display: "grid", placeItems: "center" }}>
+                    {p.imageUrl ? <img src={p.imageUrl} alt={p.displayName} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontFamily: "var(--font-display)", color: "var(--green)", fontSize: "1.7rem" }}>{p.displayName.charAt(0)}</span>}
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
-                    <p style={{ fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: "var(--text-small)", color: "var(--text-primary)" }}>{p.displayName}</p>
-                    {p.featured && <span style={{ fontSize: "1rem" }}>⭐</span>}
+                  <div>
+                    <p style={{ fontFamily: "var(--font-ui)", fontWeight: 700, color: "var(--text-primary)" }}>{p.displayName}</p>
+                    <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{p.user.email}</p>
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
-                  <span className="chip chip--neutral" style={{ fontSize: "10px" }}>{p.talentArea.replace(/_/g, " ")}</span>
-                  <span className="chip chip--neutral" style={{ fontSize: "10px" }}>{p.category}</span>
+                  <span className="chip chip--neutral" style={{ fontSize: "10px" }}>{p.talentArea.replaceAll("_", " ")}</span>
+                  <span className={`chip ${p.published ? "chip--success" : "chip--neutral"}`} style={{ fontSize: "10px" }}>{p.published ? "Published" : "Draft"}</span>
+                  {p.featured && <span className="chip chip--warning" style={{ fontSize: "10px" }}>Featured</span>}
                 </div>
-                {p.bio && <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{p.bio.slice(0, 60)}{p.bio.length > 60 ? "…" : ""}</p>}
-                <span className={`chip ${p.published ? "chip--success" : "chip--neutral"}`} style={{ alignSelf: "flex-start", fontSize: "10px" }}>{p.published ? "Published" : "Draft"}</span>
+                {p.bio && <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{p.bio.slice(0, 80)}{p.bio.length > 80 ? "..." : ""}</p>}
                 <div style={{ display: "flex", gap: "var(--space-2)", marginTop: "auto", flexWrap: "wrap" }}>
-                  <a href={`/admin/talent/${p.id}/edit`} className="btn btn--ghost btn--sm">Edit</a>
+                  <Link href={`/admin/talent/${p.id}/edit`} className="btn btn--ghost btn--sm">Edit</Link>
                   <form action={p.featured ? unfeature : feature}>
                     <input type="hidden" name="id" value={p.id} />
-                    <button type="submit" className="btn btn--ghost btn--sm" style={{ color: p.featured ? "#F59E0B" : "var(--text-muted)" }}>
-                      {p.featured ? "★ Unfeature" : "☆ Feature"}
-                    </button>
+                    <button type="submit" className="btn btn--ghost btn--sm">{p.featured ? "Unfeature" : "Feature"}</button>
                   </form>
                   <DeleteButton action={del} id={p.id} itemName={p.displayName} />
                 </div>
@@ -106,6 +107,8 @@ export default async function AdminTalentPage({ searchParams }: { searchParams: 
           ))}
         </div>
       )}
+
+      <AdminPagination page={page} pages={pages} total={total} basePath="/admin/talent" query={{ q, talentArea, status }} />
     </div>
   )
 }

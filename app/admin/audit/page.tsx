@@ -1,116 +1,104 @@
-import { db } from "@/lib/db"
-import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import { TH, TD } from "@/components/admin/AdminForm"
+import { AdminFilters, AdminPageHeader, AdminPagination } from "@/components/admin/AdminPageChrome"
+import { auth } from "@/lib/auth"
+import { db } from "@/lib/db"
 
 export const dynamic = "force-dynamic"
+const PAGE_SIZE = 25
 
-export default async function AuditLogPage({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string>>
-}) {
+export default async function AuditLogPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const session = await auth()
   if (session?.user?.role !== "SUPER_ADMIN") redirect("/admin")
 
   const sp = await searchParams
-  const actorFilter = sp.actor ?? ""
-  const entityFilter = sp.entity ?? ""
-  const page = Number(sp.page ?? 1)
-  const perPage = 50
+  const actor = sp.actor ?? ""
+  const entity = sp.entity ?? ""
+  const event = sp.event ?? ""
+  const page = Math.max(1, Number(sp.page ?? 1))
 
-  const where = {
-    ...(actorFilter ? { actorEmail: { contains: actorFilter } } : {}),
-    ...(entityFilter ? { entityType: { contains: entityFilter } } : {}),
-  }
+  const where: any = {}
+  if (actor) where.actorEmail = { contains: actor, mode: "insensitive" }
+  if (entity) where.entityType = { contains: entity, mode: "insensitive" }
+  if (event) where.eventType = { contains: event, mode: "insensitive" }
 
   const [logs, total] = await Promise.all([
     db.auditLog.findMany({
       where,
       orderBy: { createdAt: "desc" },
-      take: perPage,
-      skip: (page - 1) * perPage,
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
       include: { actor: { select: { email: true } } },
     }),
     db.auditLog.count({ where }),
   ])
-
-  const totalPages = Math.ceil(total / perPage)
-
-  const inp: React.CSSProperties = { height: "36px", padding: "0 var(--space-3)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", background: "var(--surface-base)", color: "var(--text-primary)", fontSize: "var(--text-small)", fontFamily: "var(--font-ui)" }
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   return (
     <div>
-      <h1 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: 600, marginBottom: "var(--space-6)" }}>
-        Audit Log
-      </h1>
+      <AdminPageHeader
+        eyebrow="Administration"
+        title="Audit Log"
+        description="Trace important administrative changes by actor, entity, event type, and timestamp."
+      />
 
-      {/* Filters */}
-      <form style={{ display: "flex", gap: "var(--space-3)", marginBottom: "var(--space-5)", flexWrap: "wrap" }}>
-        <input name="actor" defaultValue={actorFilter} placeholder="Filter by actor email" style={{ ...inp, width: 220 }} />
-        <input name="entity" defaultValue={entityFilter} placeholder="Filter by entity type" style={{ ...inp, width: 180 }} />
-        <button type="submit" className="btn btn--primary btn--sm">Filter</button>
-        <a href="/admin/audit" className="btn btn--ghost btn--sm">Clear</a>
-        <span style={{ marginLeft: "auto", fontSize: "var(--text-small)", color: "var(--text-muted)", fontFamily: "var(--font-ui)", alignSelf: "center" }}>
-          {total.toLocaleString()} entries
-        </span>
-      </form>
+      <AdminFilters clearHref="/admin/audit" active={Boolean(actor || entity || event)}>
+        <input name="actor" defaultValue={actor} placeholder="Actor email..." />
+        <input name="entity" defaultValue={entity} placeholder="Entity type..." />
+        <input name="event" defaultValue={event} placeholder="Event type..." />
+      </AdminFilters>
 
-      {logs.length === 0 ? (
-        <p style={{ color: "var(--text-muted)", fontFamily: "var(--font-ui)" }}>No audit log entries yet.</p>
-      ) : (
-        <>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                {["Time", "Actor", "Event", "Entity", "ID", "Details"].map(h => <th key={h} style={TH}>{h}</th>)}
-              </tr>
-            </thead>
-            <tbody>
-              {logs.map(log => (
-                <tr key={log.id}>
-                  <td style={{ ...TD, fontFamily: "var(--font-mono)", fontSize: "11px", whiteSpace: "nowrap" }}>
-                    {new Date(log.createdAt).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
-                  </td>
-                  <td style={{ ...TD, fontSize: "var(--text-caption)" }}>{log.actorEmail ?? "system"}</td>
-                  <td style={{ ...TD, fontFamily: "var(--font-mono)", fontSize: "var(--text-caption)", color: "var(--green)" }}>
-                    {log.eventType}
-                  </td>
-                  <td style={{ ...TD, fontSize: "var(--text-caption)" }}>{log.entityType}</td>
-                  <td style={{ ...TD, fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {log.entityId ?? "—"}
-                  </td>
-                  <td style={{ ...TD, fontSize: "var(--text-caption)", maxWidth: 200 }}>
-                    {log.details ? (
-                      <span style={{ color: "var(--text-secondary)" }}>{log.details.slice(0, 80)}{log.details.length > 80 ? "…" : ""}</span>
-                    ) : "—"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div style={{ display: "flex", gap: "var(--space-2)", marginTop: "var(--space-5)", justifyContent: "center" }}>
-              {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map(n => (
-                <a
-                  key={n}
-                  href={`/admin/audit?page=${n}${actorFilter ? `&actor=${actorFilter}` : ""}${entityFilter ? `&entity=${entityFilter}` : ""}`}
-                  style={{
-                    width: 36, height: 36, display: "grid", placeItems: "center",
-                    borderRadius: "var(--radius-pill)", fontFamily: "var(--font-mono)", fontSize: "var(--text-caption)",
-                    background: n === page ? "var(--green)" : "var(--surface-raised)",
-                    color: n === page ? "#fff" : "var(--text-secondary)",
-                    border: "1px solid var(--border-subtle)",
-                    textDecoration: "none",
-                  }}
-                >{n}</a>
-              ))}
+      <section className="admin-card">
+        <div className="admin-card__header">
+          <div className="admin-card__header-row">
+            <div>
+              <h3>System Activity</h3>
+              <p>{total.toLocaleString()} entr{total === 1 ? "y" : "ies"} found</p>
             </div>
-          )}
-        </>
-      )}
+          </div>
+        </div>
+        <div className="admin-card__body admin-card__body--flush">
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Actor</th>
+                  <th>Event</th>
+                  <th>Entity</th>
+                  <th>Entity ID</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                {logs.map((log) => (
+                  <tr key={log.id}>
+                    <td>
+                      <span className="td-ref">{new Date(log.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}</span>
+                      <div className="td-sub">{new Date(log.createdAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}</div>
+                    </td>
+                    <td>{log.actorEmail ?? log.actor?.email ?? "system"}</td>
+                    <td><span className="td-ref">{log.eventType}</span></td>
+                    <td>{log.entityType}</td>
+                    <td><code style={{ fontSize: "11px" }}>{log.entityId ?? "-"}</code></td>
+                    <td style={{ maxWidth: 360 }}>
+                      {log.details ? (
+                        <span title={log.details} style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                          {log.details}
+                        </span>
+                      ) : "-"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {logs.length === 0 && (
+              <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "var(--space-8)" }}>No audit log entries match this filter.</p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <AdminPagination page={page} pages={pages} total={total} basePath="/admin/audit" query={{ actor, entity, event }} />
     </div>
   )
 }

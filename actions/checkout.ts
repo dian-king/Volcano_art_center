@@ -2,6 +2,7 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { generateOrderRef } from "@/lib/references"
+import { sendOrderPlacedEmails } from "@/lib/transactional-email"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 
@@ -30,7 +31,7 @@ export async function createOrderAction(formData: FormData) {
     country: formData.get("country"),
     notes: formData.get("notes") || undefined,
   })
-  if (!parsed.success) return { error: parsed.error.errors[0].message }
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
 
   // Fetch cart
   const cart = await db.cart.findUnique({
@@ -81,9 +82,23 @@ export async function createOrderAction(formData: FormData) {
     // Clear cart
     await tx.cartItem.deleteMany({ where: { cartId: cart.id } })
 
-    return ord
+    return tx.order.findUniqueOrThrow({
+      where: { id: ord.id },
+      include: {
+        user: { select: { email: true } },
+        items: { include: { product: { select: { name: true } } } },
+      },
+    })
   })
 
+  await sendOrderPlacedEmails({
+    reference: order.reference,
+    customerEmail: order.user.email,
+    recipientName: order.recipientName,
+    total: Number(order.total),
+    status: order.status,
+    items: order.items.map(item => item.product.name),
+  })
   revalidatePath("/client/dashboard")
   return { success: true, reference: order.reference }
 }

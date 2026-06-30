@@ -1,10 +1,9 @@
 import NextAuth from "next-auth"
 import { authConfig } from "./auth.config"
 import { NextResponse } from "next/server"
+import { ADMIN_ROLES, ADMIN_ROUTE_ROLES, hasRole } from "@/lib/permissions"
 
 const { auth } = NextAuth(authConfig)
-
-const ADMIN_ROLES = ["SUPER_ADMIN", "CONTENT_MANAGER", "OPS_MANAGER"]
 
 // Routes only admin roles can access
 const ADMIN_PREFIXES = ["/admin"]
@@ -27,8 +26,14 @@ export default auth(async (req) => {
     if (!session?.user) {
       return NextResponse.redirect(new URL(`/login?next=${path}`, req.url))
     }
-    if (!role || !ADMIN_ROLES.includes(role)) {
+    if (!hasRole(role, ADMIN_ROLES)) {
       return NextResponse.redirect(new URL("/", req.url))
+    }
+    const matchedRoute = Object.entries(ADMIN_ROUTE_ROLES)
+      .sort((a, b) => b[0].length - a[0].length)
+      .find(([prefix]) => path.startsWith(prefix))
+    if (matchedRoute && !hasRole(role, matchedRoute[1])) {
+      return NextResponse.redirect(new URL("/admin", req.url))
     }
     return NextResponse.next()
   }
@@ -49,5 +54,10 @@ export default auth(async (req) => {
 })
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/admin/:path*",
+    "/client/:path*",
+    "/talent/dashboard/:path*",
+    "/tour-operators/portal/:path*",
+  ],
 }

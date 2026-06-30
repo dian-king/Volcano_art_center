@@ -3,17 +3,26 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
-
-function requireContent() { return ["CONTENT_MANAGER", "SUPER_ADMIN"] }
-function requireOps() { return ["OPS_MANAGER", "SUPER_ADMIN"] }
+import { CONTENT_ROLES, OPS_ROLES, SUPER_ROLES, requireRole } from "@/lib/permissions"
+import { sendBookingApprovedEmail, sendBookingRejectedEmail, sendOrderStatusEmail } from "@/lib/transactional-email"
 
 async function getRole() {
   const s = await auth()
   return s?.user?.role as string | undefined
 }
 
+function requiredText(fd: FormData, key: string, label: string) {
+  const value = fd.get(key)
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(`${label} is required.`)
+  }
+  return value.trim()
+}
+
 function slug(name: string) {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+  const value = name.trim()
+  if (!value) throw new Error("A title or name is required to create a slug.")
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
 }
 async function uniqueSlug(base: string, model: "product" | "experience" | "blogPost" | "conservationCampaign", excludeId?: string) {
   let s = slug(base), n = 0
@@ -30,9 +39,9 @@ async function uniqueSlug(base: string, model: "product" | "experience" | "blogP
 
 export async function createExperience(fd: FormData) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
 
-  const title = fd.get("title") as string
+  const title = requiredText(fd, "title", "Experience title")
   const sl = await uniqueSlug(title, "experience")
 
   await db.experience.create({
@@ -63,7 +72,7 @@ export async function createExperience(fd: FormData) {
 
 export async function updateExperience(id: string, fd: FormData) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
 
   await db.experience.update({
     where: { id },
@@ -96,9 +105,9 @@ export async function updateExperience(id: string, fd: FormData) {
 
 export async function createCampaign(fd: FormData) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
 
-  const name = fd.get("name") as string
+  const name = requiredText(fd, "name", "Campaign name")
   const sl = await uniqueSlug(name, "conservationCampaign")
 
   await db.conservationCampaign.create({
@@ -118,7 +127,7 @@ export async function createCampaign(fd: FormData) {
 
 export async function updateCampaign(id: string, fd: FormData) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
 
   await db.conservationCampaign.update({
     where: { id },
@@ -140,9 +149,9 @@ export async function updateCampaign(id: string, fd: FormData) {
 
 export async function createPost(fd: FormData) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
 
-  const title = fd.get("title") as string
+  const title = requiredText(fd, "title", "Post title")
   const sl = await uniqueSlug(title, "blogPost")
   const published = fd.get("published") === "on"
 
@@ -167,7 +176,7 @@ export async function createPost(fd: FormData) {
 
 export async function updatePost(id: string, fd: FormData) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
 
   const published = fd.get("published") === "on"
   const current = await db.blogPost.findUnique({ where: { id }, select: { publishedAt: true, published: true } })
@@ -196,12 +205,12 @@ export async function updatePost(id: string, fd: FormData) {
 
 export async function createTalentProfile(fd: FormData) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
 
   await db.talentProfile.create({
     data: {
       userId: fd.get("userId") as string,
-      displayName: fd.get("displayName") as string,
+      displayName: requiredText(fd, "displayName", "Display name"),
       bio: (fd.get("bio") as string) || null,
       talentArea: fd.get("talentArea") as any,
       category: fd.get("category") as any,
@@ -216,7 +225,7 @@ export async function createTalentProfile(fd: FormData) {
 
 export async function updateTalentProfile(id: string, fd: FormData) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
 
   await db.talentProfile.update({
     where: { id },
@@ -238,24 +247,67 @@ export async function updateTalentProfile(id: string, fd: FormData) {
 
 export async function toggleReviewApproved(id: string, approved: boolean) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
   await db.review.update({ where: { id }, data: { approved } })
   revalidatePath("/admin/reviews")
 }
 
 export async function toggleReviewFeatured(id: string, featured: boolean) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
   await db.review.update({ where: { id }, data: { featured } })
   revalidatePath("/admin/reviews")
 }
 
 // ─── OPS: BOOKINGS ──────────────────────────────────────────────────────────
 
-export async function updateBookingStatus(id: string, status: string) {
+export async function updateBookingStatus(id: string, status: string, note?: string) {
   const role = await getRole()
-  if (!role || !requireOps().includes(role)) throw new Error("Unauthorized")
-  await db.booking.update({ where: { id }, data: { status: status as any } })
+  requireRole(role, OPS_ROLES)
+  const result = await db.$transaction(async (tx) => {
+    const current = await tx.booking.findUnique({
+      where: { id },
+      select: { status: true, slotId: true, groupSize: true },
+    })
+    if (!current) throw new Error("Booking not found")
+
+    const nextStatus = status as any
+    const booking = await tx.booking.update({
+      where: { id },
+      data: {
+        status: nextStatus,
+        adminNote: note || null,
+        cancelReason: ["REJECTED", "CANCELLED"].includes(status) ? note || "No reason provided" : null,
+      },
+      include: { experience: { select: { title: true } } },
+    })
+
+    if (
+      current.slotId &&
+      ["REJECTED", "CANCELLED"].includes(status) &&
+      !["REJECTED", "CANCELLED"].includes(current.status)
+    ) {
+      await tx.availabilitySlot.update({
+        where: { id: current.slotId },
+        data: { booked: { decrement: current.groupSize } },
+      })
+    }
+
+    return { previousStatus: current.status, booking }
+  })
+  if (result.previousStatus !== status) {
+    const emailPayload = {
+      reference: result.booking.reference,
+      guestName: result.booking.guestName,
+      guestEmail: result.booking.guestEmail,
+      preferredDate: result.booking.preferredDate,
+      groupSize: result.booking.groupSize,
+      experienceTitle: result.booking.experience.title,
+      note,
+    }
+    if (status === "CONFIRMED") await sendBookingApprovedEmail(emailPayload)
+    if (status === "REJECTED") await sendBookingRejectedEmail(emailPayload)
+  }
   revalidatePath("/admin/bookings")
 }
 
@@ -263,15 +315,32 @@ export async function updateBookingStatus(id: string, status: string) {
 
 export async function updateOrderStatus(id: string, fd: FormData) {
   const role = await getRole()
-  if (!role || !requireOps().includes(role)) throw new Error("Unauthorized")
-  await db.order.update({
+  requireRole(role, OPS_ROLES)
+  const current = await db.order.findUnique({ where: { id }, select: { status: true } })
+  const order = await db.order.update({
     where: { id },
     data: {
       status: fd.get("status") as any,
       trackingNumber: (fd.get("trackingNumber") as string) || null,
       carrier: (fd.get("carrier") as string) || null,
     },
+    include: {
+      user: { select: { email: true } },
+      items: { include: { product: { select: { name: true } } } },
+    },
   })
+  if (current?.status !== order.status) {
+    await sendOrderStatusEmail({
+      reference: order.reference,
+      customerEmail: order.user.email,
+      recipientName: order.recipientName,
+      total: Number(order.total),
+      status: order.status,
+      items: order.items.map(item => item.product.name),
+      trackingNumber: order.trackingNumber,
+      carrier: order.carrier,
+    })
+  }
   revalidatePath("/admin/orders")
 }
 
@@ -279,7 +348,7 @@ export async function updateOrderStatus(id: string, fd: FormData) {
 
 export async function updateApplicationStatus(id: string, status: string, feedback?: string) {
   const role = await getRole()
-  if (!role || !requireOps().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, OPS_ROLES)
   await db.talentApplication.update({
     where: { id },
     data: { status: status as any, staffFeedback: feedback || null },
@@ -291,7 +360,7 @@ export async function updateApplicationStatus(id: string, status: string, feedba
 
 export async function updateInquiryStatus(id: string, status: string, note?: string) {
   const role = await getRole()
-  if (!role || !requireOps().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, OPS_ROLES)
   await db.contactInquiry.update({
     where: { id },
     data: { status: status as any, staffNote: note || null },
@@ -303,7 +372,7 @@ export async function updateInquiryStatus(id: string, status: string, note?: str
 
 export async function createSlot(fd: FormData) {
   const role = await getRole()
-  if (!role || !requireOps().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, OPS_ROLES)
   await db.availabilitySlot.create({
     data: {
       experienceId: fd.get("experienceId") as string,
@@ -320,7 +389,7 @@ export async function createSlot(fd: FormData) {
 
 export async function updateSlotStatus(id: string, status: string) {
   const role = await getRole()
-  if (!role || !requireOps().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, OPS_ROLES)
   await db.availabilitySlot.update({ where: { id }, data: { status: status as any } })
   revalidatePath("/admin/slots")
 }
@@ -329,7 +398,7 @@ export async function updateSlotStatus(id: string, status: string) {
 
 export async function updateOperatorRequestStatus(id: string, status: string, note?: string) {
   const role = await getRole()
-  if (!role || !requireOps().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, OPS_ROLES)
   await db.operatorRequest.update({
     where: { id },
     data: { status: status as any, adminNote: note || null },
@@ -339,35 +408,35 @@ export async function updateOperatorRequestStatus(id: string, status: string, no
 
 export async function toggleProductFeatured(id: string, featured: boolean) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, OPS_ROLES)
   await db.product.update({ where: { id }, data: { featured } })
   revalidatePath("/art-store"); revalidatePath("/admin/products")
 }
 
 export async function toggleExperienceFeatured(id: string, featured: boolean) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
   await db.experience.update({ where: { id }, data: { featured } })
   revalidatePath("/experiences"); revalidatePath("/admin/experiences")
 }
 
 export async function toggleBlogFeatured(id: string, featured: boolean) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
   await db.blogPost.update({ where: { id }, data: { featured } })
   revalidatePath("/blog"); revalidatePath("/admin/blog")
 }
 
 export async function toggleCampaignFeatured(id: string, featured: boolean) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
   await db.conservationCampaign.update({ where: { id }, data: { featured } })
   revalidatePath("/conservation"); revalidatePath("/admin/conservation")
 }
 
 export async function toggleTalentFeatured(id: string, featured: boolean) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
   await db.talentProfile.update({ where: { id }, data: { featured } })
   revalidatePath("/talent"); revalidatePath("/admin/talent")
 }
@@ -376,7 +445,7 @@ export async function toggleTalentFeatured(id: string, featured: boolean) {
 
 export async function deleteProduct(id: string) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, OPS_ROLES)
   await db.product.delete({ where: { id } })
   revalidatePath("/art-store"); revalidatePath("/admin/products")
   redirect("/admin/products")
@@ -384,7 +453,7 @@ export async function deleteProduct(id: string) {
 
 export async function deleteExperience(id: string) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
   await db.experience.delete({ where: { id } })
   revalidatePath("/experiences"); revalidatePath("/admin/experiences")
   redirect("/admin/experiences")
@@ -392,7 +461,7 @@ export async function deleteExperience(id: string) {
 
 export async function deleteCampaign(id: string) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
   await db.conservationCampaign.delete({ where: { id } })
   revalidatePath("/conservation"); revalidatePath("/admin/conservation")
   redirect("/admin/conservation")
@@ -400,7 +469,7 @@ export async function deleteCampaign(id: string) {
 
 export async function deletePost(id: string) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
   await db.blogPost.delete({ where: { id } })
   revalidatePath("/blog"); revalidatePath("/admin/blog")
   redirect("/admin/blog")
@@ -408,7 +477,7 @@ export async function deletePost(id: string) {
 
 export async function deleteTalentProfile(id: string) {
   const role = await getRole()
-  if (!role || !requireContent().includes(role)) throw new Error("Unauthorized")
+  requireRole(role, CONTENT_ROLES)
   await db.talentProfile.delete({ where: { id } })
   revalidatePath("/talent"); revalidatePath("/admin/talent")
   redirect("/admin/talent")
@@ -418,14 +487,14 @@ export async function deleteTalentProfile(id: string) {
 
 export async function updateUserRole(id: string, role: string) {
   const actorRole = await getRole()
-  if (actorRole !== "SUPER_ADMIN") throw new Error("Unauthorized")
+  requireRole(actorRole, SUPER_ROLES)
   await db.user.update({ where: { id }, data: { role: role as any } })
   revalidatePath("/admin/users")
 }
 
 export async function toggleUserActive(id: string, isActive: boolean) {
   const actorRole = await getRole()
-  if (actorRole !== "SUPER_ADMIN") throw new Error("Unauthorized")
+  requireRole(actorRole, SUPER_ROLES)
   await db.user.update({ where: { id }, data: { isActive } })
   revalidatePath("/admin/users")
 }

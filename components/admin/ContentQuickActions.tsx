@@ -1,7 +1,6 @@
-import { PlusCircle, Compass, PenTool, Star, Sparkles, Globe } from "lucide-react"
+import { Compass, PenTool, Star, Sparkles, Globe } from "lucide-react"
 
 const ACTIONS = [
-  { icon: <PlusCircle size={22} />, label: "Add Product", href: "/admin/products/new", external: false },
   { icon: <Compass size={22} />, label: "Add Experience", href: "/admin/experiences/new", external: false },
   { icon: <PenTool size={22} />, label: "New Blog Post", href: "/admin/blog/new", external: false },
   { icon: <Star size={22} />, label: "Moderate Reviews", href: "/admin/reviews", external: false },

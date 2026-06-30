@@ -539,6 +539,7 @@ model TalentApplication {
   id                 String         @id @default(cuid())
   reference          String         @unique
   userId             String         @unique
+  program            String         @default("TALENT_DEVELOPMENT")
   firstName          String
   lastName           String
   email              String

@@ -21,13 +21,13 @@ export const statusBadge = (status: string, map: Record<string, string>) => (
 )
 
 export const STATUS_COLORS: Record<string, string> = {
-  PUBLISHED: "var(--green)", DRAFT: "var(--text-muted)", ARCHIVED: "orange", SOLD: "#e53e3e",
+  PUBLISHED: "var(--green)", DRAFT: "var(--text-muted)", SOLD: "#e53e3e",
   ACTIVE: "var(--green)", COMPLETED: "var(--green)", PAUSED: "orange",
   PENDING: "#d97706", CONFIRMED: "var(--green)", CANCELLED: "#e53e3e",
   PROCESSING: "#2563eb", SHIPPED: "#2563eb", DELIVERED: "var(--green)", REFUNDED: "#7c3aed",
-  APPROVED: "var(--green)", REJECTED: "#e53e3e", AWAITING_INFO: "orange",
+  APPROVED: "var(--green)", REJECTED: "#e53e3e", AWAITING_INFO: "orange", ARCHIVED: "var(--text-muted)",
   NEW: "#2563eb", IN_PROGRESS: "orange", CLOSED: "var(--text-muted)",
-  AVAILABLE: "var(--green)", LIMITED: "orange", FULLY_BOOKED: "#e53e3e",
+  AVAILABLE: "var(--green)", LIMITED: "orange", FULLY_BOOKED: "#e53e3e", REQUEST_ONLY: "#7c3aed", BLACKOUT: "var(--text-muted)",
 }
 
 // Table head/cell styles

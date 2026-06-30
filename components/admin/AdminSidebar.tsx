@@ -15,7 +15,6 @@ import {
 
 const CONTENT_LINKS = [
   { href: "/admin/content/dashboard", label: "Dashboard",      icon: LayoutDashboard },
-  { href: "/admin/products",          label: "Art Catalog",    icon: Palette },
   { href: "/admin/experiences",       label: "Experiences",    icon: Map },
   { href: "/admin/blog",              label: "Blog Posts",     icon: Feather },
   { href: "/admin/reviews",           label: "Reviews",        icon: Star },
@@ -26,6 +25,7 @@ const CONTENT_LINKS = [
 
 const OPS_LINKS = [
   { href: "/admin",             label: "Dashboard",          icon: LayoutDashboard },
+  { href: "/admin/products",    label: "Art Catalog",        icon: Palette },
   { href: "/admin/bookings",    label: "Bookings",          icon: CalendarCheck },
   { href: "/admin/orders",      label: "Shipping Orders",   icon: Package },
   { href: "/admin/inquiries",   label: "Contact Inquiries", icon: Mail },

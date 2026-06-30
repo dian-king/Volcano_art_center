@@ -75,7 +75,7 @@ export function PublicFooter() {
             <h4>Support</h4>
             <Link href="/contact">Help &amp; FAQ</Link>
             <Link href="/contact">Shipping &amp; Returns</Link>
-            <Link href="/client/dashboard?tab=orders">Track an Order</Link>
+            <Link href="/client/dashboard/orders">Track an Order</Link>
             <Link href="/login">Account &amp; Sign In</Link>
             <Link href="/contact">Commission Art</Link>
           </div>

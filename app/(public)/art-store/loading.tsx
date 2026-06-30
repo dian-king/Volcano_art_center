@@ -9,7 +9,7 @@ export default function Loading() {
           <Skeleton style={{ height: 44, width: 220, background: "rgba(255,255,255,0.15)" }} />
         </div>
       </div>
-      <div className="container" className="store-layout">
+      <div className="container store-layout">
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} style={{ height: 28, borderRadius: "var(--radius-md)" }} />)}
         </div>

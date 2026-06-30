@@ -1,8 +1,10 @@
+import { DeleteButton } from "@/components/admin/DeleteButton"
+import { AdminFilters, AdminPageHeader, AdminPagination } from "@/components/admin/AdminPageChrome"
 import { db } from "@/lib/db"
 import Link from "next/link"
-import { DeleteButton } from "@/components/admin/DeleteButton"
 
 export const dynamic = "force-dynamic"
+const PAGE_SIZE = 12
 
 async function feature(fd: FormData) {
   "use server"
@@ -29,62 +31,63 @@ async function del(fd: FormData) {
 export default async function AdminProductsPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const sp = await searchParams
   const q = sp.q ?? ""
-  const statusFilter = sp.status ?? ""
+  const status = sp.status ?? ""
+  const categoryId = sp.categoryId ?? ""
+  const page = Math.max(1, Number(sp.page ?? 1))
 
   const where: any = {}
-  if (statusFilter) where.status = statusFilter
+  if (status) where.status = status
+  if (categoryId) where.categoryId = categoryId
   if (q) where.name = { contains: q, mode: "insensitive" }
 
-  const products = await db.product.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    include: { category: true },
-  })
+  const [products, total, categories] = await Promise.all([
+    db.product.findMany({ where, orderBy: { createdAt: "desc" }, skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE, include: { category: true } }),
+    db.product.count({ where }),
+    db.category.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
+  ])
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--space-6)" }}>
-        <h1 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: 600 }}>Products</h1>
-        <Link href="/admin/products/new" className="btn btn--primary btn--sm">+ Add Product</Link>
-      </div>
+      <AdminPageHeader eyebrow="Operations" title="Art Catalog" description="Manage products, inventory status, pricing, categories, and featured artwork." actionHref="/admin/products/new" actionLabel="+ Add Product" />
 
-      <form method="GET" style={{ display: "flex", gap: "var(--space-3)", marginBottom: "var(--space-6)", flexWrap: "wrap" }}>
-        <input name="q" defaultValue={q} placeholder="Search products…" style={{ height: 40, padding: "0 var(--space-3)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", background: "var(--surface-raised)", color: "var(--text-primary)", fontSize: "var(--text-small)", fontFamily: "var(--font-ui)", flex: 1, minWidth: 180 }} />
-        <select name="status" defaultValue={statusFilter} style={{ height: 40, padding: "0 var(--space-3)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", background: "var(--surface-raised)", color: "var(--text-primary)", fontSize: "var(--text-small)", fontFamily: "var(--font-ui)" }}>
-          <option value="">All Statuses</option>
+      <AdminFilters clearHref="/admin/products" active={Boolean(q || status || categoryId)}>
+        <input name="q" defaultValue={q} placeholder="Search products..." />
+        <select name="status" defaultValue={status}>
+          <option value="">All statuses</option>
           <option value="PUBLISHED">Published</option>
           <option value="DRAFT">Draft</option>
           <option value="ARCHIVED">Archived</option>
           <option value="SOLD">Sold</option>
         </select>
-        <button type="submit" className="btn btn--primary btn--sm">Search</button>
-        {(q || statusFilter) && <a href="/admin/products" className="btn btn--ghost btn--sm">Clear</a>}
-      </form>
+        <select name="categoryId" defaultValue={categoryId}>
+          <option value="">All categories</option>
+          {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+      </AdminFilters>
 
-      <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-caption)", color: "var(--text-muted)", marginBottom: "var(--space-4)" }}>{products.length} products</p>
+      <div className="admin-results-bar"><span>{total} product{total === 1 ? "" : "s"}</span><span>{q || status || categoryId ? "Filtered view" : "All records"}</span></div>
 
       {products.length === 0 ? (
-        <p style={{ color: "var(--text-muted)" }}>No products found. <Link href="/admin/products/new">Add your first product →</Link></p>
+        <p style={{ color: "var(--text-muted)" }}>No products found. <Link href="/admin/products/new">Add your first product</Link></p>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "var(--space-4)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "var(--space-4)" }}>
           {products.map((p) => (
-            <div key={p.id} className="card card--interactive" style={{ display: "flex", flexDirection: "column" }}>
+            <div key={p.id} className="card card--interactive" style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
               <div style={{ position: "relative", aspectRatio: "4/3", background: "var(--green-tint)" }}>
                 {p.primaryImageUrl && <img src={p.primaryImageUrl} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
                 <span className={`chip ${p.status === "PUBLISHED" ? "chip--success" : "chip--neutral"}`} style={{ position: "absolute", top: "var(--space-2)", left: "var(--space-2)" }}>{p.status}</span>
-                {p.featured && <span style={{ position: "absolute", top: "var(--space-2)", right: "var(--space-2)", fontSize: "1.1rem" }}>⭐</span>}
+                {p.featured && <span className="chip chip--warning" style={{ position: "absolute", top: "var(--space-2)", right: "var(--space-2)" }}>Featured</span>}
               </div>
               <div style={{ padding: "var(--space-4)", flex: 1, display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
-                <p style={{ fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: "var(--text-small)", color: "var(--text-primary)" }}>{p.name}</p>
-                <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{p.category?.name}</p>
+                <p style={{ fontFamily: "var(--font-ui)", fontWeight: 700, color: "var(--text-primary)" }}>{p.name}</p>
+                <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{p.category?.name ?? "Uncategorized"}</p>
                 <p style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontWeight: 700 }}>${Number(p.price).toFixed(0)}</p>
                 <div style={{ display: "flex", gap: "var(--space-2)", marginTop: "auto", flexWrap: "wrap" }}>
-                  <a href={`/admin/products/${p.id}/edit`} className="btn btn--ghost btn--sm">Edit</a>
+                  <Link href={`/admin/products/${p.id}/edit`} className="btn btn--ghost btn--sm">Edit</Link>
                   <form action={p.featured ? unfeature : feature}>
                     <input type="hidden" name="id" value={p.id} />
-                    <button type="submit" className="btn btn--ghost btn--sm" style={{ color: p.featured ? "#F59E0B" : "var(--text-muted)" }}>
-                      {p.featured ? "★ Unfeature" : "☆ Feature"}
-                    </button>
+                    <button type="submit" className="btn btn--ghost btn--sm">{p.featured ? "Unfeature" : "Feature"}</button>
                   </form>
                   <DeleteButton action={del} id={p.id} itemName={p.name} />
                 </div>
@@ -93,6 +96,8 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
           ))}
         </div>
       )}
+
+      <AdminPagination page={page} pages={pages} total={total} basePath="/admin/products" query={{ q, status, categoryId }} />
     </div>
   )
 }

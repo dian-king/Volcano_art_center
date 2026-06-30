@@ -7,12 +7,12 @@ import { ContentCharts } from "@/components/admin/ContentCharts"
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { Palette, Eye, FileEdit, Map, Feather, Star, Sparkles, Image, ChevronRight, PlusCircle, PenTool } from "lucide-react"
+import { Map, Feather, Star, Sparkles, Image, ChevronRight, PenTool } from "lucide-react"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Content Dashboard | Volcano Arts Admin",
-  description: "Manage the art catalog, experiences, blog posts, reviews, and talent showcase.",
+  description: "Manage experiences, blog posts, reviews, campaigns, media, and talent showcase content.",
   robots: { index: false, follow: false },
 }
 
@@ -28,9 +28,6 @@ export default async function ContentDashboardPage() {
   const { kpis, recentlyUpdatedContent, recentActivity } = data
 
   const KPI_CARDS = [
-    { icon: <Palette size={20} />, label: "Art Products", value: kpis.totalProducts, href: "/admin/products", alert: false },
-    { icon: <Eye size={20} />, label: "Published", value: kpis.publishedProducts, href: "/admin/products", alert: false },
-    { icon: <FileEdit size={20} />, label: "Drafts", value: kpis.draftProducts, href: "/admin/products", alert: false },
     { icon: <Map size={20} />, label: "Experiences", value: kpis.totalExperiences, href: "/admin/experiences", alert: false },
     { icon: <Feather size={20} />, label: "Blog Posts", value: kpis.totalBlogPosts, href: "/admin/blog", alert: false },
     { icon: <Star size={20} />, label: "Pending Reviews", value: kpis.pendingReviews, href: "/admin/reviews", alert: kpis.pendingReviews > 0 },
@@ -54,12 +51,9 @@ export default async function ContentDashboardPage() {
       <header className="admin-page-header">
         <div className="admin-page-header__info">
           <h1>Content Overview</h1>
-          <p>Manage the art catalog, experiences, blog, and more.</p>
+          <p>Manage experiences, blog posts, reviews, campaigns, media, and talent showcase content.</p>
         </div>
         <div className="admin-page-header__actions">
-          <Link href="/admin/products/new" className="btn btn--secondary btn--sm" style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)" }}>
-            <PlusCircle size={14} /> Add Product
-          </Link>
           <Link href="/admin/blog/new" className="btn btn--primary btn--sm" style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)" }}>
             <PenTool size={14} /> New Post
           </Link>
@@ -88,7 +82,6 @@ export default async function ContentDashboardPage() {
           Analytics
         </h2>
         <ContentCharts
-          productsByStatus={data.charts.productsByStatus}
           blogByCategory={data.charts.blogByCategory}
           recentPublished={data.charts.recentPublished}
         />

@@ -16,7 +16,6 @@ function buildDailyCount(items: { updatedAt: Date }[]): { date: string; count: n
 
 export const getContentDashboardData = cache(async () => {
   const [
-    totalProducts, publishedProducts, draftProducts,
     totalExperiences, publishedExperiences,
     totalBlogPosts, publishedBlogPosts,
     pendingReviews, approvedReviews,
@@ -24,13 +23,9 @@ export const getContentDashboardData = cache(async () => {
     publishedTalentProfiles, pendingTalentApplications,
     recentlyUpdatedContent,
     recentActivity,
-    productsByStatus,
     blogByCategory,
-    recentPublishedProducts,
+    recentPublishedPosts,
   ] = await Promise.all([
-    db.product.count(),
-    db.product.count({ where: { status: "PUBLISHED" } }),
-    db.product.count({ where: { status: "DRAFT" } }),
     db.experience.count(),
     db.experience.count({ where: { status: "PUBLISHED" } }),
     db.blogPost.count(),
@@ -41,7 +36,6 @@ export const getContentDashboardData = cache(async () => {
     db.talentProfile.count({ where: { published: true } }),
     db.talentApplication.count({ where: { status: "PENDING" } }),
     Promise.all([
-      db.product.findMany({ take: 3, orderBy: { updatedAt: "desc" }, select: { id: true, name: true, status: true, updatedAt: true, primaryImageUrl: true } }),
       db.experience.findMany({ take: 3, orderBy: { updatedAt: "desc" }, select: { id: true, title: true, status: true, updatedAt: true, primaryImageUrl: true } }),
       db.blogPost.findMany({ take: 3, orderBy: { updatedAt: "desc" }, select: { id: true, title: true, published: true, updatedAt: true, featuredImageUrl: true, category: true } }),
     ]),
@@ -50,29 +44,26 @@ export const getContentDashboardData = cache(async () => {
       where: { entityType: { in: ["Product", "Experience", "BlogPost", "Review", "TalentProfile", "TalentApplication"] } },
       select: { id: true, eventType: true, entityType: true, entityId: true, details: true, actorEmail: true, createdAt: true },
     }),
-    db.product.groupBy({ by: ["status"], _count: { _all: true } }),
     db.blogPost.groupBy({ by: ["category"], _count: { _all: true }, where: { published: true } }),
-    db.product.findMany({
-      where: { status: "PUBLISHED", updatedAt: { gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } },
+    db.blogPost.findMany({
+      where: { published: true, updatedAt: { gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) } },
       select: { updatedAt: true },
       orderBy: { updatedAt: "asc" },
     }),
   ])
 
   const allRecent = [
-    ...recentlyUpdatedContent[0].map(p => ({ id: p.id, type: "Product" as const, title: p.name, status: p.status, updatedAt: p.updatedAt, imageUrl: p.primaryImageUrl })),
-    ...recentlyUpdatedContent[1].map(e => ({ id: e.id, type: "Experience" as const, title: e.title, status: e.status, updatedAt: e.updatedAt, imageUrl: e.primaryImageUrl })),
-    ...recentlyUpdatedContent[2].map(b => ({ id: b.id, type: "BlogPost" as const, title: b.title, status: b.published ? "PUBLISHED" : "DRAFT", updatedAt: b.updatedAt, imageUrl: b.featuredImageUrl, category: b.category ?? undefined })),
+    ...recentlyUpdatedContent[0].map(e => ({ id: e.id, type: "Experience" as const, title: e.title, status: e.status, updatedAt: e.updatedAt, imageUrl: e.primaryImageUrl })),
+    ...recentlyUpdatedContent[1].map(b => ({ id: b.id, type: "BlogPost" as const, title: b.title, status: b.published ? "PUBLISHED" : "DRAFT", updatedAt: b.updatedAt, imageUrl: b.featuredImageUrl, category: b.category ?? undefined })),
   ].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()).slice(0, 8)
 
   return {
-    kpis: { totalProducts, publishedProducts, draftProducts, totalExperiences, publishedExperiences, totalBlogPosts, publishedBlogPosts, pendingReviews, approvedReviews, pendingTestimonials, publishedTalentProfiles, pendingTalentApplications },
+    kpis: { totalExperiences, publishedExperiences, totalBlogPosts, publishedBlogPosts, pendingReviews, approvedReviews, pendingTestimonials, publishedTalentProfiles, pendingTalentApplications },
     recentlyUpdatedContent: allRecent,
     recentActivity,
     charts: {
-      productsByStatus: productsByStatus.map(p => ({ name: p.status, value: p._count._all })),
       blogByCategory: blogByCategory.map(b => ({ category: b.category ?? "OTHER", count: b._count._all })),
-      recentPublished: buildDailyCount(recentPublishedProducts),
+      recentPublished: buildDailyCount(recentPublishedPosts),
     },
   }
 })

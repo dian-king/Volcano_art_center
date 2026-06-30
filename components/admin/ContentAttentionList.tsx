@@ -5,8 +5,6 @@ export function ContentAttentionList({ kpis }: { kpis: ContentDashboardData["kpi
   const items = [
     { label: "Reviews to Moderate", count: kpis.pendingReviews, href: "/admin/reviews" },
     { label: "Testimonials to Publish", count: kpis.pendingTestimonials, href: "/admin/reviews" },
-    { label: "Talent Applications", count: kpis.pendingTalentApplications, href: "/admin/applications" },
-    { label: "Products in Draft", count: kpis.draftProducts, href: "/admin/products" },
     { label: "Unpublished Experiences", count: kpis.totalExperiences - kpis.publishedExperiences, href: "/admin/experiences" },
   ].filter(i => i.count > 0)
 
