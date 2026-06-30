@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getToken } from "next-auth/jwt"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -17,58 +18,63 @@ function toCSV(rows: Record<string, unknown>[]): string {
 }
 
 export async function GET(req: NextRequest) {
-  const [{ auth }, { db }] = await Promise.all([
-    import("@/lib/auth"),
-    import("@/lib/db"),
-  ])
-  const session = await auth()
-  const role = session?.user?.role as string | undefined
+  const token = await getToken({
+    req,
+    secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+  })
+  const role = token?.role as string | undefined
   if (!role || !["SUPER_ADMIN", "OPS_MANAGER"].includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
   const type = req.nextUrl.searchParams.get("type")
+  const { PrismaClient } = await import("@prisma/client")
+  const db = new PrismaClient()
 
   let csv = ""
   let filename = "export.csv"
 
-  if (type === "orders") {
-    const orders = await db.order.findMany({
-      orderBy: { createdAt: "desc" },
-      include: { user: { select: { email: true } } }
-    })
-    csv = toCSV(orders.map(o => ({
-      reference: o.reference, email: o.user.email, status: o.status,
-      total: Number(o.total), country: o.country, city: o.city,
-      createdAt: o.createdAt.toISOString(),
-    })))
-    filename = "orders.csv"
-  } else if (type === "bookings") {
-    const bookings = await db.booking.findMany({
-      orderBy: { createdAt: "desc" },
-      include: { experience: { select: { title: true } } }
-    })
-    csv = toCSV(bookings.map(b => ({
-      reference: b.reference, guestName: b.guestName, guestEmail: b.guestEmail,
-      experience: b.experience.title, groupSize: b.groupSize,
-      preferredDate: b.preferredDate.toISOString().split("T")[0],
-      status: b.status, createdAt: b.createdAt.toISOString(),
-    })))
-    filename = "bookings.csv"
-  } else if (type === "donations") {
-    const donations = await db.donation.findMany({
-      orderBy: { createdAt: "desc" },
-      include: { campaign: { select: { name: true } } }
-    })
-    csv = toCSV(donations.map(d => ({
-      reference: d.reference, donorEmail: d.donorEmail, donorName: d.donorName ?? "",
-      amount: Number(d.amount), currency: d.currency,
-      campaign: d.campaign?.name ?? "General", status: d.status,
-      createdAt: d.createdAt.toISOString(),
-    })))
-    filename = "donations.csv"
-  } else {
-    return NextResponse.json({ error: "Invalid type. Use: orders, bookings, donations" }, { status: 400 })
+  try {
+    if (type === "orders") {
+      const orders = await db.order.findMany({
+        orderBy: { createdAt: "desc" },
+        include: { user: { select: { email: true } } }
+      })
+      csv = toCSV(orders.map(o => ({
+        reference: o.reference, email: o.user.email, status: o.status,
+        total: Number(o.total), country: o.country, city: o.city,
+        createdAt: o.createdAt.toISOString(),
+      })))
+      filename = "orders.csv"
+    } else if (type === "bookings") {
+      const bookings = await db.booking.findMany({
+        orderBy: { createdAt: "desc" },
+        include: { experience: { select: { title: true } } }
+      })
+      csv = toCSV(bookings.map(b => ({
+        reference: b.reference, guestName: b.guestName, guestEmail: b.guestEmail,
+        experience: b.experience.title, groupSize: b.groupSize,
+        preferredDate: b.preferredDate.toISOString().split("T")[0],
+        status: b.status, createdAt: b.createdAt.toISOString(),
+      })))
+      filename = "bookings.csv"
+    } else if (type === "donations") {
+      const donations = await db.donation.findMany({
+        orderBy: { createdAt: "desc" },
+        include: { campaign: { select: { name: true } } }
+      })
+      csv = toCSV(donations.map(d => ({
+        reference: d.reference, donorEmail: d.donorEmail, donorName: d.donorName ?? "",
+        amount: Number(d.amount), currency: d.currency,
+        campaign: d.campaign?.name ?? "General", status: d.status,
+        createdAt: d.createdAt.toISOString(),
+      })))
+      filename = "donations.csv"
+    } else {
+      return NextResponse.json({ error: "Invalid type. Use: orders, bookings, donations" }, { status: 400 })
+    }
+  } finally {
+    await db.$disconnect()
   }
 
   return new NextResponse(csv, {
