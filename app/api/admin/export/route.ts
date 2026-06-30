@@ -1,6 +1,7 @@
-import { auth } from "@/lib/auth"
-import { db } from "@/lib/db"
 import { NextRequest, NextResponse } from "next/server"
+
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
 
 function toCSV(rows: Record<string, unknown>[]): string {
   if (!rows.length) return ""
@@ -16,6 +17,10 @@ function toCSV(rows: Record<string, unknown>[]): string {
 }
 
 export async function GET(req: NextRequest) {
+  const [{ auth }, { db }] = await Promise.all([
+    import("@/lib/auth"),
+    import("@/lib/db"),
+  ])
   const session = await auth()
   const role = session?.user?.role as string | undefined
   if (!role || !["SUPER_ADMIN", "OPS_MANAGER"].includes(role)) {

@@ -1,13 +1,16 @@
 import { writeFile, mkdir } from "fs/promises"
 import { join } from "path"
-import { auth } from "@/lib/auth"
 import { NextRequest, NextResponse } from "next/server"
 import { ADMIN_ROLES, CONTENT_ROLES, OPS_ROLES, hasRole } from "@/lib/permissions"
+
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
 
 const VALID_TYPES = ["image/jpeg", "image/png", "image/webp"]
 const MAX_BYTES = 5 * 1024 * 1024 // 5 MB for content images
 
 export async function POST(req: NextRequest) {
+  const { auth } = await import("@/lib/auth")
   const session = await auth()
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
