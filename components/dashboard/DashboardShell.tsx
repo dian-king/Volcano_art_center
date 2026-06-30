@@ -85,12 +85,7 @@ export function DashboardShell({
       <aside className="app-dashboard__sidebar">
         <div className="app-dashboard__sidebar-header">
           <Link href={homeHref} className="app-dashboard__brand" aria-label="Volcano Arts Center">
-            <svg width="32" height="32" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-              <circle cx="18" cy="18" r="18" fill="#00A651" />
-              <path d="M9 28L18 10L27 28" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M13 23L23 23" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            <span>VOLCANO ARTS</span>
+            <img src="/images/logo.png" alt="Volcano Arts Center" style={{ height: 44, width: "auto", display: "block" }} />
           </Link>
         </div>
 
@@ -110,7 +105,6 @@ export function DashboardShell({
         </div>
 
         <nav className="app-dashboard__nav" aria-label={`${title} navigation`}>
-          <span className="app-dashboard__section-label">Portal</span>
           {nav.map(({ href, label, icon, badge, exact, danger }) => {
             const Icon = icons[icon]
             const active = exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`)

@@ -222,6 +222,7 @@ The Content Manager controls everything the public sees. They never touch orders
 - Assign talent area and category
 - Publish profiles to the public talent page
 - Mark one profile as **Featured** (shows with photo on home page)
+- Review and approve portfolio items (photos and videos) uploaded by talents
 
 **How to feature a talent profile on the home page:**
 1. Go to `/admin/talent`
@@ -230,6 +231,26 @@ The Content Manager controls everything the public sees. They never touch orders
 4. Check **"Featured on home page"**
 5. Make sure **Published** is ON
 6. Save — the home page talent section now shows their photo with their name and talent area
+
+**How talent portfolio works:**
+
+| Who | What they do |
+|---|---|
+| **Talent (logged in)** | Uploads photos and videos at `/talent/dashboard/portfolio` |
+| **Content Manager** | Reviews uploaded portfolio items at `/admin/talent` and approves for public display |
+| **Super Admin** | Same as Content Manager, plus can feature talent on the home page |
+| **Ops Manager** | Cannot access talent portfolios |
+
+**Portfolio file limits:**
+- Photos: JPEG, PNG, WebP — max 5 MB each
+- Videos: MP4, WebM, MOV — max 100 MB each
+
+**How to review a talent portfolio:**
+1. Go to `/admin/talent`
+2. Click on a talent profile
+3. Scroll to the **Portfolio** section to see their uploaded photos and videos
+4. Approve items to make them visible on the public talent page
+5. Reject items that don't meet the platform's standards
 
 ---
 

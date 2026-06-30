@@ -4924,3 +4924,82 @@ h4, h5 { font-family: var(--font-ui); font-weight: 600; letter-spacing: 0; }
   opacity: 1;
 }
 
+
+/* ── Dashboard content: isolate from homepage heading CSS ── */
+.app-dashboard__content h1,
+.app-dashboard__content h2,
+.app-dashboard__content h3,
+.app-dashboard__content h4,
+.app-dashboard__content h5 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.app-dashboard__content p {
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Profile fields: ensure labels and values render correctly */
+.app-dashboard__content [style*="text-primary"] {
+  color: var(--text-primary) !important;
+}
+
+/* Topbar title text */
+.app-dashboard__topbar .eyebrow {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--green);
+  display: block;
+}
+
+
+/* ── Talent portfolio: photos + videos ── */
+.talent-portfolio-section {
+  margin-bottom: var(--space-6);
+}
+.talent-portfolio-section__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-4);
+}
+.talent-portfolio-item__remove {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+}
+.talent-portfolio-item:hover .talent-portfolio-item__remove { opacity: 1; }
+
+/* Video items: taller aspect ratio for better preview */
+.talent-portfolio-grid--video .talent-portfolio-item {
+  aspect-ratio: 16 / 9;
+}
+.talent-portfolio-item--video {
+  background: #000;
+}
+

@@ -91,17 +91,17 @@ export function ProfileForm({ user }: { user: ProfileUser }) {
       </div>
 
       {!editing ? (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-5)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-6) var(--space-7)", borderTop: "1px solid var(--border-subtle)", paddingTop: "var(--space-5)" }}>
           {([
-            ["First name", user.firstName || "—"],
-            ["Last name", user.lastName || "—"],
-            ["Email", user.email],
-            ["Phone", user.phone || "—"],
-            ["Country", user.country ? `${flagEmoji(COUNTRIES.find(c => c.name === user.country)?.code ?? "")} ${user.country}` : "—"],
+            ["First Name", user.firstName || "—"],
+            ["Last Name",  user.lastName  || "—"],
+            ["Email",      user.email],
+            ["Phone",      user.phone     || "—"],
+            ["Country",    user.country ? `${flagEmoji(COUNTRIES.find(c => c.name === user.country)?.code ?? "")} ${user.country}` : "—"],
           ] as [string, string][]).map(([l, v]) => (
             <div key={l}>
-              <p style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text-muted)", fontFamily: "var(--font-ui)", marginBottom: "var(--space-1)" }}>{l}</p>
-              <p style={{ fontSize: "var(--text-body)", color: "var(--text-primary)" }}>{v}</p>
+              <p style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-muted)", fontFamily: "var(--font-ui)", marginBottom: "var(--space-2)" }}>{l}</p>
+              <p style={{ fontSize: "var(--text-body)", color: "var(--text-primary)", fontFamily: "var(--font-body)", fontWeight: 500 }}>{v}</p>
             </div>
           ))}
         </div>
