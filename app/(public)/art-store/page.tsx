@@ -55,14 +55,15 @@ export default async function ArtStorePage({ searchParams }: { searchParams: Pro
   return (
     <div style={{ paddingTop: "var(--nav-height)" }}>
       {/* Page header */}
-      <div style={{ background: "var(--green-deep)", color: "#fff", padding: "var(--space-8) 0 var(--space-7)" }}>
-        <div className="container">
-          <span className="eyebrow" style={{ color: "rgba(255,255,255,0.65)" }}>Our Collection</span>
-          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: 600, marginTop: "var(--space-2)", color: "#fff" }}>
+      <div style={{ position: "relative", background: "var(--green-deep)", color: "#fff", padding: "var(--space-10) 0 var(--space-8)", overflow: "hidden" }}>
+        <img src="/images/WhatsApp Image 2026-06-30 at 8.51.42 PM.jpeg" alt="" aria-hidden style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.35 }} />
+        <div className="container" style={{ position: "relative", zIndex: 1 }}>
+          <span className="eyebrow" style={{ color: "rgba(255,255,255,0.75)" }}>Our Collection</span>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: 700, marginTop: "var(--space-2)", color: "#fff" }}>
             Art Store
           </h1>
-          <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "var(--text-lead)", marginTop: "var(--space-3)" }}>
-            Authentic Rwandan fine art, direct from the artist
+          <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "var(--text-lead)", marginTop: "var(--space-3)", maxWidth: "52ch" }}>
+            Authentic Rwandan fine art — paintings, sculptures, textiles and crafts sourced directly from local artisans.
           </p>
         </div>
       </div>

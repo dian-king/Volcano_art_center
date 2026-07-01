@@ -7,8 +7,8 @@ const SLIDES = [
   { label: "Gorilla Trek",  bg: "#003D20", img: "/images/wide.jpeg"  },
   { label: "Art Studio",    bg: "#1B4332", img: "/images/wide2.jpeg" },
   { label: "Village Life",  bg: "#2D6A4F", img: "/images/wide3.jpeg" },
-  { label: "Culture",       bg: "#1C4A30", img: "/images/wide5.jpeg" },
-  { label: "Conservation",  bg: "#1C3A2A", img: "/images/wide7.jpeg" },
+  { label: "Culture",       bg: "#1C4A30", img: "/images/WhatsApp Image 2026-06-30 at 8.51.34 PM (1).jpeg" },
+  { label: "Conservation",  bg: "#1C3A2A", img: "/images/WhatsApp Image 2026-06-30 at 8.51.36 PM.jpeg"      },
 ]
 
 const DURATION = 5000

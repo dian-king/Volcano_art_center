@@ -41,8 +41,8 @@ export function WhyFigure() {
         transition={SPRING}
       >
         <img
-          src="/images/wide6.jpeg"
-          alt="Artisan at work"
+          src="/images/WhatsApp Image 2026-06-30 at 8.51.40 PM.jpeg"
+          alt="Rwandan artisans weaving traditional baskets"
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
       </motion.div>
@@ -59,8 +59,8 @@ export function WhyFigure() {
         transition={SPRING}
       >
         <img
-          src="/images/wide4.jpeg"
-          alt="Gallery entrance"
+          src="/images/WhatsApp Image 2026-06-30 at 8.51.31 PM.jpeg"
+          alt="Volcano Arts Center gallery exterior"
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
       </motion.div>

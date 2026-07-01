@@ -5003,3 +5003,58 @@ h4, h5 { font-family: var(--font-ui); font-weight: 600; letter-spacing: 0; }
   background: #000;
 }
 
+
+/* ── Life at VAC — Photo mosaic ── */
+.vac-mosaic-section { background: var(--surface-raised); }
+.vac-mosaic {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-7);
+}
+.vac-mosaic__tall {
+  grid-row: span 2;
+  aspect-ratio: auto;
+  min-height: 480px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.vac-mosaic__col { display: flex; flex-direction: column; gap: var(--space-3); }
+.vac-mosaic__item {
+  flex: 1;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  min-height: 220px;
+}
+.vac-mosaic__tall img,
+.vac-mosaic__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-out);
+}
+.vac-mosaic__tall:hover img,
+.vac-mosaic__item:hover img { transform: scale(1.05); }
+
+/* Page header hero image pattern */
+.page-hero-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0.38;
+}
+
+@media (max-width: 768px) {
+  .vac-mosaic {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+  .vac-mosaic__tall { grid-row: span 1; min-height: 200px; }
+  .vac-mosaic__col { flex-direction: row; }
+  .vac-mosaic__item { min-height: 180px; }
+}
+
+@media (max-width: 480px) {
+  .vac-mosaic { grid-template-columns: 1fr; }
+}
+

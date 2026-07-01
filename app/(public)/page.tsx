@@ -50,25 +50,25 @@ const PILLARS = [
     href: "/art-store", num: "01", title: "Art Store",
     desc: "Authentic Rwandan paintings, sculptures & crafts sourced from local masters.",
     tag: "Shop Collection",
-    img: "/images/WhatsApp Image 2026-06-27 at 1.59.51 PM.jpeg",
+    img: "/images/WhatsApp Image 2026-06-30 at 8.51.41 PM.jpeg",
   },
   {
     href: "/experiences", num: "02", title: "Experiences",
     desc: "Gorilla treks, painting workshops, cultural village immersions & more.",
     tag: "Book Now",
-    img: "/images/WhatsApp Image 2026-06-27 at 1.59.56 PM (1).jpeg",
+    img: "/images/WhatsApp Image 2026-06-30 at 8.51.33 PM (3).jpeg",
   },
   {
     href: "/conservation", num: "03", title: "Conservation",
     desc: "Support Rwanda's mountain gorillas, forests & local communities.",
     tag: "Give Back",
-    img: "/images/WhatsApp Image 2026-06-27 at 1.59.55 PM.jpeg",
+    img: "/images/WhatsApp Image 2026-06-30 at 8.51.34 PM.jpeg",
   },
   {
     href: "/talent", num: "04", title: "Talent",
     desc: "Empowering Rwanda's next generation of artists and cultural stewards.",
     tag: "Discover",
-    img: "/images/WhatsApp Image 2026-06-27 at 1.59.54 PM (1).jpeg",
+    img: "/images/WhatsApp Image 2026-06-30 at 8.51.32 PM.jpeg",
   },
 ]
 
@@ -191,7 +191,7 @@ export default async function HomePage() {
       <RevealSection>
         <section className="section why-section">
           <div className="container why-grid">
-            {/* Visual: interactive overlapping images */}
+            {/* Visual: interactive overlapping images — real VAC photos */}
             <WhyFigure />
 
             {/* Copy */}
@@ -362,6 +362,40 @@ export default async function HomePage() {
             <SH eyebrow="Share Your Story" title="Had an experience with us?" center
               subtitle="Approved reviews appear on our website. We read every single one." />
             <ReviewForm />
+          </div>
+        </section>
+      </RevealSection>
+
+      {/* ── 11b. LIFE AT VAC — Photo mosaic ── */}
+      <RevealSection>
+        <section className="section vac-mosaic-section">
+          <div className="container">
+            <SH eyebrow="Behind the Scenes" title="Life at Volcano Arts Center" center
+              subtitle="Real moments from our artisans, students, and the community around us." />
+            <div className="vac-mosaic">
+              <div className="vac-mosaic__tall">
+                <img src="/images/WhatsApp Image 2026-06-30 at 8.51.28 PM.jpeg" alt="Wood carver at work" loading="lazy" />
+              </div>
+              <div className="vac-mosaic__col">
+                <div className="vac-mosaic__item">
+                  <img src="/images/WhatsApp Image 2026-06-30 at 8.51.30 PM.jpeg" alt="Children in outdoor art class" loading="lazy" />
+                </div>
+                <div className="vac-mosaic__item">
+                  <img src="/images/WhatsApp Image 2026-06-30 at 8.51.40 PM.jpeg" alt="Artisans weaving baskets" loading="lazy" />
+                </div>
+              </div>
+              <div className="vac-mosaic__col">
+                <div className="vac-mosaic__item">
+                  <img src="/images/WhatsApp Image 2026-06-30 at 8.51.43 PM.jpeg" alt="Traditional village cooking" loading="lazy" />
+                </div>
+                <div className="vac-mosaic__item">
+                  <img src="/images/WhatsApp Image 2026-06-30 at 8.51.33 PM (1).jpeg" alt="Traditional culture near the volcano" loading="lazy" />
+                </div>
+              </div>
+              <div className="vac-mosaic__tall">
+                <img src="/images/WhatsApp Image 2026-06-30 at 8.52.04 PM.jpeg" alt="Traditional ceremony with artifacts" loading="lazy" />
+              </div>
+            </div>
           </div>
         </section>
       </RevealSection>
