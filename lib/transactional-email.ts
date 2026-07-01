@@ -83,21 +83,55 @@ function bookingSummary(booking: BookingEmail) {
     </table>`
 }
 
-async function sendSafely(to: string, subject: string, html: string) {
+async function sendSafely(to: string, subject: string, html: string, replyTo?: string) {
   try {
-    await sendMail(to, subject, html)
+    await sendMail(to, subject, html, replyTo)
   } catch (error) {
     console.warn("[transactional-email] failed to send", subject, "to", to, error)
   }
 }
 
-async function getOperationsEmails() {
-  const users = await db.user.findMany({
+async function notifyAdmins(roles: string[], title: string, body: string, ctaUrl: string, type = "INFO") {
+  try {
+    const admins = await db.user.findMany({
+      where: { isActive: true, role: { in: roles } },
+      select: { id: true },
+    })
+    if (admins.length === 0) return
+    await db.notification.createMany({
+      data: admins.map(a => ({ userId: a.id, title, body, type, ctaUrl })),
+    })
+  } catch (err) {
+    console.warn("[transactional-email] failed to create admin notifications", err)
+  }
+}
+
+// Hardcoded admin emails — also pulled from env so Vercel/production can override
+const DIRECTOR_EMAIL  = process.env.DIRECTOR_EMAIL  ?? "ntihemuka@volcanoartscenterinc.org.rw"
+const OPS_EMAIL       = process.env.OPS_EMAIL        ?? "oliveni@volcanoartscenterinc.org.rw"
+const MARKETING_EMAIL = process.env.MARKETING_EMAIL  ?? "danken@volcanoartscenterinc.org.rw"
+
+/** Orders & bookings → Director + Ops Manager */
+async function getOrdersAdminEmails() {
+  const dbUsers = await db.user.findMany({
     where: { isActive: true, role: { in: ["OPS_MANAGER", "SUPER_ADMIN"] } },
     select: { email: true },
   })
-  const configured = [process.env.OPERATIONS_EMAIL, process.env.ADMIN_EMAIL].filter(Boolean) as string[]
-  return Array.from(new Set([...users.map(u => u.email), ...configured]))
+  return Array.from(new Set([DIRECTOR_EMAIL, OPS_EMAIL, ...dbUsers.map(u => u.email)]))
+}
+
+/** Donations → Director + Marketing/Content Manager */
+async function getDonationAdminEmails() {
+  const dbUsers = await db.user.findMany({
+    where: { isActive: true, role: { in: ["CONTENT_MANAGER", "SUPER_ADMIN"] } },
+    select: { email: true },
+  })
+  return Array.from(new Set([DIRECTOR_EMAIL, MARKETING_EMAIL, ...dbUsers.map(u => u.email)]))
+}
+
+/** Contact inquiries → all three admins */
+function getAllAdminEmails() {
+  return [DIRECTOR_EMAIL, OPS_EMAIL, MARKETING_EMAIL]
 }
 
 export async function sendBookingSubmittedEmails(booking: BookingEmail) {
@@ -116,9 +150,16 @@ export async function sendBookingSubmittedEmails(booking: BookingEmail) {
     <p style="font-size:15px;line-height:1.7;color:#555;">Review it in the admin booking queue.</p>
     <p><a href="${siteUrl()}/admin/bookings" style="display:inline-block;background:#00A651;color:#fff;text-decoration:none;padding:11px 18px;border-radius:6px;font-weight:700;">Open Bookings</a></p>`
   )
-  for (const email of await getOperationsEmails()) {
-    await sendSafely(email, `New booking request: ${booking.reference}`, opsHtml)
+  for (const email of await getOrdersAdminEmails()) {
+    await sendSafely(email, `New booking request: ${booking.reference}`, opsHtml, booking.guestEmail)
   }
+  await notifyAdmins(
+    ["OPS_MANAGER", "SUPER_ADMIN"],
+    "New booking request",
+    `${booking.guestName} requested ${booking.experienceTitle} on ${formatDate(booking.preferredDate)} (${booking.groupSize} guests)`,
+    "/admin/bookings",
+    "BOOKING"
+  )
 }
 
 export async function sendBookingApprovedEmail(booking: BookingEmail) {
@@ -169,9 +210,119 @@ export async function sendOrderPlacedEmails(order: OrderEmail) {
     ${orderSummary(order)}
     <p><a href="${siteUrl()}/admin/orders" style="display:inline-block;background:#00A651;color:#fff;text-decoration:none;padding:11px 18px;border-radius:6px;font-weight:700;">Open Orders</a></p>`
   )
-  for (const email of await getOperationsEmails()) {
-    await sendSafely(email, `New art order: ${order.reference}`, opsHtml)
+  for (const email of await getOrdersAdminEmails()) {
+    await sendSafely(email, `New art order: ${order.reference}`, opsHtml, order.customerEmail)
   }
+  await notifyAdmins(
+    ["OPS_MANAGER", "SUPER_ADMIN"],
+    "New art order",
+    `${order.recipientName} placed an order for ${order.items.join(", ")} — $${order.total.toFixed(2)}`,
+    "/admin/orders",
+    "ORDER"
+  )
+}
+
+// ── DONATION EMAILS ──────────────────────────────────────────────────────────
+
+type DonationEmail = {
+  reference: string
+  donorName?: string | null
+  donorEmail: string
+  amount: number
+  purpose: string
+  frequency: string
+  anonymous: boolean
+}
+
+export async function sendDonationEmails(donation: DonationEmail) {
+  const displayName = donation.anonymous || !donation.donorName ? "Anonymous donor" : donation.donorName
+
+  // Donor confirmation
+  const donorHtml = emailShell(
+    "Thank you for your support",
+    `<p style="font-size:15px;line-height:1.7;color:#555;">Dear ${escapeHtml(displayName)}, your donation has been received. Thank you for supporting conservation at Volcano Arts Center.</p>
+    <table cellpadding="0" cellspacing="0" style="width:100%;margin:20px 0;border-collapse:collapse;border:1px solid #E8E8E5;">
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Reference</td><td style="padding:10px 12px;">${escapeHtml(donation.reference)}</td></tr>
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Amount</td><td style="padding:10px 12px;">$${donation.amount.toFixed(2)}</td></tr>
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Purpose</td><td style="padding:10px 12px;">${escapeHtml(donation.purpose.replace("_", " "))}</td></tr>
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Frequency</td><td style="padding:10px 12px;">${escapeHtml(donation.frequency.replace("_", " "))}</td></tr>
+    </table>
+    <p style="font-size:15px;line-height:1.7;color:#555;">Our team will reach out to confirm next steps for payment. Every contribution makes a direct difference to Rwanda's gorilla habitat.</p>`
+  )
+  await sendSafely(donation.donorEmail, `Donation received: ${donation.reference}`, donorHtml)
+
+  // Admin notification → Director + Marketing
+  const adminHtml = emailShell(
+    "New conservation donation",
+    `<p style="font-size:15px;line-height:1.7;color:#555;">A new donation was submitted.</p>
+    <table cellpadding="0" cellspacing="0" style="width:100%;margin:20px 0;border-collapse:collapse;border:1px solid #E8E8E5;">
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Reference</td><td style="padding:10px 12px;">${escapeHtml(donation.reference)}</td></tr>
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Donor</td><td style="padding:10px 12px;">${escapeHtml(displayName)}</td></tr>
+      ${!donation.anonymous ? `<tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Email</td><td style="padding:10px 12px;">${escapeHtml(donation.donorEmail)}</td></tr>` : ""}
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Amount</td><td style="padding:10px 12px;">$${donation.amount.toFixed(2)}</td></tr>
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Purpose</td><td style="padding:10px 12px;">${escapeHtml(donation.purpose.replace("_", " "))}</td></tr>
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Frequency</td><td style="padding:10px 12px;">${escapeHtml(donation.frequency.replace("_", " "))}</td></tr>
+    </table>
+    <p><a href="${siteUrl()}/admin/conservation" style="display:inline-block;background:#00A651;color:#fff;text-decoration:none;padding:11px 18px;border-radius:6px;font-weight:700;">View in Admin</a></p>`
+  )
+  for (const email of await getDonationAdminEmails()) {
+    await sendSafely(email, `New donation $${donation.amount.toFixed(2)}: ${donation.reference}`, adminHtml, donation.donorEmail)
+  }
+  await notifyAdmins(
+    ["CONTENT_MANAGER", "SUPER_ADMIN"],
+    "New conservation donation",
+    `${displayName} donated $${donation.amount.toFixed(2)} for ${donation.purpose.replace("_", " ")}`,
+    "/admin/conservation",
+    "DONATION"
+  )
+}
+
+// ── CONTACT EMAILS ───────────────────────────────────────────────────────────
+
+type ContactEmail = {
+  name: string
+  email: string
+  phone?: string | null
+  subject: string
+  message: string
+}
+
+export async function sendContactEmails(inquiry: ContactEmail) {
+  // Auto-reply to sender
+  const senderHtml = emailShell(
+    "We received your message",
+    `<p style="font-size:15px;line-height:1.7;color:#555;">Dear ${escapeHtml(inquiry.name)}, thank you for reaching out to Volcano Arts Center. We will get back to you within 24–48 hours.</p>
+    <table cellpadding="0" cellspacing="0" style="width:100%;margin:20px 0;border-collapse:collapse;border:1px solid #E8E8E5;">
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Subject</td><td style="padding:10px 12px;">${escapeHtml(inquiry.subject)}</td></tr>
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Your message</td><td style="padding:10px 12px;">${escapeHtml(inquiry.message)}</td></tr>
+    </table>
+    <p style="font-size:15px;line-height:1.7;color:#555;">For urgent matters you can reach us directly at <a href="mailto:${DIRECTOR_EMAIL}" style="color:#00A651;">${DIRECTOR_EMAIL}</a>.</p>`
+  )
+  await sendSafely(inquiry.email, "We received your message — Volcano Arts Center", senderHtml)
+
+  // Admin notification → all three admins, reply-to is the sender so they can reply directly
+  const adminHtml = emailShell(
+    "New contact inquiry",
+    `<p style="font-size:15px;line-height:1.7;color:#555;">A visitor submitted a contact form. Reply to this email to respond directly to them.</p>
+    <table cellpadding="0" cellspacing="0" style="width:100%;margin:20px 0;border-collapse:collapse;border:1px solid #E8E8E5;">
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Name</td><td style="padding:10px 12px;">${escapeHtml(inquiry.name)}</td></tr>
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Email</td><td style="padding:10px 12px;"><a href="mailto:${escapeHtml(inquiry.email)}" style="color:#00A651;">${escapeHtml(inquiry.email)}</a></td></tr>
+      ${inquiry.phone ? `<tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Phone</td><td style="padding:10px 12px;">${escapeHtml(inquiry.phone)}</td></tr>` : ""}
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Subject</td><td style="padding:10px 12px;">${escapeHtml(inquiry.subject)}</td></tr>
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Message</td><td style="padding:10px 12px;white-space:pre-wrap;">${escapeHtml(inquiry.message)}</td></tr>
+    </table>
+    <p><a href="${siteUrl()}/admin/inquiries" style="display:inline-block;background:#00A651;color:#fff;text-decoration:none;padding:11px 18px;border-radius:6px;font-weight:700;">View in Admin</a></p>`
+  )
+  for (const email of getAllAdminEmails()) {
+    await sendSafely(email, `New inquiry from ${inquiry.name}: ${inquiry.subject}`, adminHtml, inquiry.email)
+  }
+  await notifyAdmins(
+    ["OPS_MANAGER", "CONTENT_MANAGER", "SUPER_ADMIN"],
+    "New contact inquiry",
+    `${inquiry.name} — "${inquiry.subject}"`,
+    "/admin/inquiries",
+    "INQUIRY"
+  )
 }
 
 export async function sendOrderStatusEmail(order: OrderEmail) {

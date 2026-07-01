@@ -14,11 +14,11 @@ export function getTransporter() {
 
 export const FROM = `"Volcano Arts Center Inc Rwanda" <${process.env.SMTP_USER ?? "hello@volcanoartsandhospes.com"}>`
 
-export async function sendMail(to: string, subject: string, html: string) {
+export async function sendMail(to: string, subject: string, html: string, replyTo?: string) {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
     console.warn("[mailer] SMTP not configured — skipping email to", to)
     return
   }
   const t = getTransporter()
-  await t.sendMail({ from: FROM, to, subject, html })
+  await t.sendMail({ from: FROM, to, subject, html, ...(replyTo ? { replyTo } : {}) })
 }

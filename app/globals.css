@@ -984,8 +984,8 @@ html[data-theme="dark"] .home-hero__word { color: #6FE6A0; }
 .conservation { background: var(--green-deep); color: rgba(255, 255, 255, 0.86); }
 html[data-theme="dark"] .conservation { background: #0A0A09; }
 .conservation__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); align-items: center; }
-.conservation__media { aspect-ratio: 4 / 3; border-radius: var(--radius-lg); overflow: hidden; }
-.conservation__media img { width: 100%; height: 100%; object-fit: cover; }
+.conservation__media { display: grid; grid-template-rows: 2fr 1fr; gap: var(--space-3); border-radius: var(--radius-lg); overflow: hidden; max-height: 480px; }
+.conservation__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .conservation__copy { display: flex; flex-direction: column; gap: var(--space-4); }
 .conservation__copy h2 { color: #fff; }
 .conservation__copy .lead { color: rgba(255, 255, 255, 0.8); }

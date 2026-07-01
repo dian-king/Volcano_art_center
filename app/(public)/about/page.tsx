@@ -11,8 +11,9 @@ export default function AboutPage() {
   return (
     <div style={{ paddingTop: "var(--nav-height)" }}>
       {/* Header */}
-      <div style={{ background: "var(--green-deep)", padding: "var(--space-8) 0 var(--space-7)" }}>
-        <div className="container">
+      <div style={{ position: "relative", background: "var(--green-deep)", overflow: "hidden", padding: "var(--space-10) 0 var(--space-8)" }}>
+        <img src="/images/WhatsApp Image 2026-06-27 at 1.59.54 PM (2).jpeg" aria-hidden style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }} />
+        <div className="container" style={{ position: "relative", zIndex: 1 }}>
           <span className="eyebrow" style={{ color: "rgba(255,255,255,0.65)" }}>Our Story</span>
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: 600, marginTop: "var(--space-2)", color: "#fff" }}>
             About Us
@@ -76,13 +77,29 @@ export default function AboutPage() {
       <div className="photo-strip">
         {[
           "/images/WhatsApp Image 2026-06-27 at 1.59.54 PM (2).jpeg",
-          "/images/WhatsApp Image 2026-06-27 at 1.59.56 PM (1).jpeg",
-          "/images/WhatsApp Image 2026-06-27 at 1.59.55 PM.jpeg",
+          "/images/WhatsApp Image 2026-06-30 at 8.51.42 PM.jpeg",
+          "/images/WhatsApp Image 2026-06-30 at 8.51.40 PM.jpeg",
         ].map((src, i) => (
           <div key={i} style={{ overflow: "hidden" }}>
             <img src={src} alt="VAC gallery" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         ))}
+      </div>
+
+      {/* Leadership */}
+      <div className="container" style={{ paddingBlock: "var(--space-8)" }}>
+        <span className="eyebrow">Leadership</span>
+        <h2 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title)", fontWeight: 600, marginTop: "var(--space-2)", marginBottom: "var(--space-7)" }}>The Team</h2>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-6)", background: "var(--surface-raised)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", padding: "var(--space-6)", maxWidth: 480 }}>
+          <div style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--green-deep)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <span style={{ color: "#fff", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.5rem" }}>N</span>
+          </div>
+          <div>
+            <p style={{ fontWeight: 700, fontSize: "var(--text-body)", marginBottom: 2 }}>NTIHEMUKA Jean d&apos;Amour</p>
+            <p style={{ color: "var(--text-muted)", fontSize: "var(--text-small)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "var(--space-2)" }}>Director Manager</p>
+            <a href="mailto:ntihemuka@volcanoartscenterinc.org.rw" style={{ color: "var(--green-mid)", fontSize: "var(--text-small)" }}>ntihemuka@volcanoartscenterinc.org.rw</a>
+          </div>
+        </div>
       </div>
 
       {/* Location */}

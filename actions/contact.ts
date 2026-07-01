@@ -2,6 +2,7 @@
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { headers } from "next/headers"
+import { sendContactEmails } from "@/lib/transactional-email"
 
 const schema = z.object({
   name: z.string().min(1),
@@ -27,5 +28,14 @@ export async function submitContactAction(raw: unknown) {
   await db.contactInquiry.create({
     data: { ...parsed.data, ipAddress: ip, status: "NEW" },
   })
+
+  await sendContactEmails({
+    name: parsed.data.name,
+    email: parsed.data.email,
+    phone: parsed.data.phone ?? null,
+    subject: parsed.data.subject,
+    message: parsed.data.message,
+  })
+
   return { success: true }
 }

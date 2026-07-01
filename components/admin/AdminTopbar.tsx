@@ -83,7 +83,7 @@ export function AdminTopbar({
         </Link>
         <Link
           className="icon-btn"
-          href="/admin/inquiries"
+          href="/admin/notifications"
           aria-label={unread > 0 ? `${unread} unread notifications` : "Notifications"}
           style={{ position: "relative" }}
         >

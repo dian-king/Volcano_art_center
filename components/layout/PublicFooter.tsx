@@ -87,11 +87,11 @@ export function PublicFooter() {
               </svg>
               <span>GJQ7+P76 · Musanze, Rwanda</span>
             </a>
-            <a href="mailto:hello@volcanoartsandhospes.com" className="site-footer__contact">
+            <a href="mailto:ntihemuka@volcanoartscenterinc.org.rw" className="site-footer__contact">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/>
               </svg>
-              <span>hello@volcanoartsandhospes.com</span>
+              <span>ntihemuka@volcanoartscenterinc.org.rw</span>
             </a>
             <a href="tel:+250780000000" className="site-footer__contact">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -130,6 +130,7 @@ export function PublicFooter() {
           <div className="site-footer__legal">
             <Link href="/contact">Privacy</Link>
             <Link href="/contact">Terms</Link>
+            <span style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.75rem", marginLeft: "var(--space-2)" }}>Created by <strong style={{ color: "rgba(255,255,255,0.6)" }}>CODAFRICA</strong></span>
           </div>
         </div>
       </div>

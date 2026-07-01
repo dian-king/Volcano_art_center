@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { auth } from "@/lib/auth"
 import { z } from "zod"
 import { generateDonationRef } from "@/lib/references"
+import { sendDonationEmails } from "@/lib/transactional-email"
 
 const schema = z.object({
   amount: z.number().min(1),
@@ -34,6 +35,16 @@ export async function createDonationAction(raw: unknown) {
       anonymous: parsed.data.anonymous,
       status: "PENDING",
     },
+  })
+
+  await sendDonationEmails({
+    reference,
+    donorName: parsed.data.anonymous ? null : parsed.data.donorName ?? null,
+    donorEmail: parsed.data.donorEmail,
+    amount: parsed.data.amount,
+    purpose: parsed.data.purpose,
+    frequency: parsed.data.frequency,
+    anonymous: parsed.data.anonymous,
   })
 
   const paymentSettings = await db.platformSetting.findMany({ where: { category: "payments" } })

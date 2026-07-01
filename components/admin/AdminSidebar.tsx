@@ -15,6 +15,7 @@ import {
 
 const CONTENT_LINKS = [
   { href: "/admin/content/dashboard", label: "Dashboard",      icon: LayoutDashboard },
+  { href: "/admin/notifications",     label: "Notifications",  icon: Bell },
   { href: "/admin/experiences",       label: "Experiences",    icon: Map },
   { href: "/admin/blog",              label: "Blog Posts",     icon: Feather },
   { href: "/admin/reviews",           label: "Reviews",        icon: Star },
@@ -24,14 +25,15 @@ const CONTENT_LINKS = [
 ]
 
 const OPS_LINKS = [
-  { href: "/admin",             label: "Dashboard",          icon: LayoutDashboard },
-  { href: "/admin/products",    label: "Art Catalog",        icon: Palette },
-  { href: "/admin/bookings",    label: "Bookings",          icon: CalendarCheck },
-  { href: "/admin/orders",      label: "Shipping Orders",   icon: Package },
-  { href: "/admin/inquiries",   label: "Contact Inquiries", icon: Mail },
-  { href: "/admin/operators",   label: "Tour Operators",    icon: Users },
-  { href: "/admin/applications",label: "Talent Applications",icon: FileText },
-  { href: "/admin/slots",       label: "Availability Slots",icon: Clock },
+  { href: "/admin",                  label: "Dashboard",           icon: LayoutDashboard },
+  { href: "/admin/notifications",    label: "Notifications",       icon: Bell },
+  { href: "/admin/products",         label: "Art Catalog",         icon: Palette },
+  { href: "/admin/bookings",         label: "Bookings",            icon: CalendarCheck },
+  { href: "/admin/orders",           label: "Shipping Orders",     icon: Package },
+  { href: "/admin/inquiries",        label: "Contact Inquiries",   icon: Mail },
+  { href: "/admin/operators",        label: "Tour Operators",      icon: Users },
+  { href: "/admin/applications",     label: "Talent Applications", icon: FileText },
+  { href: "/admin/slots",            label: "Availability Slots",  icon: Clock },
 ]
 
 const SUPER_LINKS = [

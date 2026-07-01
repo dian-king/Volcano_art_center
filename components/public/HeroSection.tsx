@@ -4,14 +4,19 @@ import Link from "next/link"
 import Image from "next/image"
 
 const SLIDES = [
-  { label: "Gorilla Trek",  bg: "#003D20", img: "/images/wide.jpeg"  },
-  { label: "Art Studio",    bg: "#1B4332", img: "/images/wide2.jpeg" },
-  { label: "Village Life",  bg: "#2D6A4F", img: "/images/wide3.jpeg" },
-  { label: "Culture",       bg: "#1C4A30", img: "/images/WhatsApp Image 2026-06-30 at 8.51.34 PM (1).jpeg" },
-  { label: "Conservation",  bg: "#1C3A2A", img: "/images/WhatsApp Image 2026-06-30 at 8.51.36 PM.jpeg"      },
+  { label: "Gorilla Trek",     bg: "#003D20", img: "/images/wide.jpeg"  },
+  { label: "Highlands",        bg: "#1A3A28", img: "/images/WhatsApp Image 2026-06-30 at 8.51.33 PM (1).jpeg" },
+  { label: "Art Studio",       bg: "#1B4332", img: "/images/wide2.jpeg" },
+  { label: "Village Life",     bg: "#2D6A4F", img: "/images/wide3.jpeg" },
+  { label: "Virunga",          bg: "#0F2D1C", img: "/images/WhatsApp Image 2026-06-30 at 8.51.35 PM.jpeg"     },
+  { label: "Twin Peaks",       bg: "#1C4A30", img: "/images/WhatsApp Image 2026-06-30 at 8.51.34 PM (1).jpeg" },
+  { label: "Art Store",        bg: "#3D1F00", img: "/images/WhatsApp Image 2026-06-30 at 8.51.41 PM.jpeg"     },
+  { label: "Village Cooking",  bg: "#1A0F00", img: "/images/WhatsApp Image 2026-06-30 at 8.51.43 PM.jpeg"     },
+  { label: "Grain Grinding",   bg: "#2A1800", img: "/images/WhatsApp Image 2026-06-30 at 8.51.59 PM.jpeg"     },
+  { label: "Heritage Room",    bg: "#3A1500", img: "/images/WhatsApp Image 2026-06-30 at 8.52.04 PM (1).jpeg" },
 ]
 
-const DURATION = 5000
+const DURATION = 3000
 
 export function HeroSection() {
   const [slide, setSlide]   = useState(0)
@@ -60,7 +65,7 @@ export function HeroSection() {
               aria-hidden
               fill
               unoptimized
-              priority={i < 2}
+              priority
               sizes="100vw"
               style={{ objectFit: "cover", objectPosition: "center", opacity: 0.62 }}
             />
@@ -101,29 +106,9 @@ export function HeroSection() {
         style={{ objectFit: "contain" }}
       />
 
-      {/* ── Bottom bar ── */}
+      {/* ── Location tag ── */}
       <div className="home-hero__footer">
-        <nav className="home-hero__pips" aria-label="Slide controls">
-          {SLIDES.map((s, i) => (
-            <button
-              key={i}
-              className={`home-hero__pip${i === slide ? " is-active" : ""}`}
-              onClick={() => goTo(i)}
-              aria-label={s.label}
-              aria-pressed={i === slide}
-            >
-              {/* key=slide forces remount → CSS animation restarts cleanly */}
-              {i === slide && <span key={slide} className="home-hero__pip-fill" />}
-            </button>
-          ))}
-        </nav>
-
-        <span className="home-hero__counter" aria-hidden="true">
-          <strong>{String(slide + 1).padStart(2, "0")}</strong>
-          <span className="home-hero__counter-slash">/</span>
-          <span>{String(SLIDES.length).padStart(2, "0")}</span>
-        </span>
-
+        <div style={{ flex: 1 }} />
         <div className="home-hero__location" aria-hidden="true">
           <span className="home-hero__location-dot" />
           <span>Musanze · Rwanda</span>
