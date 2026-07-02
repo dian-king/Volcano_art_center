@@ -1,69 +1,78 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
-import { motion, useReducedMotion } from "framer-motion"
 
-const SPRING = { type: "spring" as const, stiffness: 280, damping: 18 }
+const CARDS = [
+  { src: "/images/WhatsApp Image 2026-06-30 at 8.51.40 PM.jpeg", alt: "Rwandan artisans weaving traditional baskets" },
+  { src: "/images/gorilla-sculpture.jpeg", alt: "Carving a lava-stone gorilla sculpture" },
+  { src: "/images/WhatsApp Image 2026-06-27 at 1.59.51 PM.jpeg", alt: "Carrying finished woven baskets in our gallery" },
+]
+
+// Idle stack offsets by depth — a loose, tossed-on-a-table scatter
+const SLOTS = [
+  { x: -3,  y: 3,   rot: -4 },
+  { x: 20,  y: -8,  rot: 9  },
+  { x: -22, y: -18, rot: -12 },
+]
 
 export function WhyFigure() {
-  const [swapped, setSwapped]   = useState(false)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const reduced     = useReducedMotion()
+  const [order, setOrder] = useState<number[]>(CARDS.map((_, i) => i))
+  const [leaving, setLeaving] = useState<number | null>(null)
+  const [hovering, setHovering] = useState(false)
+  const [exitDir, setExitDir] = useState(1)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  function onEnter() {
-    if (intervalRef.current) return
-    setSwapped(true)
-    intervalRef.current = setInterval(() => setSwapped(p => !p), 2000)
-  }
+  useEffect(() => {
+    if (!hovering) return
+    const t = setTimeout(() => {
+      const top = order[0]
+      setLeaving(top)
+      timeoutRef.current = setTimeout(() => {
+        setOrder(o => { const [f, ...r] = o; return [...r, f] })
+        setLeaving(null)
+        setExitDir(d => d * -1)
+      }, 500)
+    }, 1400)
+    return () => { clearTimeout(t); if (timeoutRef.current) clearTimeout(timeoutRef.current) }
+  }, [order, hovering])
 
   function onLeave() {
-    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null }
-    setSwapped(false)
+    setHovering(false)
+    setLeaving(null)
+    setOrder(CARDS.map((_, i) => i))
+    setExitDir(1)
   }
-
-  useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current) }, [])
 
   return (
     <div
       className="why-figure"
-      onMouseEnter={onEnter}
+      onMouseEnter={() => setHovering(true)}
       onMouseLeave={onLeave}
       style={{ cursor: "pointer" }}
     >
-      {/* Back image — pops to front when swapped */}
-      <motion.div
-        className="why-figure__a"
-        animate={reduced ? {} : {
-          scale:  swapped ? 1.07 : 1,
-          y:      swapped ? "-10%" : "0%",
-          rotate: swapped ? 2 : 0,
-          zIndex: swapped ? 3 : 1,
-        }}
-        transition={SPRING}
-      >
-        <img
-          src="/images/WhatsApp Image 2026-06-30 at 8.51.40 PM.jpeg"
-          alt="Rwandan artisans weaving traditional baskets"
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        />
-      </motion.div>
+      {[...order].reverse().map((cardIdx, ri) => {
+        const depth = order.length - 1 - ri
+        const slot = SLOTS[Math.min(depth, SLOTS.length - 1)]
+        const isLeaving = cardIdx === leaving
+        const card = CARDS[cardIdx]
 
-      {/* Front image — retreats when swapped */}
-      <motion.div
-        className="why-figure__b"
-        animate={reduced ? {} : {
-          scale:  swapped ? 0.88 : 1,
-          y:      swapped ? "10%" : "0%",
-          rotate: swapped ? -2 : 0,
-          zIndex: swapped ? 1 : 2,
-        }}
-        transition={SPRING}
-      >
-        <img
-          src="/images/WhatsApp Image 2026-06-30 at 8.51.31 PM.jpeg"
-          alt="Volcano Arts Center gallery exterior"
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        />
-      </motion.div>
+        return (
+          <div
+            key={cardIdx}
+            className="why-figure__stack-card"
+            style={{
+              zIndex: CARDS.length - depth,
+              transform: isLeaving
+                ? `translateX(${160 * exitDir}%) rotate(${18 * exitDir}deg)`
+                : `translate(${slot.x}%, ${slot.y}%) rotate(${slot.rot}deg)`,
+              transition: isLeaving
+                ? "transform 0.5s cubic-bezier(0.4,0,1,1)"
+                : "transform 0.6s cubic-bezier(0.25,0.9,0.4,1.3)",
+            }}
+          >
+            <img src={card.src} alt={card.alt} draggable={false} />
+          </div>
+        )
+      })}
 
       <div className="why-rating">
         <span>★★★★★</span>

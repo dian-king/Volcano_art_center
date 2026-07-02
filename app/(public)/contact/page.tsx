@@ -57,7 +57,7 @@ export default function ContactPage() {
                 icon: "📞",
                 label: "Phone",
                 value: "+250 788 945 163",
-                href: "tel:+250780000000",
+                href: "tel:+250788945163",
               },
               {
                 icon: "🕐",

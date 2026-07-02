@@ -2,12 +2,13 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { signIn } from "next-auth/react"
+import { signIn, getSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { useState } from "react"
 import { Loader2 } from "lucide-react"
 import type { Metadata } from "next"
+import { dashboardPathForRole } from "@/lib/permissions"
 
 const schema = z.object({
   email: z.string().email("Valid email required"),
@@ -28,7 +29,7 @@ const OAUTH_ERRORS: Record<string, string> = {
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const next = searchParams.get("next") ?? "/"
+  const explicitNext = searchParams.get("next")
   const oauthError = searchParams.get("error")
   const [error, setError] = useState<string | null>(
     oauthError ? (OAUTH_ERRORS[oauthError] ?? OAUTH_ERRORS.Default) : null
@@ -41,11 +42,17 @@ export default function LoginPage() {
     setError(null)
     const result = await signIn("credentials", { email: data.email, password: data.password, redirect: false })
     if (result?.error) {
-      setError("Invalid email or password. Try: client@volcanoarts.rw / Test1234!")
-    } else {
-      router.replace(next)
-      router.refresh()
+      setError("Invalid email or password.")
+      return
     }
+    // Deep-link (?next=) always wins; otherwise route straight to the user's dashboard.
+    if (explicitNext) {
+      router.replace(explicitNext)
+    } else {
+      const session = await getSession()
+      router.replace(dashboardPathForRole(session?.user?.role as string | undefined))
+    }
+    router.refresh()
   }
 
   return (
@@ -57,7 +64,7 @@ export default function LoginPage() {
       {/* Google OAuth */}
       <button
         type="button"
-        onClick={() => signIn("google", { callbackUrl: next })}
+        onClick={() => signIn("google", { callbackUrl: explicitNext ? `/api/post-login?next=${encodeURIComponent(explicitNext)}` : "/api/post-login" })}
         style={{
           display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-3)",
           width: "100%", height: "44px",

@@ -56,17 +56,21 @@ export default function AboutPage() {
               Four Pillars of Purpose
             </h2>
           </div>
-          <div className="stat-pair">
+          <div className="pillar-grid">
             {[
-              { icon: "🎨", title: "Art & Commerce", desc: "Our art store brings authentic Rwandan paintings, sculpture, textiles, and photography to collectors worldwide, ensuring artists receive fair compensation for their work." },
-              { icon: "🌿", title: "Immersive Experiences", desc: "We design cultural tours, painting workshops, village visits, and conservation walks that connect visitors with Rwanda's living traditions and natural wonders." },
-              { icon: "🌟", title: "Talent Development", desc: "Through our Talent Programme, we support emerging artists with mentorship, studio space, exhibitions, and pathways to international markets." },
-              { icon: "🦍", title: "Conservation", desc: "We fund and advocate for conservation initiatives protecting the ecosystems that sustain Rwanda's biodiversity and inspire its art — including mountain gorilla habitat." },
-            ].map(({ icon, title, desc }) => (
-              <div key={title} style={{ background: "var(--surface-raised)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", padding: "var(--space-6)" }}>
-                <span style={{ fontSize: "2rem", display: "block", marginBottom: "var(--space-3)" }}>{icon}</span>
-                <h3 style={{ fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: "var(--text-body)", marginBottom: "var(--space-2)" }}>{title}</h3>
-                <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-small)", lineHeight: 1.7 }}>{desc}</p>
+              { img: "/images/WhatsApp Image 2026-06-30 at 8.51.41 PM.jpeg", title: "Art & Commerce", desc: "Our art store brings authentic Rwandan paintings, sculpture, textiles, and photography to collectors worldwide, ensuring artists receive fair compensation for their work." },
+              { img: "/images/WhatsApp Image 2026-06-27 at 1.59.57 PM.jpeg", title: "Immersive Experiences", desc: "We design cultural tours, painting workshops, village visits, and conservation walks that connect visitors with Rwanda's living traditions and natural wonders." },
+              { img: "/images/talent-gorilla-sketch.jpeg", title: "Talent Development", desc: "Through our Talent Programme, we support emerging artists with mentorship, studio space, exhibitions, and pathways to international markets." },
+              { img: "/images/WhatsApp Image 2026-06-30 at 8.51.37 PM (1).jpeg", title: "Conservation", desc: "We fund and advocate for conservation initiatives protecting the ecosystems that sustain Rwanda's biodiversity and inspire its art — including mountain gorilla habitat." },
+            ].map(({ img, title, desc }) => (
+              <div key={title} className="pillar">
+                <div className="pillar__media">
+                  <img src={img} alt="" loading="lazy" />
+                </div>
+                <div className="pillar__body">
+                  <h3>{title}</h3>
+                  <p className="pillar__desc">{desc}</p>
+                </div>
               </div>
             ))}
           </div>

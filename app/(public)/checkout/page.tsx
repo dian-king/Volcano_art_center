@@ -136,7 +136,7 @@ export default function CheckoutPage() {
           </div>
 
           <button type="submit" className="btn btn--primary" style={{ width: "100%", justifyContent: "center", height: "52px", fontSize: "var(--text-body)" }} disabled={submitting}>
-            {submitting ? "Placing order…" : `Place Order · $${subtotal.toFixed(2)}`}
+            {submitting ? "Placing order…" : `Place Order · ${subtotal.toLocaleString()} RWF`}
           </button>
         </form>
 
@@ -154,7 +154,7 @@ export default function CheckoutPage() {
                   <p style={{ fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: "var(--text-small)", color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</p>
                   <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>Qty: {item.quantity}</p>
                 </div>
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-small)", color: "var(--text-primary)", flexShrink: 0 }}>${(item.price * item.quantity).toFixed(2)}</span>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-small)", color: "var(--text-primary)", flexShrink: 0 }}>{(item.price * item.quantity).toLocaleString()} RWF</span>
               </div>
             ))}
           </div>
@@ -162,7 +162,7 @@ export default function CheckoutPage() {
           <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "var(--text-small)", color: "var(--text-secondary)" }}>
               <span>Subtotal</span>
-              <span style={{ fontFamily: "var(--font-mono)" }}>${subtotal.toFixed(2)}</span>
+              <span style={{ fontFamily: "var(--font-mono)" }}>{subtotal.toLocaleString()} RWF</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "var(--text-small)", color: "var(--text-muted)" }}>
               <span>Shipping</span>
@@ -170,7 +170,7 @@ export default function CheckoutPage() {
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 700, borderTop: "1px solid var(--border-subtle)", paddingTop: "var(--space-3)" }}>
               <span style={{ fontFamily: "var(--font-ui)" }}>Total</span>
-              <span style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontSize: "var(--text-lead)" }}>${subtotal.toFixed(2)}</span>
+              <span style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontSize: "var(--text-lead)" }}>{subtotal.toLocaleString()} RWF</span>
             </div>
           </div>
         </div>

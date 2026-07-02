@@ -190,7 +190,7 @@ function orderSummary(order: OrderEmail) {
     <table cellpadding="0" cellspacing="0" style="width:100%;margin:20px 0;border-collapse:collapse;border:1px solid #E8E8E5;">
       <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Reference</td><td style="padding:10px 12px;">${escapeHtml(order.reference)}</td></tr>
       <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Items</td><td style="padding:10px 12px;">${escapeHtml(order.items.join(", "))}</td></tr>
-      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Total</td><td style="padding:10px 12px;">$${order.total.toFixed(2)}</td></tr>
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Total</td><td style="padding:10px 12px;">${order.total.toLocaleString()} RWF</td></tr>
       <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Status</td><td style="padding:10px 12px;">${escapeHtml(order.status)}</td></tr>
       ${order.trackingNumber ? `<tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Tracking</td><td style="padding:10px 12px;">${escapeHtml(order.trackingNumber)}${order.carrier ? ` (${escapeHtml(order.carrier)})` : ""}</td></tr>` : ""}
     </table>`
@@ -217,7 +217,7 @@ export async function sendOrderPlacedEmails(order: OrderEmail) {
   await notifyAdmins(
     ["OPS_MANAGER", "SUPER_ADMIN"],
     "New art order",
-    `${order.recipientName} placed an order for ${order.items.join(", ")} — $${order.total.toFixed(2)}`,
+    `${order.recipientName} placed an order for ${order.items.join(", ")} — ${order.total.toLocaleString()} RWF`,
     "/admin/orders",
     "ORDER"
   )
@@ -244,7 +244,7 @@ export async function sendDonationEmails(donation: DonationEmail) {
     `<p style="font-size:15px;line-height:1.7;color:#555;">Dear ${escapeHtml(displayName)}, your donation has been received. Thank you for supporting conservation at Volcano Arts Center.</p>
     <table cellpadding="0" cellspacing="0" style="width:100%;margin:20px 0;border-collapse:collapse;border:1px solid #E8E8E5;">
       <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Reference</td><td style="padding:10px 12px;">${escapeHtml(donation.reference)}</td></tr>
-      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Amount</td><td style="padding:10px 12px;">$${donation.amount.toFixed(2)}</td></tr>
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Amount</td><td style="padding:10px 12px;">${donation.amount.toLocaleString()} RWF</td></tr>
       <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Purpose</td><td style="padding:10px 12px;">${escapeHtml(donation.purpose.replace("_", " "))}</td></tr>
       <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Frequency</td><td style="padding:10px 12px;">${escapeHtml(donation.frequency.replace("_", " "))}</td></tr>
     </table>
@@ -260,19 +260,19 @@ export async function sendDonationEmails(donation: DonationEmail) {
       <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Reference</td><td style="padding:10px 12px;">${escapeHtml(donation.reference)}</td></tr>
       <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Donor</td><td style="padding:10px 12px;">${escapeHtml(displayName)}</td></tr>
       ${!donation.anonymous ? `<tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Email</td><td style="padding:10px 12px;">${escapeHtml(donation.donorEmail)}</td></tr>` : ""}
-      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Amount</td><td style="padding:10px 12px;">$${donation.amount.toFixed(2)}</td></tr>
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Amount</td><td style="padding:10px 12px;">${donation.amount.toLocaleString()} RWF</td></tr>
       <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Purpose</td><td style="padding:10px 12px;">${escapeHtml(donation.purpose.replace("_", " "))}</td></tr>
       <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Frequency</td><td style="padding:10px 12px;">${escapeHtml(donation.frequency.replace("_", " "))}</td></tr>
     </table>
     <p><a href="${siteUrl()}/admin/conservation" style="display:inline-block;background:#00A651;color:#fff;text-decoration:none;padding:11px 18px;border-radius:6px;font-weight:700;">View in Admin</a></p>`
   )
   for (const email of await getDonationAdminEmails()) {
-    await sendSafely(email, `New donation $${donation.amount.toFixed(2)}: ${donation.reference}`, adminHtml, donation.donorEmail)
+    await sendSafely(email, `New donation ${donation.amount.toLocaleString()} RWF: ${donation.reference}`, adminHtml, donation.donorEmail)
   }
   await notifyAdmins(
     ["CONTENT_MANAGER", "SUPER_ADMIN"],
     "New conservation donation",
-    `${displayName} donated $${donation.amount.toFixed(2)} for ${donation.purpose.replace("_", " ")}`,
+    `${displayName} donated ${donation.amount.toLocaleString()} RWF for ${donation.purpose.replace("_", " ")}`,
     "/admin/conservation",
     "DONATION"
   )
@@ -285,7 +285,7 @@ export async function sendDonationConfirmedEmail(donation: { reference: string; 
     `<p style="font-size:15px;line-height:1.7;color:#555;">Dear ${escapeHtml(displayName)}, we have confirmed receipt of your donation. Thank you for supporting conservation at Volcano Arts Center — your contribution is now funding work on the ground.</p>
     <table cellpadding="0" cellspacing="0" style="width:100%;margin:20px 0;border-collapse:collapse;border:1px solid #E8E8E5;">
       <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Reference</td><td style="padding:10px 12px;">${escapeHtml(donation.reference)}</td></tr>
-      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Amount</td><td style="padding:10px 12px;">$${donation.amount.toFixed(2)}</td></tr>
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Amount</td><td style="padding:10px 12px;">${donation.amount.toLocaleString()} RWF</td></tr>
     </table>`
   )
   await sendSafely(donation.donorEmail, `Donation confirmed: ${donation.reference}`, html)

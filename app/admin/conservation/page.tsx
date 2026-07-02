@@ -83,7 +83,7 @@ export default async function AdminConservationPage({ searchParams }: { searchPa
                 </div>
                 <div style={{ padding: "var(--space-4)", flex: 1, display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
                   <p style={{ fontFamily: "var(--font-ui)", fontWeight: 700, color: "var(--text-primary)" }}>{c.name}</p>
-                  <p style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontWeight: 700 }}>${raised.toLocaleString()} <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>/ ${goal.toLocaleString()}</span></p>
+                  <p style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontWeight: 700 }}>{raised.toLocaleString()} <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>/ {goal.toLocaleString()} RWF</span></p>
                   <div style={{ width: "100%", height: 7, background: "var(--border-subtle)", borderRadius: "999px", overflow: "hidden" }}><div style={{ width: `${pct}%`, height: "100%", background: "var(--green)" }} /></div>
                   <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{pct}% funded - {c.donorCount ?? 0} donors</p>
                   <div style={{ display: "flex", gap: "var(--space-2)", marginTop: "auto", flexWrap: "wrap" }}>

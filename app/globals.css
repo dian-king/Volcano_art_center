@@ -952,12 +952,18 @@ html[data-theme="dark"] .home-hero__word { color: #6FE6A0; }
 
 /* Why / provenance split */
 .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-9); align-items: center; }
-.why-figure { position: relative; aspect-ratio: 5 / 6; }
-.why-figure__a, .why-figure__b { position: absolute; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); }
-.why-figure__a { inset: 0 28% 18% 0; z-index: 1; }
-.why-figure__b { inset: 30% 0 0 32%; z-index: 2; border: 4px solid var(--surface-raised); }
-.why-figure__a img, .why-figure__b img { width: 100%; height: 100%; object-fit: cover; }
-.why-rating { position: absolute; left: 0; bottom: 0; z-index: 3; display: flex; flex-direction: column; gap: 2px; padding: var(--space-4); background: var(--surface-raised); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); }
+.why-figure { position: relative; aspect-ratio: 5 / 6; overflow: hidden; }
+.why-figure__stack-card {
+  position: absolute;
+  inset: 14% 16% 20% 14%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 4px solid var(--surface-raised);
+  will-change: transform;
+}
+.why-figure__stack-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.why-rating { position: absolute; left: 0; bottom: 0; z-index: 10; display: flex; flex-direction: column; gap: 2px; padding: var(--space-4); background: var(--surface-raised); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); }
 .why-rating span { color: var(--earth); font-size: var(--text-small); letter-spacing: 2px; }
 .why-rating strong { font-family: var(--font-display); font-size: 1.6rem; }
 .why-rating small { font-size: var(--text-caption); color: var(--text-muted); }
@@ -4791,31 +4797,6 @@ h4, h5 { font-family: var(--font-ui); font-weight: 600; letter-spacing: 0; }
   transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-
-/* ── Why figure: bouncy swap animation on hover ── */
-.why-figure__a,
-.why-figure__b {
-  transition:
-    transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.5s ease,
-    z-index 0s 0.35s;
-  cursor: crosshair;
-  will-change: transform;
-}
-
-/* Back image (a) comes to front with a pop + slight upward nudge */
-.why-figure--swapped .why-figure__a {
-  z-index: 3;
-  transform: scale(1.06) translate(5%, 3%) rotate(1.5deg);
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.38);
-}
-
-/* Front image (b) retreats to back with a shrink */
-.why-figure--swapped .why-figure__b {
-  z-index: 1;
-  transform: scale(0.91) translate(-4%, -5%) rotate(-1deg);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
 
 /* Subtle scale on the whole figure when hovering */
 .why-figure:hover { transform: scale(1.01); }

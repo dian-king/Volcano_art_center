@@ -73,7 +73,7 @@ export default async function AdminDonationsPage() {
                       {!d.anonymous && <div style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{d.donorEmail}</div>}
                     </td>
                     <td style={{ padding: "var(--space-3)", fontSize: "var(--text-small)" }}>{d.campaign?.name ?? "—"}</td>
-                    <td style={{ padding: "var(--space-3)", fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--green)", whiteSpace: "nowrap" }}>{Number(d.amount).toLocaleString()}</td>
+                    <td style={{ padding: "var(--space-3)", fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--green)", whiteSpace: "nowrap" }}>{Number(d.amount).toLocaleString()} RWF</td>
                     <td style={{ padding: "var(--space-3)" }}><span className={`chip ${STATUS_CHIP[d.status] ?? "chip--neutral"}`}>{d.status}</span></td>
                     <td style={{ padding: "var(--space-3)" }}>
                       {canManage && isCounted ? (

@@ -51,7 +51,7 @@ export default async function OperatorQuotationPage({ params }: { params: Promis
               ["Experience", request.experienceSlug ?? "Custom itinerary"],
               ["Estimated size", `${request.estimatedSize} guests`],
               ["Estimated date", request.estimatedDate ? request.estimatedDate.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : "Flexible"],
-              ["Partner price", amount > 0 ? `$${amount.toFixed(2)}` : "Pending operations confirmation"],
+              ["Partner price", amount > 0 ? `${amount.toLocaleString()} RWF` : "Pending operations confirmation"],
             ].map(([k, v]) => (
               <tr key={k}>
                 <td style={{ border: "1px solid #e5e5df", background: "#f7f7f4", padding: 12, fontWeight: 700 }}>{k}</td>

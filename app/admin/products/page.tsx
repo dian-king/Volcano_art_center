@@ -82,7 +82,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
               <div style={{ padding: "var(--space-4)", flex: 1, display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
                 <p style={{ fontFamily: "var(--font-ui)", fontWeight: 700, color: "var(--text-primary)" }}>{p.name}</p>
                 <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{p.category?.name ?? "Uncategorized"}</p>
-                <p style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontWeight: 700 }}>${Number(p.price).toFixed(0)}</p>
+                <p style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontWeight: 700 }}>{Number(p.price).toLocaleString()} RWF</p>
                 <div style={{ display: "flex", gap: "var(--space-2)", marginTop: "auto", flexWrap: "wrap" }}>
                   <Link href={`/admin/products/${p.id}/edit`} className="btn btn--ghost btn--sm">Edit</Link>
                   <form action={p.featured ? unfeature : feature}>

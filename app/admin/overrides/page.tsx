@@ -49,7 +49,7 @@ export default async function AdminOverridesPage() {
                     <td style={{ ...td, whiteSpace: "nowrap", fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{fmtDate(o.createdAt)}</td>
                     <td style={{ ...td, fontFamily: "var(--font-mono)", fontSize: "var(--text-caption)" }}>{o.reference}</td>
                     <td style={{ ...td, fontSize: "var(--text-small)" }}>{o.user?.email ?? "—"}</td>
-                    <td style={{ ...td, fontFamily: "var(--font-mono)", fontWeight: 700 }}>${Number(o.total).toLocaleString()}</td>
+                    <td style={{ ...td, fontFamily: "var(--font-mono)", fontWeight: 700 }}>{Number(o.total).toLocaleString()} RWF</td>
                     <td style={td}><span className="chip chip--neutral">{o.status}</span></td>
                     <td style={{ ...td, textAlign: "right" }}><StatusOverrideControl kind="order" id={o.id} current={o.status} options={ORDER_STATUSES} /></td>
                   </tr>
@@ -76,7 +76,7 @@ export default async function AdminOverridesPage() {
                     <td style={{ ...td, fontFamily: "var(--font-mono)", fontSize: "var(--text-caption)" }}>{d.reference}</td>
                     <td style={{ ...td, fontSize: "var(--text-small)" }}>{d.anonymous || !d.donorName ? "Anonymous" : d.donorName}</td>
                     <td style={{ ...td, fontSize: "var(--text-small)" }}>{d.campaign?.name ?? "—"}</td>
-                    <td style={{ ...td, fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--green)" }}>{Number(d.amount).toLocaleString()}</td>
+                    <td style={{ ...td, fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--green)" }}>{Number(d.amount).toLocaleString()} RWF</td>
                     <td style={td}><span className="chip chip--neutral">{d.status}</span></td>
                     <td style={{ ...td, textAlign: "right" }}><StatusOverrideControl kind="donation" id={d.id} current={d.status} options={DONATION_STATUSES} /></td>
                   </tr>

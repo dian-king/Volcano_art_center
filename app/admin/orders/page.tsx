@@ -71,7 +71,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
                     <td><span className="td-ref">{o.reference}</span></td>
                     <td><strong>{o.recipientName}</strong><div className="td-sub">{o.user.email}</div></td>
                     <td>{o.items.map(i => i.product?.name ?? "Unknown").join(", ") || "—"}</td>
-                    <td><strong>${Number(o.total ?? 0).toFixed(2)}</strong></td>
+                    <td><strong>{Number(o.total ?? 0).toLocaleString()} RWF</strong></td>
                     <td>{statusBadge(o.status, STATUS_COLORS)}</td>
                     <td>{o.trackingNumber ?? "—"}{o.carrier ? <div className="td-sub">{o.carrier}</div> : null}</td>
                     <td>

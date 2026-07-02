@@ -49,7 +49,7 @@ export default function RegisterPage() {
       {/* Google OAuth */}
       <button
         type="button"
-        onClick={() => signIn("google", { callbackUrl: "/" })}
+        onClick={() => signIn("google", { callbackUrl: "/api/post-login" })}
         style={{
           display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-3)",
           width: "100%", height: "44px",

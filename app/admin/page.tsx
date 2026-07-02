@@ -100,8 +100,8 @@ export default async function AdminDashboard() {
       {/* Super Admin KPIs */}
       {isSuper && (
         <KpiGrid cards={[
-          { icon: TrendingUp, label: "Revenue",   value: `$${revenue.toLocaleString()}`,   href: "/admin/orders",   green: true, sub: "confirmed orders" },
-          { icon: Heart,      label: "Donations", value: `$${donations.toLocaleString()}`, href: "/admin/inquiries", green: true, sub: "completed" },
+          { icon: TrendingUp, label: "Revenue",   value: `${revenue.toLocaleString()} RWF`,   href: "/admin/orders",   green: true, sub: "confirmed orders" },
+          { icon: Heart,      label: "Donations", value: `${donations.toLocaleString()} RWF`, href: "/admin/inquiries", green: true, sub: "completed" },
           { icon: UserPlus,   label: "Users",     value: newUsersThisWeek,                 href: "/admin/users",    amber: true, sub: "new this week" },
           { icon: AlertCircle,label: "Pending",   value: pendingTotal,                     href: "/admin/bookings", amber: true, sub: "needs action" },
         ]} />
@@ -149,7 +149,7 @@ export default async function AdminDashboard() {
                         <tr key={o.id}>
                           <td><span className="td-ref">{o.reference}</span></td>
                           <td><div className="td-sub">{o.user?.email}</div></td>
-                          <td><strong>${Number(o.total).toFixed(0)}</strong></td>
+                          <td><strong>{Number(o.total).toLocaleString()} RWF</strong></td>
                           <td><span className={`chip chip--${o.status === "PENDING" ? "warning" : o.status === "DELIVERED" ? "success" : "neutral"}`}>{o.status}</span></td>
                         </tr>
                       ))}

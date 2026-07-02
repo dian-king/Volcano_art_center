@@ -85,7 +85,7 @@ export default async function AdminExperiencesPage({ searchParams }: { searchPar
                 {e.location && <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{e.location}</p>}
                 <span className="chip chip--neutral" style={{ alignSelf: "flex-start", fontSize: "10px" }}>{e.experienceType}</span>
                 <div style={{ display: "flex", gap: "var(--space-3)", alignItems: "center" }}>
-                  {e.pricePerPerson && <p style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontWeight: 700 }}>${Number(e.pricePerPerson).toFixed(0)}/person</p>}
+                  {e.pricePerPerson && <p style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontWeight: 700 }}>{Number(e.pricePerPerson).toLocaleString()} RWF/person</p>}
                   {e.durationHours && <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{Number(e.durationHours)}h</p>}
                 </div>
                 <div style={{ display: "flex", gap: "var(--space-2)", marginTop: "auto", flexWrap: "wrap" }}>

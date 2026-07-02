@@ -13,6 +13,15 @@ export function requireRole(role: string | null | undefined, allowed: readonly s
   if (!hasRole(role, allowed)) throw new Error("Unauthorized")
 }
 
+/** Where a signed-in user lands after login, based on their role. */
+export function dashboardPathForRole(role: string | null | undefined): string {
+  if (role && ADMIN_ROLES.includes(role as (typeof ADMIN_ROLES)[number])) return "/admin"
+  if (role === "TALENT_APPLICANT") return "/talent/dashboard"
+  if (role === "TOUR_OPERATOR") return "/tour-operators/portal"
+  if (role === "REGISTERED_CLIENT") return "/client/dashboard/profile"
+  return "/"
+}
+
 export const ADMIN_ROUTE_ROLES: Record<string, readonly string[]> = {
   "/admin/products": OPS_ROLES,
   "/admin/orders": OPS_ROLES,

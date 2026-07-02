@@ -106,7 +106,7 @@ export function CartDrawer() {
                         <Link href={`/art-store/${item.slug}`} onClick={close} style={{ color: "inherit" }}>{item.name}</Link>
                       </p>
                       <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-caption)", color: "var(--green)", marginTop: 2 }}>
-                        ${item.price.toFixed(2)} × {item.quantity}
+                        {item.price.toLocaleString()} RWF × {item.quantity}
                       </p>
                     </div>
                     <button
@@ -135,7 +135,7 @@ export function CartDrawer() {
               {subtotal > 0 && (
                 <div className="cart-drawer__subtotal">
                   <span>Subtotal</span>
-                  <span style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontWeight: 700 }}>${subtotal.toFixed(2)}</span>
+                  <span style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontWeight: 700 }}>{subtotal.toLocaleString()} RWF</span>
                 </div>
               )}
               <Link href="/cart" className="btn btn--primary cart-drawer__checkout" onClick={close}>

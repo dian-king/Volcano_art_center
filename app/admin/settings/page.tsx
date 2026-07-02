@@ -53,7 +53,7 @@ const DEFAULT_SETTINGS = [
   { category: "payments", key: "bank_account", value: "" },
   { category: "contact", key: "phone", value: "+250 788 945 163" },
   { category: "contact", key: "email", value: "hello@volcanoartsandhospes.com" },
-  { category: "contact", key: "whatsapp", value: "+250780000000" },
+  { category: "contact", key: "whatsapp", value: "+250788945163" },
   { category: "shipping", key: "fedex_account", value: "" },
 ]
 

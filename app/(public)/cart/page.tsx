@@ -119,10 +119,10 @@ export default function CartPage() {
                     <Link href={`/art-store/${item.slug}`} style={{ color: "inherit" }}>{item.name}</Link>
                   </p>
                   <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-small)", color: "var(--green)", marginTop: "var(--space-1)" }}>
-                    ${item.price.toFixed(2)} × {item.quantity}
+                    {item.price.toLocaleString()} RWF × {item.quantity}
                   </p>
                   <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-caption)", color: "var(--text-muted)", marginTop: 2 }}>
-                    Line total: ${(item.price * item.quantity).toFixed(2)}
+                    Line total: {(item.price * item.quantity).toLocaleString()} RWF
                   </p>
                 </div>
                 <button
@@ -148,7 +148,7 @@ export default function CartPage() {
                   <p style={{ fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: "var(--text-body)", color: "var(--text-primary)" }}>
                     {p ? <Link href={`/art-store/${p.slug}`} style={{ color: "inherit" }}>{p.name}</Link> : `Item #${item.productId.slice(-8)}`}
                   </p>
-                  {p && <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-small)", color: "var(--green)", marginTop: "var(--space-1)" }}>${p.price.toFixed(2)} × {item.quantity}</p>}
+                  {p && <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-small)", color: "var(--green)", marginTop: "var(--space-1)" }}>{p.price.toLocaleString()} RWF × {item.quantity}</p>}
                   <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)", marginTop: 2 }}>
                     <Link href="/login?next=/cart" style={{ color: "var(--green)" }}>Sign in</Link> to checkout
                   </p>
@@ -169,7 +169,7 @@ export default function CartPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)", marginBottom: "var(--space-5)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "var(--text-small)", color: "var(--text-secondary)" }}>
               <span>Subtotal ({itemCount} {itemCount === 1 ? "item" : "items"})</span>
-              <span style={{ fontFamily: "var(--font-mono)" }}>{subtotal > 0 ? `$${subtotal.toFixed(2)}` : "—"}</span>
+              <span style={{ fontFamily: "var(--font-mono)" }}>{subtotal > 0 ? `${subtotal.toLocaleString()} RWF` : "—"}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "var(--text-small)", color: "var(--text-muted)" }}>
               <span>Shipping</span>
@@ -178,7 +178,7 @@ export default function CartPage() {
             <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "var(--space-3)", display: "flex", justifyContent: "space-between", fontWeight: 700 }}>
               <span style={{ fontFamily: "var(--font-ui)" }}>Total</span>
               <span style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontSize: "var(--text-lead)" }}>
-                {subtotal > 0 ? `$${subtotal.toFixed(2)}` : "—"}
+                {subtotal > 0 ? `${subtotal.toLocaleString()} RWF` : "—"}
               </span>
             </div>
           </div>
