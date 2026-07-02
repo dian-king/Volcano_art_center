@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -12,13 +13,17 @@ import {
   Heart,
   HeartHandshake,
   LayoutDashboard,
+  Menu,
   MessageSquare,
+  Moon,
   PlusCircle,
   Shield,
   ShoppingBag,
+  Sun,
   Trash2,
   User,
   UserCircle,
+  X,
 } from "lucide-react"
 
 const icons = {
@@ -79,20 +84,56 @@ export function DashboardShell({
   children,
 }: DashboardShellProps) {
   const pathname = usePathname()
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [theme, setTheme] = useState<"light" | "dark">("light")
+
+  // Auto-close the drawer whenever navigation happens
+  useEffect(() => { setMobileOpen(false) }, [pathname])
+
+  // Lock background scroll while the mobile drawer is open
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : ""
+    return () => { document.body.style.overflow = "" }
+  }, [mobileOpen])
+
+  // Restore saved theme (shared "vac-theme" key with the public site & admin panel)
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("vac-theme") as "light" | "dark" | null
+      if (saved) setTheme(saved)
+    } catch (_) {}
+  }, [])
+
+  function toggleTheme() {
+    const next = theme === "dark" ? "light" : "dark"
+    setTheme(next)
+    document.documentElement.setAttribute("data-theme", next)
+    try { localStorage.setItem("vac-theme", next) } catch (_) {}
+  }
 
   return (
     <div className="app-dashboard">
-      <aside className="app-dashboard__sidebar">
+      {mobileOpen && (
+        <div className="app-dashboard__backdrop" onClick={() => setMobileOpen(false)} aria-hidden="true" />
+      )}
+      <aside className={`app-dashboard__sidebar${mobileOpen ? " app-dashboard__sidebar--open" : ""}`}>
         <div className="app-dashboard__sidebar-header">
           <Link href={homeHref} className="app-dashboard__brand" aria-label="Volcano Arts Center">
             <img src="/images/logo.png" alt="Volcano Arts Center" style={{ height: 44, width: "auto", display: "block" }} />
           </Link>
+          <button
+            className="app-dashboard__close"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close navigation"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         <div className="app-dashboard__identity">
           <div className="app-dashboard__avatar">
             {user.image ? (
-              <Image src={user.image} alt={user.name} fill unoptimized sizes="44px" style={{ objectFit: "cover" }} />
+              <Image src={user.image} alt={user.name} fill sizes="44px" style={{ objectFit: "cover" }} />
             ) : (
               <UserCircle size={26} />
             )}
@@ -124,6 +165,14 @@ export function DashboardShell({
         </nav>
 
         <div className="app-dashboard__sidebar-footer">
+          <button
+            className="app-dashboard__footer-link"
+            onClick={toggleTheme}
+            aria-label="Toggle dark mode"
+          >
+            {theme === "dark" ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />}
+            <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+          </button>
           <Link href="/" className="app-dashboard__footer-link" target="_blank" rel="noopener noreferrer" aria-label="View public site">
             <Globe size={16} aria-hidden="true" />
             <span>View Site</span>
@@ -134,9 +183,19 @@ export function DashboardShell({
 
       <div className="app-dashboard__main">
         <header className="app-dashboard__topbar">
-          <div>
-            <span className="eyebrow">{title}</span>
-            {subtitle && <p>{subtitle}</p>}
+          <div className="app-dashboard__topbar-left">
+            <button
+              className="app-dashboard__hamburger"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open navigation"
+              aria-expanded={mobileOpen}
+            >
+              <Menu size={20} />
+            </button>
+            <div>
+              <span className="eyebrow">{title}</span>
+              {subtitle && <p>{subtitle}</p>}
+            </div>
           </div>
           <div className="app-dashboard__topbar-actions">
             {actions}
@@ -148,7 +207,7 @@ export function DashboardShell({
               <Link href={profileHref} className="app-dashboard__profile-chip">
                 <div className="app-dashboard__profile-mini">
                   {user.image ? (
-                    <Image src={user.image} alt={user.name} fill unoptimized sizes="32px" style={{ objectFit: "cover" }} />
+                    <Image src={user.image} alt={user.name} fill sizes="32px" style={{ objectFit: "cover" }} />
                   ) : (
                     <UserCircle size={20} />
                   )}

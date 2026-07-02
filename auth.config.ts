@@ -45,9 +45,13 @@ export const authConfig: NextAuthConfig = {
         if (next && next.startsWith("/") && !next.startsWith("//")) {
           return `${baseUrl}${next}`
         }
-      } catch {}
-      // Allow same-origin redirects, fall back to baseUrl
-      return url.startsWith(baseUrl) ? url : baseUrl
+        // Allow same-origin redirects (resolve relative URLs like "/api/post-login"
+        // against baseUrl first — comparing the raw string against baseUrl always
+        // fails for relative paths and silently sends everyone to the homepage).
+        return parsed.origin === baseUrl ? parsed.toString() : baseUrl
+      } catch {
+        return baseUrl
+      }
     },
   },
 }

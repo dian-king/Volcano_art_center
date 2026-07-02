@@ -27,7 +27,7 @@ function siteUrl() {
   return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
 }
 
-function escapeHtml(value: string) {
+export function escapeHtml(value: string) {
   return value
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -40,7 +40,7 @@ function formatDate(date: Date) {
   return date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
 }
 
-function emailShell(title: string, body: string) {
+export function emailShell(title: string, body: string) {
   return `<!DOCTYPE html>
 <html>
 <body style="margin:0;padding:0;background:#F9F8F5;font-family:Arial,sans-serif;color:#1C1C1C;">

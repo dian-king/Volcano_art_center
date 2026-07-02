@@ -28,7 +28,7 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
       {/* Hero */}
       <div style={{ position: "relative", height: "clamp(260px, 40vh, 420px)", background: "var(--green-deep)", overflow: "hidden" }}>
         {campaign.imageUrl ? (
-          <Image src={campaign.imageUrl} alt={campaign.name} fill unoptimized style={{ objectFit: "cover", opacity: 0.6 }} sizes="100vw" />
+          <Image src={campaign.imageUrl} alt={campaign.name} fill style={{ objectFit: "cover", opacity: 0.6 }} sizes="100vw" />
         ) : (
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, var(--green-deep) 0%, #1B4332 100%)" }} />
         )}

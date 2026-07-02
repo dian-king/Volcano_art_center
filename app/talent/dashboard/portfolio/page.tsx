@@ -122,7 +122,7 @@ export default function PortfolioPage() {
               <div className="talent-portfolio-grid">
                 {photos.map((url, i) => (
                   <article key={url} className="talent-portfolio-item">
-                    <Image src={url} alt={`Photo ${i + 1}`} fill unoptimized style={{ objectFit: "cover" }} />
+                    <Image src={url} alt={`Photo ${i + 1}`} fill style={{ objectFit: "cover" }} />
                     <button className="talent-portfolio-item__remove" onClick={() => handleRemove(url)} aria-label="Remove">
                       <Trash2 size={14} />
                     </button>

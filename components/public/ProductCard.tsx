@@ -51,7 +51,6 @@ export function ProductCard({ product }: ProductCardProps) {
             src={product.primaryImageUrl}
             alt={product.name}
             fill
-            unoptimized
             sizes="(max-width: 768px) 50vw, 25vw"
             style={{ objectFit: "cover" }}
           />

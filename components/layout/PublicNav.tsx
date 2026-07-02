@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
@@ -127,7 +128,7 @@ export function PublicNav() {
       <div className="site-nav__inner">
         {/* Logo */}
         <Link className="site-nav__logo" href="/" aria-label="Volcano Arts Center Inc Rwanda — home">
-          <img src="/images/logo.png" alt="Volcano Arts Center Inc Rwanda" style={{ height: 44, width: "auto", display: "block" }} />
+          <Image src="/images/logo.png" alt="Volcano Arts Center Inc Rwanda" width={79} height={44} priority style={{ height: 44, width: "auto", display: "block" }} />
         </Link>
 
         {/* Nav links */}

@@ -110,7 +110,7 @@ export default function CartPage() {
               <div key={item.productId} style={{ display: "grid", gridTemplateColumns: "80px 1fr auto", gap: "var(--space-4)", padding: "var(--space-4)", background: "var(--surface-raised)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", alignItems: "center" }}>
                 <div style={{ width: 80, height: 80, borderRadius: "var(--radius-md)", overflow: "hidden", background: "var(--green-tint)", position: "relative", flexShrink: 0 }}>
                   {item.image
-                    ? <Image src={item.image} alt={item.name} fill unoptimized style={{ objectFit: "cover" }} />
+                    ? <Image src={item.image} alt={item.name} fill style={{ objectFit: "cover" }} />
                     : <div style={{ width: "100%", height: "100%", background: "var(--green-tint)" }} />
                   }
                 </div>
@@ -142,7 +142,7 @@ export default function CartPage() {
               return (
               <div key={item.productId} style={{ display: "grid", gridTemplateColumns: "80px 1fr auto", gap: "var(--space-4)", padding: "var(--space-4)", background: "var(--surface-raised)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", alignItems: "center" }}>
                 <div style={{ width: 80, height: 80, borderRadius: "var(--radius-md)", overflow: "hidden", background: "var(--green-tint)", position: "relative", flexShrink: 0 }}>
-                  {p?.image ? <Image src={p.image} alt={p.name} fill unoptimized style={{ objectFit: "cover" }} /> : null}
+                  {p?.image ? <Image src={p.image} alt={p.name} fill style={{ objectFit: "cover" }} /> : null}
                 </div>
                 <div>
                   <p style={{ fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: "var(--text-body)", color: "var(--text-primary)" }}>

@@ -31,7 +31,7 @@ export default async function ClientSavedPage() {
             <div key={product.id} className="card card--interactive" style={{ position: "relative" }}>
               <Link href={`/art-store/${product.slug}`} className="media media--4x3" style={{ display: "block" }}>
                 {product.primaryImageUrl ? (
-                  <Image src={product.primaryImageUrl} alt={product.name} fill unoptimized sizes="33vw" style={{ objectFit: "cover" }} />
+                  <Image src={product.primaryImageUrl} alt={product.name} fill sizes="33vw" style={{ objectFit: "cover" }} />
                 ) : (
                   <div style={{ position: "absolute", inset: 0, background: "var(--green-tint)", display: "grid", placeItems: "center", color: "var(--green-hover)", fontSize: "var(--text-caption)" }}>{product.name}</div>
                 )}

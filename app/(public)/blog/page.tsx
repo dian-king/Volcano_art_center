@@ -46,7 +46,7 @@ export default async function BlogPage() {
               <Link href={`/blog/${featured.slug}`} className="blog-featured">
                 <div style={{ position: "relative", aspectRatio: "4/3", background: "var(--green-tint)" }}>
                   {featured.featuredImageUrl && (
-                    <Image src={featured.featuredImageUrl} alt={featured.title} fill unoptimized style={{ objectFit: "cover" }} />
+                    <Image src={featured.featuredImageUrl} alt={featured.title} fill style={{ objectFit: "cover" }} />
                   )}
                   {featured.category && (
                     <span className="chip chip--accent" style={{ position: "absolute", top: "var(--space-3)", left: "var(--space-3)", zIndex: 2 }}>

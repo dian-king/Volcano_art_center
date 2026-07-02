@@ -59,7 +59,7 @@ export function RecentContentTable({ items }: { items: ContentDashboardData["rec
                     <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
                       <div style={{ width: 32, height: 32, borderRadius: "var(--radius-sm)", overflow: "hidden", flexShrink: 0, background: "var(--green-tint)", position: "relative" }}>
                         {item.imageUrl
-                          ? <Image src={item.imageUrl} alt="" fill unoptimized style={{ objectFit: "cover" }} sizes="32px" />
+                          ? <Image src={item.imageUrl} alt="" fill style={{ objectFit: "cover" }} sizes="32px" />
                           : null}
                       </div>
                       <div>

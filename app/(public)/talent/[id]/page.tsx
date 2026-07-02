@@ -45,7 +45,7 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
             {/* Avatar */}
             <div style={{ width: 100, height: 100, borderRadius: "50%", overflow: "hidden", border: "3px solid var(--green)", position: "relative", background: "var(--green-tint)", flexShrink: 0 }}>
               {profile.imageUrl
-                ? <Image src={profile.imageUrl} alt={profile.displayName} fill unoptimized style={{ objectFit: "cover" }} />
+                ? <Image src={profile.imageUrl} alt={profile.displayName} fill style={{ objectFit: "cover" }} />
                 : <div style={{ width: "100%", height: "100%", display: "grid", placeItems: "center", fontFamily: "var(--font-display)", fontSize: "2.5rem", color: "var(--green)" }}>{profile.displayName.charAt(0)}</div>
               }
             </div>
@@ -81,7 +81,7 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
               <div className="talent-grid">
                 {portfolio.map((url, i) => (
                   <div key={i} style={{ position: "relative", aspectRatio: "1", borderRadius: "var(--radius-md)", overflow: "hidden", background: "var(--green-tint)" }}>
-                    <Image src={url} alt={`${profile.displayName} portfolio ${i + 1}`} fill unoptimized style={{ objectFit: "cover" }} sizes="25vw" />
+                    <Image src={url} alt={`${profile.displayName} portfolio ${i + 1}`} fill style={{ objectFit: "cover" }} sizes="25vw" />
                   </div>
                 ))}
               </div>

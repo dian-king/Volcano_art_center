@@ -281,7 +281,6 @@ export default async function HomePage() {
                       <Leaf size={56} />
                     </div>
                   )}
-                  <img src="/images/WhatsApp Image 2026-06-30 at 8.51.28 PM.jpeg" alt="Gorilla wood carver at Volcano Arts Center" />
                 </div>
                 <div className="conservation__copy">
                   <div className="section-hd">

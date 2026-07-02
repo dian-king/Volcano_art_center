@@ -1,6 +1,10 @@
 "use server"
 import { db } from "@/lib/db"
+import { auth } from "@/lib/auth"
 import { sendMail } from "@/lib/mailer"
+import { emailShell, escapeHtml } from "@/lib/transactional-email"
+import { hasRole, CONTENT_ROLES } from "@/lib/permissions"
+import { revalidatePath } from "next/cache"
 import { z } from "zod"
 
 const schema = z.string().email()
@@ -71,4 +75,40 @@ export async function subscribeNewsletter(fd: FormData) {
   )
 
   return { success: true }
+}
+
+/** Admin/content-manager broadcast to every distinct newsletter subscriber. */
+export async function sendNewsletterBlast(subject: string, message: string) {
+  const session = await auth()
+  if (!hasRole(session?.user?.role as string | undefined, CONTENT_ROLES)) {
+    return { error: "Unauthorized" }
+  }
+  if (!subject.trim() || !message.trim()) {
+    return { error: "Subject and message are required." }
+  }
+
+  const subscribers = await db.contactInquiry.findMany({
+    where: { subject: "Newsletter Subscription" },
+    select: { email: true },
+    distinct: ["email"],
+  })
+  if (subscribers.length === 0) return { error: "No subscribers yet." }
+
+  const html = emailShell(
+    subject,
+    `<div style="font-size:15px;line-height:1.7;color:#6B6B6B;white-space:pre-wrap;">${escapeHtml(message)}</div>`
+  )
+
+  let sent = 0
+  for (const { email } of subscribers) {
+    try {
+      await sendMail(email, subject, html)
+      sent++
+    } catch (err) {
+      console.warn("[newsletter] failed to send to", email, err)
+    }
+  }
+
+  revalidatePath("/admin/newsletter")
+  return { success: true, sent, total: subscribers.length }
 }

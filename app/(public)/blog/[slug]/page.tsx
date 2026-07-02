@@ -86,7 +86,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       {post.featuredImageUrl && (
         <div style={{ maxWidth: "var(--container-narrow)", margin: "0 auto", padding: "0 clamp(var(--space-4), 5vw, var(--space-8))" }}>
           <div style={{ position: "relative", aspectRatio: "16/9", borderRadius: "var(--radius-lg)", overflow: "hidden", marginTop: "var(--space-7)" }}>
-            <Image src={post.featuredImageUrl} alt={post.title} fill unoptimized style={{ objectFit: "cover" }} />
+            <Image src={post.featuredImageUrl} alt={post.title} fill style={{ objectFit: "cover" }} />
           </div>
         </div>
       )}

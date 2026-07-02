@@ -27,7 +27,6 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
             src={experience.primaryImageUrl}
             alt={experience.title}
             fill
-            unoptimized
             sizes="(max-width: 768px) 100vw, 33vw"
             style={{ objectFit: "cover" }}
           />

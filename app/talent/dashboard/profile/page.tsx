@@ -56,7 +56,7 @@ export default async function TalentProfilePage() {
       <section className="talent-profile-card">
         <div className="talent-profile-card__avatar">
           {profile.imageUrl ? (
-            <Image src={profile.imageUrl} alt={profile.displayName} fill unoptimized style={{ objectFit: "cover" }} />
+            <Image src={profile.imageUrl} alt={profile.displayName} fill style={{ objectFit: "cover" }} />
           ) : (
             <span>{profile.displayName.charAt(0)}</span>
           )}

@@ -1,6 +1,13 @@
 ﻿import Image from "next/image"
 import Link from "next/link"
 import type { Metadata } from "next"
+import { TeamCard, type TeamMember } from "@/components/public/TeamCard"
+
+const TEAM: TeamMember[] = [
+  { name: "NTIHEMUKA Jean d'Amour", role: "Director Manager", email: "ntihemuka@volcanoartscenterinc.org.rw", whatsapp: "250788945163", initial: "N", color: "var(--green-deep)" },
+  { name: "Olive Niyizigihe", role: "Operations Manager", email: "Oliveni@volcanoartscenterinc.org.rw", whatsapp: "250788945163", initial: "O", color: "#1C4A30" },
+  { name: "Imanizabayo Jean Marie Vianey", role: "Marketing Manager", email: "Danken@volcanoartscenterinc.org.rw", whatsapp: "250788945163", initial: "I", color: "#3D1F00" },
+]
 
 export const metadata: Metadata = {
   title: "About",
@@ -94,15 +101,8 @@ export default function AboutPage() {
       <div className="container" style={{ paddingBlock: "var(--space-8)" }}>
         <span className="eyebrow">Leadership</span>
         <h2 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title)", fontWeight: 600, marginTop: "var(--space-2)", marginBottom: "var(--space-7)" }}>The Team</h2>
-        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-6)", background: "var(--surface-raised)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", padding: "var(--space-6)", maxWidth: 480 }}>
-          <div style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--green-deep)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <span style={{ color: "#fff", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.5rem" }}>N</span>
-          </div>
-          <div>
-            <p style={{ fontWeight: 700, fontSize: "var(--text-body)", marginBottom: 2 }}>NTIHEMUKA Jean d&apos;Amour</p>
-            <p style={{ color: "var(--text-muted)", fontSize: "var(--text-small)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "var(--space-2)" }}>Director Manager</p>
-            <a href="mailto:ntihemuka@volcanoartscenterinc.org.rw" style={{ color: "var(--green-mid)", fontSize: "var(--text-small)" }}>ntihemuka@volcanoartscenterinc.org.rw</a>
-          </div>
+        <div className="team-grid">
+          {TEAM.map((member, i) => <TeamCard key={member.email} member={member} index={i} />)}
         </div>
       </div>
 

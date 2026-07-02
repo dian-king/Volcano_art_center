@@ -47,7 +47,6 @@ export function HeroSection() {
               alt=""
               aria-hidden
               fill
-              unoptimized
               priority={i === 0}
               sizes="100vw"
               style={{ objectFit: "cover", objectPosition: "center", opacity: 0.62 }}
@@ -84,7 +83,6 @@ export function HeroSection() {
         width={560}
         height={700}
         priority
-        unoptimized
         className="home-hero__gorilla"
         style={{ objectFit: "contain" }}
       />

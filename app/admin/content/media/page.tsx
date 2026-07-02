@@ -58,7 +58,7 @@ export default async function MediaLibraryPage() {
             {items.map(f => (
               <div key={f.url} style={{ background: "var(--surface-raised)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", overflow: "hidden" }}>
                 <div style={{ position: "relative", aspectRatio: "1", background: "var(--green-tint)" }}>
-                  <Image src={f.url} alt={f.name} fill unoptimized style={{ objectFit: "cover" }} sizes="140px" />
+                  <Image src={f.url} alt={f.name} fill style={{ objectFit: "cover" }} sizes="140px" />
                 </div>
                 <div style={{ padding: "var(--space-2)" }}>
                   <p style={{ fontSize: "10px", color: "var(--text-muted)", fontFamily: "var(--font-mono)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: "var(--space-1)" }}>{f.name}</p>

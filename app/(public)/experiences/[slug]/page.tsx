@@ -76,7 +76,7 @@ export default async function ExperienceDetailPage({ params }: { params: Promise
       {/* Hero image */}
       <div style={{ position: "relative", height: "clamp(280px, 45vh, 480px)", background: "var(--green-deep)", overflow: "hidden" }}>
         {experience.primaryImageUrl ? (
-          <Image src={experience.primaryImageUrl} alt={experience.title} fill unoptimized style={{ objectFit: "cover", opacity: 0.75 }} sizes="100vw" />
+          <Image src={experience.primaryImageUrl} alt={experience.title} fill style={{ objectFit: "cover", opacity: 0.75 }} sizes="100vw" />
         ) : (
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, var(--green-deep) 0%, #1B4332 100%)" }} />
         )}

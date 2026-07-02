@@ -53,7 +53,6 @@ export default async function ConservationPage() {
                           src={c.imageUrl}
                           alt={c.name}
                           fill
-                          unoptimized
                           sizes="33vw"
                           style={{ objectFit: "cover" }}
                         />

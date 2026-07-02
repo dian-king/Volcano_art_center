@@ -990,7 +990,7 @@ html[data-theme="dark"] .home-hero__word { color: #6FE6A0; }
 .conservation { background: var(--green-deep); color: rgba(255, 255, 255, 0.86); }
 html[data-theme="dark"] .conservation { background: #0A0A09; }
 .conservation__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); align-items: center; }
-.conservation__media { display: grid; grid-template-rows: 2fr 1fr; gap: var(--space-3); border-radius: var(--radius-lg); overflow: hidden; height: 420px; }
+.conservation__media { border-radius: var(--radius-lg); overflow: hidden; height: 420px; }
 .conservation__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .conservation__copy { display: flex; flex-direction: column; gap: var(--space-4); }
 .conservation__copy h2 { color: #fff; }
@@ -1151,7 +1151,7 @@ html[data-theme="dark"] .cta-band { background: var(--green-deep); }
   .why-grid { grid-template-columns: 1fr; gap: var(--space-7); }
   .why-proof { grid-template-columns: 1fr; }
   .conservation__grid { grid-template-columns: 1fr; gap: var(--space-6); }
-  .conservation__media { height: auto; min-height: 260px; grid-template-rows: 1fr; }
+  .conservation__media { height: auto; min-height: 260px; }
   .talent-split { grid-template-columns: 1fr; }
   .talent-split__copy { padding: var(--space-8) var(--space-5); }
   .talent-split__media { min-height: 340px; order: -1; }
@@ -1310,7 +1310,7 @@ html[data-theme="dark"] .admin-sidebar { background: #0D0D0B; border-right: 1px 
 /* â”€â”€ Admin main area â”€â”€ */
 .admin-main {
   flex: 1; margin-left: var(--sidebar-width);
-  display: flex; flex-direction: column; min-height: 100vh;
+  display: flex; flex-direction: column; min-height: 100vh; min-width: 0;
   transition: margin-left var(--dur-normal) var(--ease-inout);
 }
 .admin-main.sidebar-collapsed { margin-left: var(--sidebar-collapsed); }
@@ -1409,7 +1409,7 @@ html[data-theme="dark"] .admin-sidebar { background: #0D0D0B; border-right: 1px 
 .admin-notif-center__all { display: block; padding: var(--space-3) var(--space-5); font-family: var(--font-ui); font-weight: 700; font-size: var(--text-caption); letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); text-align: center; border-top: 1px solid var(--border-subtle); }
 
 /* â”€â”€ Admin content area â”€â”€ */
-.admin-content { flex: 1; padding: var(--space-6) clamp(var(--space-5), 3vw, var(--space-7)); }
+.admin-content { flex: 1; min-width: 0; padding: var(--space-6) clamp(var(--space-5), 3vw, var(--space-7)); }
 
 /* â”€â”€ Admin toast (showToast() from admin.js) â”€â”€ */
 .admin-toast-container {
@@ -3118,8 +3118,8 @@ html[data-theme="dark"] .admin-sidebar { background: #0D0D0B; border-right: 1px 
 .vac-kpi-chevron svg, .vac-kpi-chevron i { width: 18px; height: 18px; }
 
 /* â”€â”€ Two-column panels grid â”€â”€ */
-.vac-dashboard-panels-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-5); align-items: start; }
-.vac-panels-col { display: flex; flex-direction: column; gap: var(--space-5); }
+.vac-dashboard-panels-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-5); align-items: start; min-width: 0; }
+.vac-panels-col { display: flex; flex-direction: column; gap: var(--space-5); min-width: 0; }
 
 /* â”€â”€ Admin card â”€â”€ */
 .admin-card { background: var(--surface-raised); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
@@ -3553,6 +3553,45 @@ html[data-theme="dark"] .talent-shell .admin-sidebar { background: #0D0A04; }
   flex: none;
 }
 
+.app-dashboard__close {
+  display: none;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+}
+.app-dashboard__close:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+.app-dashboard__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 65;
+}
+
+.app-dashboard__hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-base);
+  color: var(--text-primary);
+  cursor: pointer;
+  flex: none;
+}
+
+.app-dashboard__topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
 .app-dashboard__identity {
   display: flex;
   align-items: center;
@@ -3850,43 +3889,28 @@ html[data-theme="dark"] .talent-shell .admin-sidebar { background: #0D0A04; }
     grid-template-columns: 1fr;
   }
 
+  /* Off-canvas drawer — same pattern as the admin sidebar */
   .app-dashboard__sidebar {
-    position: sticky;
-    top: 0;
-    z-index: 60;
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(300px, 84vw);
+    height: 100vh;
+    z-index: 70;
+    transform: translateX(-100%);
+    transition: transform var(--dur-normal) var(--ease-out);
   }
 
-  .app-dashboard__sidebar-header {
-    min-height: auto;
-    padding: var(--space-3) var(--space-3) var(--space-2);
+  .app-dashboard__sidebar--open {
+    transform: translateX(0);
   }
 
-  .app-dashboard__identity,
-  .app-dashboard__sidebar-footer {
-    display: none;
+  .app-dashboard__close {
+    display: grid;
+    place-items: center;
   }
 
-  .app-dashboard__nav {
-    flex-direction: row;
-    overflow-x: auto;
-    scrollbar-width: none;
-    padding: 0 var(--space-3) var(--space-3);
-  }
-
-  .app-dashboard__nav::-webkit-scrollbar {
-    display: none;
-  }
-
-  .app-dashboard__nav-link {
-    flex: 0 0 auto;
-    white-space: nowrap;
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-sm);
-  }
-
-  .app-dashboard__section-label,
-  .app-dashboard__nav-link--active::before {
-    display: none;
+  .app-dashboard__hamburger {
+    display: flex;
   }
 
   .app-dashboard__topbar {
@@ -5160,4 +5184,52 @@ h4, h5 { font-family: var(--font-ui); font-weight: 600; letter-spacing: 0; }
   .gallery-lightbox__nav { width: 38px; height: 38px; }
   .gallery-lightbox__close { top: var(--space-3); right: var(--space-3); }
 }
+
+/* ── Team cards (About page) ── */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-5);
+}
+.team-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-2);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-7) var(--space-6);
+  transition: box-shadow var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.team-card:hover { box-shadow: var(--shadow-xl); border-color: var(--green-mid); }
+.team-card__avatar {
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  margin-bottom: var(--space-2);
+  box-shadow: var(--shadow-md);
+}
+.team-card__avatar span { color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 1.9rem; }
+.team-card__name { font-weight: 700; font-size: var(--text-body); color: var(--text-primary); }
+.team-card__role { color: var(--text-muted); font-size: var(--text-caption); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--space-2); }
+.team-card__actions { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); width: 100%; }
+.team-card__email {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  color: var(--green-mid); font-size: var(--text-caption);
+  word-break: break-all; text-decoration: none;
+}
+.team-card__email:hover { text-decoration: underline; }
+.team-card__whatsapp {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  height: 34px; padding: 0 var(--space-4);
+  border-radius: var(--radius-pill);
+  background: #25D366; color: #fff;
+  font-family: var(--font-ui); font-weight: 600; font-size: var(--text-caption);
+  text-decoration: none;
+  transition: background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.team-card__whatsapp:hover { background: #20ba5a; transform: translateY(-1px); }
 

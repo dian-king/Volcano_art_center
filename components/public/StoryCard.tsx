@@ -24,7 +24,6 @@ export function StoryCard({ post }: StoryCardProps) {
             src={post.featuredImageUrl}
             alt={post.title}
             fill
-            unoptimized
             sizes="33vw"
             style={{ objectFit: "cover" }}
           />

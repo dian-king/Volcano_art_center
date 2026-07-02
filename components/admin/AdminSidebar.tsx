@@ -1,5 +1,6 @@
 "use client"
 import { useEffect } from "react"
+import NextImage from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useSession } from "next-auth/react"
@@ -23,6 +24,7 @@ const CONTENT_LINKS = [
   { href: "/admin/content/media",     label: "Media Library",  icon: Image },
   { href: "/admin/gallery",           label: "Gallery",        icon: Images },
   { href: "/admin/conservation",      label: "Campaigns",      icon: Leaf },
+  { href: "/admin/newsletter",        label: "Newsletter",     icon: Mail },
 ]
 
 const OPS_LINKS = [
@@ -103,7 +105,7 @@ export function AdminSidebar() {
     <aside className="admin-sidebar" id="admin-sidebar" aria-label="Admin navigation">
       <div className="admin-sidebar__header">
         <Link href="/" className="admin-sidebar__logo" aria-label="Volcano Arts Center" style={{ flexDirection: "column", alignItems: "center", gap: "var(--space-1)" }}>
-          <img src="/favicon.png" width={40} height={40} alt="VAC logo" style={{ borderRadius: 6, flexShrink: 0 }} />
+          <NextImage src="/favicon.png" width={40} height={40} alt="VAC logo" style={{ borderRadius: 6, flexShrink: 0 }} />
           <span className="admin-sidebar__logo-name" style={{ fontSize: "0.6rem", letterSpacing: "0.1em", textAlign: "center" }}>VOLCANO ARTS CENTER</span>
         </Link>
         <button

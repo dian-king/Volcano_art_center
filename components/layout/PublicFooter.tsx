@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import { NewsletterForm } from "./NewsletterForm"
 
@@ -10,7 +11,7 @@ export function PublicFooter() {
       <div className="site-footer__top container">
         <div className="site-footer__brandcol">
           <Link href="/" className="site-footer__logo">
-            <img src="/images/logo.png" alt="Volcano Arts Center Inc Rwanda" style={{ height: 60, width: "auto", display: "block" }} />
+            <Image src="/images/logo.png" alt="Volcano Arts Center Inc Rwanda" width={107} height={60} style={{ height: 60, width: "auto", display: "block" }} />
           </Link>
 
           <p className="site-footer__mission">
@@ -130,7 +131,10 @@ export function PublicFooter() {
           <div className="site-footer__legal">
             <Link href="/contact">Privacy</Link>
             <Link href="/contact">Terms</Link>
-            <span style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.75rem", marginLeft: "var(--space-2)" }}>Created by <strong style={{ color: "rgba(255,255,255,0.6)" }}>CODAFRICA</strong></span>
+            <span style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.75rem", marginLeft: "var(--space-2)" }}>
+              Created by{" "}
+              <a href="https://www.codafriqa.rw/" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.6)", fontWeight: 700 }}>CODAFRIQA</a>
+            </span>
           </div>
         </div>
       </div>

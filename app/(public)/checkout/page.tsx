@@ -148,7 +148,7 @@ export default function CheckoutPage() {
             {items.map(item => (
               <div key={item.productId} style={{ display: "flex", gap: "var(--space-3)", alignItems: "center" }}>
                 <div style={{ width: 52, height: 52, borderRadius: "var(--radius-md)", overflow: "hidden", background: "var(--green-tint)", position: "relative", flexShrink: 0 }}>
-                  {item.image && <Image src={item.image} alt={item.name} fill unoptimized style={{ objectFit: "cover" }} />}
+                  {item.image && <Image src={item.image} alt={item.name} fill style={{ objectFit: "cover" }} />}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: "var(--text-small)", color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</p>

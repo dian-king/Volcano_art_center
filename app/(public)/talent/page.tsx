@@ -55,7 +55,7 @@ export default async function TalentPage() {
                 {/* Avatar / image */}
                 <div className="media media--4x3" style={{ position: "relative" }}>
                   {p.imageUrl ? (
-                    <Image src={p.imageUrl} alt={p.displayName} fill unoptimized sizes="33vw" style={{ objectFit: "cover" }} />
+                    <Image src={p.imageUrl} alt={p.displayName} fill sizes="33vw" style={{ objectFit: "cover" }} />
                   ) : (
                     <div style={{ position: "absolute", inset: 0, background: "var(--green-tint)", display: "grid", placeItems: "center", fontFamily: "var(--font-display)", fontSize: "2.5rem", color: "var(--green-hover)" }}>
                       {p.displayName.charAt(0)}

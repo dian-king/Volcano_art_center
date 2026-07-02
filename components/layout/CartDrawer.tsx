@@ -97,7 +97,7 @@ export function CartDrawer() {
                   <div key={item.productId} style={{ display: "grid", gridTemplateColumns: "56px 1fr auto", gap: "var(--space-3)", alignItems: "center" }}>
                     <div style={{ width: 56, height: 56, borderRadius: "var(--radius-md)", overflow: "hidden", background: "var(--green-tint)", position: "relative", flexShrink: 0 }}>
                       {item.image
-                        ? <Image src={item.image} alt={item.name} fill unoptimized style={{ objectFit: "cover" }} />
+                        ? <Image src={item.image} alt={item.name} fill style={{ objectFit: "cover" }} />
                         : <div style={{ width: "100%", height: "100%", background: "var(--green-tint)" }} />
                       }
                     </div>
