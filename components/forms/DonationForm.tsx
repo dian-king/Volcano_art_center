@@ -19,14 +19,17 @@ interface Campaign { id: string; name: string }
 
 export function DonationForm({ campaigns }: { campaigns: Campaign[] }) {
   const [reference, setReference] = useState<string | null>(null)
+  const [serverError, setServerError] = useState<string | null>(null)
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { campaignId: campaigns[0]?.id ?? "" },
   })
 
   async function onSubmit(data: FormData) {
+    setServerError(null)
     const result = await createDonationAction(data)
     if (result?.reference) setReference(result.reference)
+    else setServerError(result?.error ?? "Something went wrong. Please try again.")
   }
 
   const err = (msg?: string) => msg
@@ -39,7 +42,7 @@ export function DonationForm({ campaigns }: { campaigns: Campaign[] }) {
         <h3 style={{ fontFamily: "var(--font-ui)", fontWeight: 700, color: "var(--color-success)" }}>Thank you for your donation!</h3>
         <p style={{ fontSize: "var(--text-small)", color: "var(--text-secondary)" }}>Please transfer to one of the following:</p>
         <ul style={{ fontSize: "var(--text-small)", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "var(--space-1)", paddingLeft: "var(--space-4)", listStyle: "disc" }}>
-          <li><strong>MTN MoMo:</strong> +250 788 000 000</li>
+          <li><strong>MTN MoMo:</strong> +250 788 945 163</li>
           <li><strong>Bank:</strong> Bank of Kigali</li>
         </ul>
         <p style={{ fontSize: "var(--text-small)", color: "var(--text-secondary)" }}>
@@ -82,6 +85,10 @@ export function DonationForm({ campaigns }: { campaigns: Campaign[] }) {
         <label className="field__label" htmlFor="message">Message (optional)</label>
         <textarea id="message" className="textarea" rows={3} {...register("message")} />
       </div>
+
+      {serverError && (
+        <p role="alert" style={{ fontSize: "var(--text-small)", color: "var(--color-error)", fontFamily: "var(--font-ui)" }}>{serverError}</p>
+      )}
 
       <button type="submit" className="btn btn--primary" disabled={isSubmitting}>
         {isSubmitting ? "Processing…" : "Donate Now"}

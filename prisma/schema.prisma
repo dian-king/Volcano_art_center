@@ -29,6 +29,7 @@ model User {
   auditLogs         AuditLog[]
   bookings          Booking[]
   donations         Donation[]
+  galleryImages     GalleryImage[]
   messages          Message[]
   notifications     Notification[]
   orders            Order[]
@@ -439,6 +440,17 @@ model TalentApplication {
   updatedAt          DateTime       @updatedAt
   program            String         @default("TALENT_DEVELOPMENT")
   user               User           @relation(fields: [userId], references: [id])
+}
+
+model GalleryImage {
+  id          String   @id @default(cuid())
+  imageUrl    String
+  caption     String?
+  sortOrder   Int      @default(0)
+  published   Boolean  @default(true)
+  createdById String?
+  createdAt   DateTime @default(now())
+  createdBy   User?    @relation(fields: [createdById], references: [id])
 }
 
 model TalentProfile {

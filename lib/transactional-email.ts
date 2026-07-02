@@ -1,5 +1,6 @@
 import { db } from "@/lib/db"
 import { sendMail } from "@/lib/mailer"
+import type { Role } from "@prisma/client"
 
 type BookingEmail = {
   reference: string
@@ -91,7 +92,7 @@ async function sendSafely(to: string, subject: string, html: string, replyTo?: s
   }
 }
 
-async function notifyAdmins(roles: string[], title: string, body: string, ctaUrl: string, type = "INFO") {
+async function notifyAdmins(roles: Role[], title: string, body: string, ctaUrl: string, type = "INFO") {
   try {
     const admins = await db.user.findMany({
       where: { isActive: true, role: { in: roles } },
@@ -275,6 +276,19 @@ export async function sendDonationEmails(donation: DonationEmail) {
     "/admin/conservation",
     "DONATION"
   )
+}
+
+export async function sendDonationConfirmedEmail(donation: { reference: string; donorName?: string | null; donorEmail: string; amount: number }) {
+  const displayName = donation.donorName || "friend"
+  const html = emailShell(
+    "Your donation is confirmed",
+    `<p style="font-size:15px;line-height:1.7;color:#555;">Dear ${escapeHtml(displayName)}, we have confirmed receipt of your donation. Thank you for supporting conservation at Volcano Arts Center — your contribution is now funding work on the ground.</p>
+    <table cellpadding="0" cellspacing="0" style="width:100%;margin:20px 0;border-collapse:collapse;border:1px solid #E8E8E5;">
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Reference</td><td style="padding:10px 12px;">${escapeHtml(donation.reference)}</td></tr>
+      <tr><td style="padding:10px 12px;background:#F9F8F5;font-weight:700;">Amount</td><td style="padding:10px 12px;">$${donation.amount.toFixed(2)}</td></tr>
+    </table>`
+  )
+  await sendSafely(donation.donorEmail, `Donation confirmed: ${donation.reference}`, html)
 }
 
 // ── CONTACT EMAILS ───────────────────────────────────────────────────────────

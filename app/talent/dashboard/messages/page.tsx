@@ -79,7 +79,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
           <p>You can also email the talent team directly or call the center during business hours.</p>
           <div>
             <strong>talent@volcanoarts.rw</strong>
-            <span>+250 780 000 000</span>
+            <span>+250 788 945 163</span>
           </div>
         </aside>
       </section>

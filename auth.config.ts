@@ -4,6 +4,9 @@ import Credentials from "next-auth/providers/credentials"
 
 // Edge-safe config — no Prisma, no bcrypt (those run in lib/auth.ts server-side only)
 export const authConfig: NextAuthConfig = {
+  // Trust the deployment host (Vercel/proxy) so OAuth callbacks resolve to the
+  // real production domain instead of erroring on an untrusted host.
+  trustHost: true,
   pages: {
     signIn: "/login",
     error: "/login",

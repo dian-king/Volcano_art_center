@@ -47,11 +47,11 @@ const input: React.CSSProperties = {
 }
 
 const DEFAULT_SETTINGS = [
-  { category: "payments", key: "mtn_momo_number", value: "+250 788 000 000" },
+  { category: "payments", key: "mtn_momo_number", value: "+250 788 945 163" },
   { category: "payments", key: "airtel_money_number", value: "+250 733 000 000" },
   { category: "payments", key: "bank_name", value: "Bank of Kigali" },
   { category: "payments", key: "bank_account", value: "" },
-  { category: "contact", key: "phone", value: "+250 780 000 000" },
+  { category: "contact", key: "phone", value: "+250 788 945 163" },
   { category: "contact", key: "email", value: "hello@volcanoartsandhospes.com" },
   { category: "contact", key: "whatsapp", value: "+250780000000" },
   { category: "shipping", key: "fedex_account", value: "" },

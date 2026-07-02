@@ -33,6 +33,13 @@ export default async function NotificationsPage() {
 
   const unreadIds = notifications.filter(n => !n.read).map(n => n.id)
 
+  if (unreadIds.length > 0) {
+    await db.notification.updateMany({
+      where: { id: { in: unreadIds }, userId: session.user.id },
+      data: { read: true },
+    })
+  }
+
   return (
     <div style={{ maxWidth: 720 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--space-6)" }}>

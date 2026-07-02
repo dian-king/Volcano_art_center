@@ -125,7 +125,7 @@ export default function CheckoutPage() {
             <div style={{ background: "var(--green-tint)", border: "1px solid var(--green)", borderRadius: "var(--radius-md)", padding: "var(--space-4)", fontSize: "var(--text-small)", color: "var(--text-secondary)", lineHeight: 1.7 }}>
               <strong style={{ color: "var(--text-primary)", display: "block", marginBottom: "var(--space-2)" }}>We accept the following payment methods:</strong>
               <ul style={{ listStyle: "disc", paddingLeft: "var(--space-5)", display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
-                <li><strong>MTN MoMo:</strong> +250 788 000 000</li>
+                <li><strong>MTN MoMo:</strong> +250 788 945 163</li>
                 <li><strong>Airtel Money:</strong> +250 733 000 000</li>
                 <li><strong>Bank Transfer:</strong> Bank of Kigali — Account details sent via email</li>
               </ul>

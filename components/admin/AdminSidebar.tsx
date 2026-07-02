@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react"
 import { signOut } from "next-auth/react"
 import {
   LayoutDashboard, Palette, Map, Feather, Star,
-  Sparkles, Image, Leaf,
+  Sparkles, Image, Images, Leaf,
   CalendarCheck, Package, Mail, Users, FileText, Clock, Heart,
   MessageSquare, Bell,
   Shield, Settings, Activity, AlertTriangle, DownloadCloud,
@@ -21,6 +21,7 @@ const CONTENT_LINKS = [
   { href: "/admin/reviews",           label: "Reviews",        icon: Star },
   { href: "/admin/talent",            label: "Talent Profiles",icon: Sparkles },
   { href: "/admin/content/media",     label: "Media Library",  icon: Image },
+  { href: "/admin/gallery",           label: "Gallery",        icon: Images },
   { href: "/admin/conservation",      label: "Campaigns",      icon: Leaf },
 ]
 
@@ -30,6 +31,7 @@ const OPS_LINKS = [
   { href: "/admin/products",         label: "Art Catalog",         icon: Palette },
   { href: "/admin/bookings",         label: "Bookings",            icon: CalendarCheck },
   { href: "/admin/orders",           label: "Shipping Orders",     icon: Package },
+  { href: "/admin/conservation/donations", label: "Donations",     icon: Heart },
   { href: "/admin/inquiries",        label: "Contact Inquiries",   icon: Mail },
   { href: "/admin/operators",        label: "Tour Operators",      icon: Users },
   { href: "/admin/applications",     label: "Talent Applications", icon: FileText },
@@ -59,6 +61,10 @@ export function AdminSidebar() {
     try {
       const saved = localStorage.getItem("vac-theme")
       if (saved) document.documentElement.setAttribute("data-theme", saved)
+      if (localStorage.getItem("vac-sidebar") === "collapsed") {
+        document.querySelector(".admin-sidebar")?.classList.add("collapsed")
+        document.getElementById("admin-main")?.classList.add("sidebar-collapsed")
+      }
     } catch (_) {}
   }, [])
 
@@ -96,13 +102,9 @@ export function AdminSidebar() {
   return (
     <aside className="admin-sidebar" id="admin-sidebar" aria-label="Admin navigation">
       <div className="admin-sidebar__header">
-        <Link href="/" className="admin-sidebar__logo" aria-label="Volcano Arts Center">
-          <svg width="32" height="32" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-            <circle cx="18" cy="18" r="18" fill="#00A651" />
-            <path d="M9 28L18 10L27 28" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M13 23L23 23" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          <span className="admin-sidebar__logo-name">VOLCANO ARTS</span>
+        <Link href="/" className="admin-sidebar__logo" aria-label="Volcano Arts Center" style={{ flexDirection: "column", alignItems: "center", gap: "var(--space-1)" }}>
+          <img src="/favicon.png" width={40} height={40} alt="VAC logo" style={{ borderRadius: 6, flexShrink: 0 }} />
+          <span className="admin-sidebar__logo-name" style={{ fontSize: "0.6rem", letterSpacing: "0.1em", textAlign: "center" }}>VOLCANO ARTS CENTER</span>
         </Link>
         <button
           className="admin-sidebar__close"
@@ -110,6 +112,13 @@ export function AdminSidebar() {
           aria-label="Collapse sidebar"
           title="Collapse sidebar"
           style={{ display: "grid", placeItems: "center" }}
+          onClick={() => {
+            const sidebar = document.querySelector(".admin-sidebar")
+            const main = document.getElementById("admin-main")
+            const collapsed = sidebar?.classList.toggle("collapsed")
+            main?.classList.toggle("sidebar-collapsed", collapsed)
+            try { localStorage.setItem("vac-sidebar", collapsed ? "collapsed" : "open") } catch (_) {}
+          }}
         >
           <ChevronLeft size={16} aria-hidden="true" />
         </button>

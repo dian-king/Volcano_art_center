@@ -48,6 +48,10 @@ export default async function AdminConservationPage({ searchParams }: { searchPa
     <div>
       <AdminPageHeader eyebrow="Conservation" title="Campaigns" description="Manage fundraising campaigns, impact statements, progress, and featured placement." actionHref="/admin/conservation/new" actionLabel="+ New Campaign" />
 
+      <div style={{ marginBottom: "var(--space-4)" }}>
+        <Link href="/admin/conservation/donations" className="btn btn--ghost btn--sm">View Donations</Link>
+      </div>
+
       <AdminFilters clearHref="/admin/conservation" active={Boolean(q || status)}>
         <input name="q" defaultValue={q} placeholder="Search campaigns..." />
         <select name="status" defaultValue={status}>

@@ -33,7 +33,7 @@ export default async function CheckoutSuccessPage({ searchParams }: { searchPara
         <div style={{ background: "var(--surface-raised)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", padding: "var(--space-5)", width: "100%", textAlign: "left" }}>
           <p style={{ fontFamily: "var(--font-ui)", fontWeight: 700, marginBottom: "var(--space-3)", color: "var(--text-primary)" }}>Send payment to:</p>
           <ul style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)", fontSize: "var(--text-small)", color: "var(--text-secondary)" }}>
-            <li><strong style={{ color: "var(--text-primary)" }}>MTN MoMo:</strong> +250 788 000 000</li>
+            <li><strong style={{ color: "var(--text-primary)" }}>MTN MoMo:</strong> +250 788 945 163</li>
             <li><strong style={{ color: "var(--text-primary)" }}>Airtel Money:</strong> +250 733 000 000</li>
             <li><strong style={{ color: "var(--text-primary)" }}>Bank Transfer:</strong> Details sent to your email</li>
           </ul>

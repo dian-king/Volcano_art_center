@@ -21,7 +21,7 @@ const NAV_ITEMS = [
       features: [
         { label: "Paintings", href: "/art-store?category=paintings", img: "/images/WhatsApp Image 2026-06-27 at 1.59.54 PM.jpeg" },
         { label: "Textiles & Crafts", href: "/art-store?category=textiles", img: "/images/WhatsApp Image 2026-06-27 at 1.59.53 PM (1).jpeg" },
-        { label: "Sculptures", href: "/art-store?category=sculpture", img: "/images/WhatsApp Image 2026-06-27 at 1.59.53 PM.jpeg" },
+        { label: "Sculptures", href: "/art-store?category=sculpture", img: "/images/gorilla-sculpture.jpeg" },
       ],
     },
   },
@@ -37,8 +37,8 @@ const NAV_ITEMS = [
       ],
       features: [
         { label: "Gorilla Trek", href: "/experiences/gorilla-trek-volcanoes", img: "/images/WhatsApp Image 2026-06-27 at 1.59.58 PM.jpeg" },
-        { label: "Painting Workshop", href: "/experiences?type=CULTURAL", img: "/images/WhatsApp Image 2026-06-27 at 1.59.56 PM (1).jpeg" },
-        { label: "Village Life", href: "/experiences?type=VILLAGE", img: "/images/WhatsApp Image 2026-06-27 at 1.59.55 PM.jpeg" },
+        { label: "Painting Workshop", href: "/experiences?type=CULTURAL", img: "/images/WhatsApp Image 2026-06-27 at 1.59.57 PM.jpeg" },
+        { label: "Village Life", href: "/experiences?type=VILLAGE", img: "/images/WhatsApp Image 2026-06-27 at 1.59.58 PM (2).jpeg" },
       ],
     },
   },
@@ -54,7 +54,7 @@ const NAV_ITEMS = [
       features: [
         { label: "Gorilla Habitat Fund", href: "/conservation/gorilla-habitat-restoration-fund", img: "/images/WhatsApp Image 2026-06-27 at 1.59.55 PM (1).jpeg" },
         { label: "Virunga Reforestation", href: "/conservation/virunga-reforestation-2025", img: "/images/WhatsApp Image 2026-06-27 at 1.59.54 PM (2).jpeg" },
-        { label: "Support Us", href: "/conservation", img: "/images/WhatsApp Image 2026-06-27 at 1.59.55 PM.jpeg" },
+        { label: "Support Us", href: "/conservation", img: "/images/talent-highlands-man.jpeg" },
       ],
     },
   },
@@ -85,10 +85,11 @@ const NAV_ITEMS = [
       features: [
         { label: "Meet Our Artists", href: "/talent", img: "/images/WhatsApp Image 2026-06-27 at 1.59.54 PM (1).jpeg" },
         { label: "Apply Now", href: "/talent/apply", img: "/images/WhatsApp Image 2026-06-27 at 1.59.58 PM (1).jpeg" },
-        { label: "Live Painting", href: "/experiences/live-painting-workshop-vac", img: "/images/WhatsApp Image 2026-06-27 at 1.59.56 PM (1).jpeg" },
+        { label: "Live Painting", href: "/experiences/live-painting-workshop-vac", img: "/images/talent-gorilla-sketch.jpeg" },
       ],
     },
   },
+  { label: "Gallery", href: "/gallery" },
 ]
 
 export function PublicNav() {
@@ -183,6 +184,14 @@ export function PublicNav() {
                   </div>
                 </div>
               </div>
+            </li>
+          ))}
+
+          {NAV_ITEMS.filter(i => !i.mega && i.href !== "/").map(item => (
+            <li key={item.label}>
+              <Link className={`nav-link${pathname.startsWith(item.href) ? " active" : ""}`} href={item.href} onClick={() => setNavOpen(false)}>
+                {item.label}
+              </Link>
             </li>
           ))}
         </ul>

@@ -5,6 +5,7 @@ import { StoryCard } from "@/components/public/StoryCard"
 import { ReviewCard } from "@/components/public/ReviewCard"
 import { ReviewForm } from "@/components/public/ReviewForm"
 import { HeroSection } from "@/components/public/HeroSection"
+import { PolaroidStack } from "@/components/public/PolaroidStack"
 import { RevealSection } from "@/components/ui/RevealSection"
 import Link from "next/link"
 import { AuthGuardButton } from "@/components/public/AuthGuardButton"
@@ -321,19 +322,7 @@ export default async function HomePage() {
             </div>
           </div>
           <div className="talent-split__media">
-            {talentProfile?.imageUrl ? (
-              <img src={talentProfile.imageUrl} alt={talentProfile.displayName} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }} />
-            ) : (
-              <div className="talent-split__placeholder">
-                {talentProfile?.displayName ?? "Rwandan Talent"}
-              </div>
-            )}
-            {talentProfile && (
-              <div className="talent-split__caption">
-                <p className="talent-split__name">{talentProfile.displayName}</p>
-                <p className="talent-split__area">{talentProfile.talentArea.replace(/_/g, " ")}</p>
-              </div>
-            )}
+            <PolaroidStack />
           </div>
         </section>
       </RevealSection>
