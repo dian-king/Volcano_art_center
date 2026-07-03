@@ -6,7 +6,7 @@ import { signIn, getSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { useState } from "react"
-import { Loader2 } from "lucide-react"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 import type { Metadata } from "next"
 import { dashboardPathForRole } from "@/lib/permissions"
 
@@ -37,6 +37,7 @@ export default function LoginPage() {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
+  const [showPassword, setShowPassword] = useState(false)
 
   async function onSubmit(data: FormData) {
     setError(null)
@@ -107,7 +108,17 @@ export default function LoginPage() {
 
         <div className={`field${errors.password ? " is-invalid" : ""}`}>
           <label className="field__label" htmlFor="password">Password</label>
-          <input id="password" type="password" className="input" autoComplete="current-password" {...register("password")} />
+          <div style={{ position: "relative" }}>
+            <input id="password" type={showPassword ? "text" : "password"} className="input" autoComplete="current-password" style={{ paddingRight: "44px" }} {...register("password")} />
+            <button
+              type="button"
+              onClick={() => setShowPassword(v => !v)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              style={{ position: "absolute", right: 0, top: 0, height: "44px", width: "44px", display: "grid", placeItems: "center", border: "none", background: "transparent", color: "var(--text-muted)", cursor: "pointer" }}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
           {errors.password && <span className="field__error">{errors.password.message}</span>}
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <Link href="/forgot-password" style={{ fontSize: "var(--text-caption)", color: "var(--green)" }}>Forgot password?</Link>

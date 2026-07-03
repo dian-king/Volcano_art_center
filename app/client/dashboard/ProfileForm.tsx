@@ -6,6 +6,7 @@ import { useToastStore } from "@/store/toast-store"
 import { COUNTRIES, flagEmoji } from "@/lib/countries"
 import { CountrySelect } from "@/components/ui/CountrySelect"
 import { DialCodeSelect } from "@/components/ui/DialCodeSelect"
+import { uploadToCloudinaryClient } from "@/lib/upload-client"
 
 export interface ProfileUser {
   id: string
@@ -62,12 +63,10 @@ export function ProfileForm({ user }: { user: ProfileUser }) {
     if (file.size > 2 * 1024 * 1024) { addToast("Max 2 MB", "error"); return }
     setAvatarPreview(URL.createObjectURL(file))
     setUploading(true)
-    const fd = new FormData(); fd.append("file", file)
-    const res = await fetch("/api/upload", { method: "POST", body: fd })
-    const json = await res.json()
+    const result = await uploadToCloudinaryClient(file, "avatars")
     setUploading(false)
-    if (json.error) { addToast(json.error, "error"); setAvatarPreview(null); return }
-    setUploadedUrl(json.url)
+    if (result.error) { addToast(result.error, "error"); setAvatarPreview(null); return }
+    setUploadedUrl(result.url!)
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {

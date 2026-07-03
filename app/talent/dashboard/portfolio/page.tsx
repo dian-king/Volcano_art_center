@@ -4,8 +4,13 @@ import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { ImagePlus, Trash2, Upload, Play, Film } from "lucide-react"
 import { useToastStore } from "@/store/toast-store"
+import { uploadToCloudinaryClient } from "@/lib/upload-client"
 
 const VIDEO_EXTS = [".mp4", ".webm", ".mov"]
+const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"]
+const VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"]
+const IMAGE_MAX = 5 * 1024 * 1024   // 5 MB
+const VIDEO_MAX = 100 * 1024 * 1024 // 100 MB
 
 function isVideo(url: string) {
   return VIDEO_EXTS.some(ext => url.toLowerCase().endsWith(ext))
@@ -46,12 +51,21 @@ export default function PortfolioPage() {
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
       setProgress(`Uploading ${i + 1} of ${files.length}…`)
-      const fd = new FormData()
-      fd.append("file", file)
-      const res  = await fetch("/api/talent/portfolio/upload", { method: "POST", body: fd })
-      const json = await res.json()
-      if (json.url) uploaded.push(json.url)
-      else addToast(`${file.name}: ${json.error ?? "upload failed"}`, "error")
+
+      const fileIsVideo = VIDEO_TYPES.includes(file.type)
+      if (!IMAGE_TYPES.includes(file.type) && !fileIsVideo) {
+        addToast(`${file.name}: only JPEG, PNG, WebP, MP4, WebM or MOV are supported`, "error")
+        continue
+      }
+      const maxBytes = fileIsVideo ? VIDEO_MAX : IMAGE_MAX
+      if (file.size > maxBytes) {
+        addToast(`${file.name}: too large — max ${fileIsVideo ? "100" : "5"} MB`, "error")
+        continue
+      }
+
+      const result = await uploadToCloudinaryClient(file, "portfolio")
+      if (result.url) uploaded.push(result.url)
+      else addToast(`${file.name}: ${result.error ?? "upload failed"}`, "error")
     }
 
     if (uploaded.length) {

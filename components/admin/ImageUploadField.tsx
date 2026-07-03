@@ -2,6 +2,7 @@
 import { useState, useRef } from "react"
 import Image from "next/image"
 import { Upload, X } from "lucide-react"
+import { uploadToCloudinaryClient } from "@/lib/upload-client"
 
 interface Props {
   name: string          // hidden input name (used by the parent form action)
@@ -32,16 +33,11 @@ export function ImageUploadField({ name, defaultUrl, folder = "misc", label = "I
     setPreview(URL.createObjectURL(file))
     setUploading(true)
 
-    const fd = new FormData()
-    fd.append("file", file)
-    fd.append("folder", folder)
-
-    const res = await fetch("/api/upload", { method: "POST", body: fd })
-    const json = await res.json()
+    const result = await uploadToCloudinaryClient(file, folder)
     setUploading(false)
 
-    if (json.error) { setError(json.error); setPreview(defaultUrl || null); return }
-    setUrl(json.url)
+    if (result.error) { setError(result.error); setPreview(defaultUrl || null); return }
+    setUrl(result.url!)
   }
 
   function clear() {
