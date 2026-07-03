@@ -4,9 +4,34 @@ import { redirect } from "next/navigation"
 import { submitOperatorApplicationAction } from "@/actions/tour-operators"
 import Link from "next/link"
 import type { Metadata } from "next"
-import { Building2, LockKeyhole, UserRound } from "lucide-react"
+import { Building2, UserRound } from "lucide-react"
+import { COUNTRIES } from "@/lib/countries"
 
 export const metadata: Metadata = { title: "Apply as a Tour Operator" }
+
+function SelectField({
+  name,
+  label,
+  options,
+  required,
+  defaultValue,
+}: {
+  name: string
+  label: string
+  options: string[]
+  required?: boolean
+  defaultValue?: string | null
+}) {
+  return (
+    <div className="talent-apply-field">
+      <label htmlFor={name}>{label}{required ? " *" : ""}</label>
+      <select id={name} name={name} required={required} defaultValue={defaultValue ?? ""}>
+        <option value="">Select...</option>
+        {options.map(option => <option key={option} value={option}>{option}</option>)}
+      </select>
+    </div>
+  )
+}
 
 function Field({
   name,
@@ -36,14 +61,31 @@ export default async function TourOperatorApplyPage({ searchParams }: { searchPa
   const user = session?.user
   const sp = await searchParams
 
-  if (user?.id) {
-    const existing = await db.tourOperator.findUnique({ where: { userId: user.id } })
-    if (existing) redirect("/tour-operators/portal")
+  if (!user?.id) {
+    redirect(`/login?next=${encodeURIComponent("/tour-operators/apply")}`)
   }
 
-  const dbUser = user?.id
-    ? await db.user.findUnique({ where: { id: user.id }, select: { firstName: true, lastName: true, email: true, phone: true, country: true } })
-    : null
+  if (user.role !== "REGISTERED_CLIENT") {
+    return (
+      <main className="talent-apply">
+        <section className="talent-apply-hero">
+          <div className="container container--wide">
+            <span className="eyebrow">VAC Partners</span>
+            <h1>Apply as a Tour Operator</h1>
+            <p>Only regular client accounts can apply to become a tour operator. Your current account role does not qualify.</p>
+          </div>
+        </section>
+        <section className="container container--wide talent-apply-shell">
+          <Link href="/" className="btn btn--primary">Back to Home</Link>
+        </section>
+      </main>
+    )
+  }
+
+  const existing = await db.tourOperator.findUnique({ where: { userId: user.id } })
+  if (existing) redirect("/tour-operators/portal")
+
+  const dbUser = await db.user.findUnique({ where: { id: user.id }, select: { firstName: true, lastName: true, email: true, phone: true, country: true } })
 
   async function apply(fd: FormData) {
     "use server"
@@ -52,11 +94,19 @@ export default async function TourOperatorApplyPage({ searchParams }: { searchPa
 
   return (
     <main className="talent-apply">
-      <section className="talent-apply-hero">
+      <section
+        className="talent-apply-hero"
+        style={{
+          position: "relative",
+          backgroundImage: "linear-gradient(rgba(11,46,29,0.72), rgba(11,46,29,0.72)), url('/images/tour-operators-hero.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <div className="container container--wide">
           <span className="eyebrow">VAC Partners</span>
           <h1>Apply as a Tour Operator</h1>
-          <p>Register your company to submit group bookings and custom package requests. If you do not have an account, we will create one during application.</p>
+          <p>Register your company to submit group bookings and custom package requests.</p>
         </div>
       </section>
 
@@ -79,7 +129,7 @@ export default async function TourOperatorApplyPage({ searchParams }: { searchPa
               </div>
               <div className="talent-apply-grid">
                 <Field name="companyName" label="Company name" required />
-                <Field name="country" label="Country" defaultValue={dbUser?.country} />
+                <SelectField name="country" label="Country" options={COUNTRIES.map(c => c.name)} defaultValue={dbUser?.country} />
               </div>
             </section>
 
@@ -97,25 +147,6 @@ export default async function TourOperatorApplyPage({ searchParams }: { searchPa
                 <Field name="phone" label="Phone" type="tel" defaultValue={dbUser?.phone} />
               </div>
             </section>
-
-            {!user?.id && (
-              <section className="talent-apply-card">
-                <div className="talent-apply-card__head">
-                  <LockKeyhole size={20} />
-                  <div>
-                    <h2>Create Your Account</h2>
-                    <p>This account will let you sign in to the tour operator portal.</p>
-                  </div>
-                </div>
-                <div className="talent-apply-grid talent-apply-grid--two">
-                  <Field name="password" label="Password" type="password" required placeholder="At least 8 characters" />
-                  <Field name="confirmPassword" label="Confirm password" type="password" required />
-                </div>
-                <p className="talent-apply-note">
-                  Already have an account? <Link href="/login?next=/tour-operators/apply">Sign in before applying</Link>.
-                </p>
-              </section>
-            )}
           </div>
 
           <aside className="talent-apply-aside">
@@ -125,7 +156,7 @@ export default async function TourOperatorApplyPage({ searchParams }: { searchPa
               <p>Make sure your company name and contact details are complete and correct.</p>
             </div>
             <ul>
-              <li>New applicants receive an account automatically.</li>
+              <li>Your account role will switch to Tour Operator.</li>
               <li>You can submit requests right away in the operator portal.</li>
               <li>Our team reviews each request individually.</li>
             </ul>

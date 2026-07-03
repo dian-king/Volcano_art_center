@@ -1,11 +1,10 @@
 "use server"
 
-import { auth, signIn } from "@/lib/auth"
+import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { z } from "zod"
-import bcrypt from "bcryptjs"
 
 const profileSchema = z.object({
   companyName: z.string().min(2, "Company name is required"),
@@ -15,51 +14,21 @@ const profileSchema = z.object({
   country: z.string().optional(),
 })
 
-const applySchema = profileSchema.extend({
-  password: z.string().optional(),
-  confirmPassword: z.string().optional(),
-})
+const applySchema = profileSchema
 
 export async function submitOperatorApplicationAction(fd: FormData) {
   const session = await auth()
+  if (!session?.user?.id || session.user.role !== "REGISTERED_CLIENT") {
+    redirect("/tour-operators/apply?error=Only%20client%20accounts%20can%20apply")
+  }
+  const userId = session.user.id
+
   const parsed = applySchema.safeParse(Object.fromEntries(fd))
   if (!parsed.success) redirect(`/tour-operators/apply?error=${encodeURIComponent(parsed.error.issues[0].message)}`)
-
   const d = parsed.data
-  let userId = session?.user?.id
-  const isNewApplicant = !userId
 
-  if (userId) {
-    const existing = await db.tourOperator.findUnique({ where: { userId } })
-    if (existing) redirect("/tour-operators/portal")
-  } else {
-    if (!d.password || d.password.length < 8) {
-      redirect("/tour-operators/apply?error=Password%20must%20be%20at%20least%208%20characters")
-    }
-    if (d.password !== d.confirmPassword) {
-      redirect("/tour-operators/apply?error=Passwords%20do%20not%20match")
-    }
-    const existingUser = await db.user.findUnique({ where: { email: d.email } })
-    if (existingUser) {
-      redirect(`/login?next=/tour-operators/apply&error=${encodeURIComponent("An account already exists for this email. Please sign in to apply.")}`)
-    }
-
-    const [firstName, ...rest] = d.contactName.trim().split(" ")
-    const hashed = await bcrypt.hash(d.password, 12)
-    const user = await db.user.create({
-      data: {
-        email: d.email,
-        firstName: firstName || "Operator",
-        lastName: rest.join(" ") || "-",
-        phone: d.phone || null,
-        country: d.country || null,
-        password: hashed,
-        role: "TOUR_OPERATOR",
-      },
-      select: { id: true },
-    })
-    userId = user.id
-  }
+  const existing = await db.tourOperator.findUnique({ where: { userId } })
+  if (existing) redirect("/tour-operators/portal")
 
   await db.tourOperator.create({
     data: {
@@ -71,19 +40,9 @@ export async function submitOperatorApplicationAction(fd: FormData) {
       country: d.country || null,
     },
   })
-
-  if (!isNewApplicant) {
-    await db.user.update({ where: { id: userId }, data: { role: "TOUR_OPERATOR" } })
-  }
+  await db.user.update({ where: { id: userId }, data: { role: "TOUR_OPERATOR" } })
 
   revalidatePath("/tour-operators/portal")
-  if (isNewApplicant) {
-    await signIn("credentials", {
-      email: d.email,
-      password: d.password,
-      redirectTo: "/tour-operators/portal",
-    })
-  }
   redirect("/tour-operators/portal")
 }
 
