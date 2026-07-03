@@ -70,6 +70,7 @@ export function PublicFooter() {
             <Link href="/contact">Contact</Link>
             <Link href="/conservation">Our Impact</Link>
             <Link href="/talent/apply">Join the Talent Pipeline</Link>
+            <Link href="/tour-operators/apply">Become a Tour Operator</Link>
             <Link href="/blog">Newsroom</Link>
           </div>
           <div className="site-footer__col">
