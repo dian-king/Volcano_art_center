@@ -66,7 +66,7 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      <div className="container" style={{ paddingBlock: "var(--space-8)", display: "grid", gridTemplateColumns: "1fr 380px", gap: "var(--space-7)", alignItems: "start" }}>
+      <div className="container checkout-layout" style={{ paddingBlock: "var(--space-8)" }}>
 
         {/* Shipping form */}
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
@@ -141,7 +141,7 @@ export default function CheckoutPage() {
         </form>
 
         {/* Order summary */}
-        <div style={{ background: "var(--surface-raised)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", padding: "var(--space-6)", position: "sticky", top: "calc(var(--nav-height) + var(--space-5))" }}>
+        <div className="cart-summary">
           <h2 style={{ fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: "var(--text-lead)", marginBottom: "var(--space-5)" }}>Order Summary</h2>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)", marginBottom: "var(--space-5)" }}>

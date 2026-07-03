@@ -108,7 +108,7 @@ export default async function ExperienceDetailPage({ params }: { params: Promise
       </div>
 
       {/* Body */}
-      <div className="container" style={{ paddingBlock: "var(--space-7)", display: "grid", gridTemplateColumns: "1fr 360px", gap: "var(--space-9)", alignItems: "start" }}>
+      <div className="container checkout-layout" style={{ paddingBlock: "var(--space-7)", gap: "var(--space-9)" }}>
 
         {/* Left: tabbed content */}
         <ExperienceTabs

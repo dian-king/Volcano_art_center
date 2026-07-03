@@ -5092,12 +5092,21 @@ h4, h5 { font-family: var(--font-ui); font-weight: 600; letter-spacing: 0; }
   .vac-mosaic { grid-template-columns: 1fr; }
 }
 
-/* ── Cart page ── */
+/* ── Cart / Checkout pages ── */
 .cart-layout {
   display: grid;
   grid-template-columns: 1fr 360px;
   gap: var(--space-7);
   align-items: start;
+}
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: var(--space-7);
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .checkout-layout { grid-template-columns: 1fr; }
 }
 .cart-item {
   display: grid;

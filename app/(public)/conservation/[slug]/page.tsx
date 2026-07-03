@@ -50,7 +50,7 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
         </nav>
       </div>
 
-      <div className="container" style={{ paddingBlock: "var(--space-7)", display: "grid", gridTemplateColumns: "1fr 380px", gap: "var(--space-9)", alignItems: "start" }}>
+      <div className="container checkout-layout" style={{ paddingBlock: "var(--space-7)", gap: "var(--space-9)" }}>
 
         {/* Left: campaign details */}
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>

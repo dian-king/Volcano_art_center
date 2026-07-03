@@ -62,7 +62,7 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
         </div>
       </div>
 
-      <div className="container" style={{ paddingBlock: "var(--space-8)", display: "grid", gridTemplateColumns: "1fr 320px", gap: "var(--space-9)", alignItems: "start" }}>
+      <div className="container checkout-layout" style={{ paddingBlock: "var(--space-8)", gap: "var(--space-9)" }}>
 
         {/* Left: bio + portfolio */}
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-7)" }}>
