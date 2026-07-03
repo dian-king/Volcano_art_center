@@ -91,6 +91,7 @@ const NAV_ITEMS = [
     },
   },
   { label: "Gallery", href: "/gallery" },
+  { label: "Tour Operators", href: "/tour-operators/apply" },
 ]
 
 export function PublicNav() {
