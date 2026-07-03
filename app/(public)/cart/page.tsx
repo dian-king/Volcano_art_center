@@ -101,14 +101,14 @@ export default function CartPage() {
         </div>
       </div>
 
-      <div className="container" style={{ paddingBlock: "var(--space-8)", display: "grid", gridTemplateColumns: "1fr 360px", gap: "var(--space-7)", alignItems: "start" }}>
+      <div className="container cart-layout" style={{ paddingBlock: "var(--space-8)" }}>
 
         {/* Items list */}
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           {session?.user ? (
             dbItems.map(item => (
-              <div key={item.productId} style={{ display: "grid", gridTemplateColumns: "80px 1fr auto", gap: "var(--space-4)", padding: "var(--space-4)", background: "var(--surface-raised)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", alignItems: "center" }}>
-                <div style={{ width: 80, height: 80, borderRadius: "var(--radius-md)", overflow: "hidden", background: "var(--green-tint)", position: "relative", flexShrink: 0 }}>
+              <div key={item.productId} className="cart-item">
+                <div className="cart-item__img">
                   {item.image
                     ? <Image src={item.image} alt={item.name} fill style={{ objectFit: "cover" }} />
                     : <div style={{ width: "100%", height: "100%", background: "var(--green-tint)" }} />
@@ -140,8 +140,8 @@ export default function CartPage() {
             guestItems.map(item => {
               const p = guestDetails[item.productId]
               return (
-              <div key={item.productId} style={{ display: "grid", gridTemplateColumns: "80px 1fr auto", gap: "var(--space-4)", padding: "var(--space-4)", background: "var(--surface-raised)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", alignItems: "center" }}>
-                <div style={{ width: 80, height: 80, borderRadius: "var(--radius-md)", overflow: "hidden", background: "var(--green-tint)", position: "relative", flexShrink: 0 }}>
+              <div key={item.productId} className="cart-item">
+                <div className="cart-item__img">
                   {p?.image ? <Image src={p.image} alt={p.name} fill style={{ objectFit: "cover" }} /> : null}
                 </div>
                 <div>
@@ -163,7 +163,7 @@ export default function CartPage() {
         </div>
 
         {/* Order summary */}
-        <div style={{ background: "var(--surface-raised)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", padding: "var(--space-6)", position: "sticky", top: "calc(var(--nav-height) + var(--space-5))" }}>
+        <div className="cart-summary">
           <h2 style={{ fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: "var(--text-lead)", marginBottom: "var(--space-5)" }}>Order Summary</h2>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)", marginBottom: "var(--space-5)" }}>
