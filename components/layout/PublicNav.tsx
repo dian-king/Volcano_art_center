@@ -31,15 +31,15 @@ const NAV_ITEMS = [
     mega: {
       menu: [
         { label: "All Experiences", href: "/experiences" },
-        { label: "Cultural Tours", href: "/experiences?type=CULTURAL" },
-        { label: "Conservation Walks", href: "/experiences?type=CONSERVATION" },
-        { label: "Village Life", href: "/experiences?type=VILLAGE" },
-        { label: "Custom Itineraries", href: "/experiences?type=CUSTOM" },
+        { label: "Cultural & Community", href: "/experiences?category=cultural-community-experiences" },
+        { label: "Arts & Creative", href: "/experiences?category=arts-creative-experiences" },
+        { label: "Outdoor & Adventure", href: "/experiences?category=outdoor-adventure-activities" },
+        { label: "Tours & Excursions", href: "/experiences?category=tours-excursions" },
       ],
       features: [
         { label: "Gorilla Trek", href: "/experiences/gorilla-trek-volcanoes", img: "/images/WhatsApp Image 2026-06-27 at 1.59.58 PM.jpeg" },
-        { label: "Painting Workshop", href: "/experiences?type=CULTURAL", img: "/images/WhatsApp Image 2026-06-27 at 1.59.57 PM.jpeg" },
-        { label: "Village Life", href: "/experiences?type=VILLAGE", img: "/images/WhatsApp Image 2026-06-27 at 1.59.58 PM (2).jpeg" },
+        { label: "Painting Workshop", href: "/experiences?category=arts-creative-experiences", img: "/images/WhatsApp Image 2026-06-27 at 1.59.57 PM.jpeg" },
+        { label: "Village Life", href: "/experiences?category=local-lifestyle-experiences", img: "/images/WhatsApp Image 2026-06-27 at 1.59.58 PM (2).jpeg" },
       ],
     },
   },

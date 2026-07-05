@@ -5,8 +5,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatPrice(amount: number | string | { toNumber: () => number }): string {
+export function formatPrice(amount: number | string | { toNumber: () => number }, currency: "RWF" | "USD" = "RWF"): string {
   const num = typeof amount === "object" && "toNumber" in amount ? amount.toNumber() : Number(amount)
+  if (currency === "USD") return `$${new Intl.NumberFormat("en-US").format(num)}`
   return `${new Intl.NumberFormat("en-US").format(num)} RWF`
 }
 

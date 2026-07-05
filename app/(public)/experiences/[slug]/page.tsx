@@ -17,10 +17,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: exp.title, description: exp.shortDescription ?? exp.title }
 }
 
-const TYPE_LABEL: Record<string, string> = {
-  CULTURAL: "Cultural", VILLAGE: "Village Life", CONSERVATION: "Conservation", CUSTOM: "Custom"
-}
-
 const SLOT_COLOR: Record<string, string> = {
   AVAILABLE: "var(--color-success)", LIMITED: "var(--color-warning)",
   FULLY_BOOKED: "var(--color-error)", BLACKOUT: "var(--text-muted)", REQUEST_ONLY: "var(--color-info)",
@@ -34,6 +30,7 @@ export default async function ExperienceDetailPage({ params }: { params: Promise
     include: {
       reviews: { where: { approved: true } },
       slots: { where: { date: { gte: new Date() } }, orderBy: { date: "asc" }, take: 30 },
+      category: true,
     },
   })
   if (!experience || experience.status !== "PUBLISHED") notFound()
@@ -84,9 +81,11 @@ export default async function ExperienceDetailPage({ params }: { params: Promise
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 60%)" }} />
         {/* Hero text */}
         <div className="container" style={{ position: "absolute", bottom: "var(--space-7)", left: "50%", transform: "translateX(-50%)", width: "100%" }}>
-          <span className="chip chip--accent" style={{ marginBottom: "var(--space-3)" }}>
-            {TYPE_LABEL[experience.experienceType] ?? experience.experienceType}
-          </span>
+          {experience.category && (
+            <span className="chip chip--accent" style={{ marginBottom: "var(--space-3)" }}>
+              {experience.category.name}
+            </span>
+          )}
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: 600, color: "#fff", lineHeight: 1.1 }}>
             {experience.title}
           </h1>
@@ -184,13 +183,13 @@ export default async function ExperienceDetailPage({ params }: { params: Promise
               <div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-2)" }}>
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-headline)", fontWeight: 700, color: "var(--green)" }}>
-                    {formatPrice(price)}
+                    {formatPrice(price, "USD")}
                   </span>
                   <span style={{ fontSize: "var(--text-small)", color: "var(--text-muted)" }}>per person</span>
                 </div>
                 {groupPrice != null && (
                   <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)", marginTop: "var(--space-1)" }}>
-                    Group rate: {formatPrice(groupPrice)}/person
+                    Group rate: {formatPrice(groupPrice, "USD")}/person
                   </p>
                 )}
               </div>

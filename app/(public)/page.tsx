@@ -85,7 +85,7 @@ export default async function HomePage() {
     await Promise.all([
       db.product.findMany({ where: { featured: true, status: "PUBLISHED" }, take: 8, include: { category: true } })
         .then(ps => ps.map(p => ({ ...p, price: Number(p.price), compareAtPrice: p.compareAtPrice ? Number(p.compareAtPrice) : null, weight: p.weight ? Number(p.weight) : null }))),
-      db.experience.findMany({ where: { featured: true, status: "PUBLISHED" }, take: 3 })
+      db.experience.findMany({ where: { featured: true, status: "PUBLISHED" }, take: 3, include: { category: true } })
         .then(es => es.map(e => ({ ...e, durationHours: e.durationHours ? Number(e.durationHours) : null, pricePerPerson: e.pricePerPerson ? Number(e.pricePerPerson) : null, groupPrice: e.groupPrice ? Number(e.groupPrice) : null }))),
       db.conservationCampaign.findFirst({ where: { featured: true, status: "ACTIVE" } }),
       db.talentProfile.findFirst({ where: { published: true, featured: true } }),

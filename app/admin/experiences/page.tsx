@@ -1,6 +1,7 @@
 import { DeleteButton } from "@/components/admin/DeleteButton"
 import { AdminFilters, AdminPageHeader, AdminPagination } from "@/components/admin/AdminPageChrome"
 import { db } from "@/lib/db"
+import { formatPrice } from "@/lib/utils"
 import Link from "next/link"
 
 export const dynamic = "force-dynamic"
@@ -31,18 +32,19 @@ async function del(fd: FormData) {
 export default async function AdminExperiencesPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const sp = await searchParams
   const q = sp.q ?? ""
-  const type = sp.experienceType ?? ""
+  const categoryId = sp.categoryId ?? ""
   const status = sp.status ?? ""
   const page = Math.max(1, Number(sp.page ?? 1))
 
   const where: any = {}
-  if (type) where.experienceType = type
+  if (categoryId) where.categoryId = categoryId
   if (status) where.status = status
   if (q) where.title = { contains: q, mode: "insensitive" }
 
-  const [items, total] = await Promise.all([
-    db.experience.findMany({ where, orderBy: { createdAt: "desc" }, skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }),
+  const [items, total, categories] = await Promise.all([
+    db.experience.findMany({ where, orderBy: { createdAt: "desc" }, skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE, include: { category: true } }),
     db.experience.count({ where }),
+    db.experienceCategory.findMany({ orderBy: { name: "asc" } }),
   ])
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
@@ -50,14 +52,11 @@ export default async function AdminExperiencesPage({ searchParams }: { searchPar
     <div>
       <AdminPageHeader eyebrow="Content Studio" title="Experiences" description="Manage public experience pages, pricing, availability posture, and featured placement." actionHref="/admin/experiences/new" actionLabel="+ New Experience" />
 
-      <AdminFilters clearHref="/admin/experiences" active={Boolean(q || type || status)}>
+      <AdminFilters clearHref="/admin/experiences" active={Boolean(q || categoryId || status)}>
         <input name="q" defaultValue={q} placeholder="Search experiences..." />
-        <select name="experienceType" defaultValue={type}>
-          <option value="">All types</option>
-          <option value="CULTURAL">Cultural</option>
-          <option value="VILLAGE">Village</option>
-          <option value="CONSERVATION">Conservation</option>
-          <option value="CUSTOM">Custom</option>
+        <select name="categoryId" defaultValue={categoryId}>
+          <option value="">All categories</option>
+          {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
         <select name="status" defaultValue={status}>
           <option value="">All statuses</option>
@@ -67,7 +66,7 @@ export default async function AdminExperiencesPage({ searchParams }: { searchPar
         </select>
       </AdminFilters>
 
-      <div className="admin-results-bar"><span>{total} experience{total === 1 ? "" : "s"}</span><span>{q || type || status ? "Filtered view" : "All records"}</span></div>
+      <div className="admin-results-bar"><span>{total} experience{total === 1 ? "" : "s"}</span><span>{q || categoryId || status ? "Filtered view" : "All records"}</span></div>
 
       {items.length === 0 ? (
         <p style={{ color: "var(--text-muted)" }}>No experiences found. <Link href="/admin/experiences/new">Add your first experience</Link></p>
@@ -83,9 +82,9 @@ export default async function AdminExperiencesPage({ searchParams }: { searchPar
               <div style={{ padding: "var(--space-4)", flex: 1, display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
                 <p style={{ fontFamily: "var(--font-ui)", fontWeight: 700, color: "var(--text-primary)" }}>{e.title}</p>
                 {e.location && <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{e.location}</p>}
-                <span className="chip chip--neutral" style={{ alignSelf: "flex-start", fontSize: "10px" }}>{e.experienceType}</span>
+                {e.category && <span className="chip chip--neutral" style={{ alignSelf: "flex-start", fontSize: "10px" }}>{e.category.name}</span>}
                 <div style={{ display: "flex", gap: "var(--space-3)", alignItems: "center" }}>
-                  {e.pricePerPerson && <p style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontWeight: 700 }}>{Number(e.pricePerPerson).toLocaleString()} RWF/person</p>}
+                  {e.pricePerPerson && <p style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontWeight: 700 }}>{formatPrice(e.pricePerPerson.toString(), "USD")}/person</p>}
                   {e.durationHours && <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{Number(e.durationHours)}h</p>}
                 </div>
                 <div style={{ display: "flex", gap: "var(--space-2)", marginTop: "auto", flexWrap: "wrap" }}>
@@ -102,7 +101,7 @@ export default async function AdminExperiencesPage({ searchParams }: { searchPar
         </div>
       )}
 
-      <AdminPagination page={page} pages={pages} total={total} basePath="/admin/experiences" query={{ q, experienceType: type, status }} />
+      <AdminPagination page={page} pages={pages} total={total} basePath="/admin/experiences" query={{ q, categoryId, status }} />
     </div>
   )
 }

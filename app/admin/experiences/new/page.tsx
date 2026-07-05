@@ -3,9 +3,11 @@ import { F } from "@/components/admin/AdminForm"
 import { AdminFormShell } from "@/components/admin/AdminPageChrome"
 import { AdminFormWizard } from "@/components/admin/AdminFormWizard"
 import { ImageUploadField } from "@/components/admin/ImageUploadField"
+import { db } from "@/lib/db"
 import Link from "next/link"
 
-export default function NewExperiencePage() {
+export default async function NewExperiencePage() {
+  const categories = await db.experienceCategory.findMany({ orderBy: { name: "asc" } })
   return (
     <AdminFormShell eyebrow="Content Studio" title="New Experience" description="Create a public experience with booking settings, pricing, logistics, and media." backHref="/admin/experiences">
       <form action={createExperience}>
@@ -28,9 +30,10 @@ export default function NewExperiencePage() {
           <div>
             <div style={F.grid2}>
               <div style={F.wrap}>
-                <label style={F.label}>Type</label>
-                <select name="experienceType" style={F.sel}>
-                  {["CULTURAL","VILLAGE","CONSERVATION","CUSTOM"].map(t => <option key={t}>{t}</option>)}
+                <label style={F.label}>Category</label>
+                <select name="categoryId" style={F.sel}>
+                  <option value="">Uncategorized</option>
+                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
               <div style={F.wrap}>

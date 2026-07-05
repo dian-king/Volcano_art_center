@@ -12,7 +12,7 @@ interface ExperienceCardProps {
     location: string | null
     durationHours: string | number | { toString: () => string } | null
     pricePerPerson: string | number | { toString: () => string } | null
-    experienceType: string
+    category: { name: string } | null
     primaryImageUrl: string | null
     featured: boolean
   }
@@ -35,7 +35,7 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
             {experience.title}
           </div>
         )}
-        <span className="chip chip--accent">{experience.experienceType}</span>
+        {experience.category && <span className="chip chip--accent">{experience.category.name}</span>}
         {experience.durationHours && (
           <em>{String(experience.durationHours)}h</em>
         )}
@@ -47,7 +47,7 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
         <div className="exp-card__foot">
           {experience.pricePerPerson != null && (
             <div>
-              <strong>{formatPrice(String(experience.pricePerPerson))}</strong>
+              <strong>{formatPrice(String(experience.pricePerPerson), "USD")}</strong>
               <small> / person</small>
             </div>
           )}

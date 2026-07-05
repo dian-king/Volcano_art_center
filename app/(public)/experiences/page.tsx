@@ -11,21 +11,17 @@ export const metadata: Metadata = {
   description: "Cultural tours, village visits, conservation walks and custom experiences in Rwanda.",
 }
 
-const TYPES = [
-  { value: "", label: "All" },
-  { value: "CULTURAL", label: "Cultural" },
-  { value: "VILLAGE", label: "Village" },
-  { value: "CONSERVATION", label: "Conservation" },
-  { value: "CUSTOM", label: "Custom" },
-]
-
 export default async function ExperiencesPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const params = await searchParams
   const where: Record<string, unknown> = { status: "PUBLISHED" }
-  if (params.type) where.experienceType = params.type
+  if (params.category) where.category = { slug: params.category }
 
-  const rawExperiences = await db.experience.findMany({ where, orderBy: { featured: "desc" } })
+  const [rawExperiences, categories] = await Promise.all([
+    db.experience.findMany({ where, orderBy: { featured: "desc" }, include: { category: true } }),
+    db.experienceCategory.findMany({ orderBy: { name: "asc" } }),
+  ])
   const experiences = rawExperiences.map(e => ({ ...e, durationHours: e.durationHours ? Number(e.durationHours) : null, pricePerPerson: e.pricePerPerson ? Number(e.pricePerPerson) : null, groupPrice: e.groupPrice ? Number(e.groupPrice) : null }))
+  const TYPES = [{ value: "", label: "All" }, ...categories.map(c => ({ value: c.slug, label: c.name }))]
 
   return (
     <div style={{ paddingTop: "var(--nav-height)" }}>
@@ -47,11 +43,11 @@ export default async function ExperiencesPage({ searchParams }: { searchParams: 
         {/* Type filter pills */}
         <nav aria-label="Experience types" style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap", marginBottom: "var(--space-7)" }}>
           {TYPES.map((t) => {
-            const active = (params.type ?? "") === t.value
+            const active = (params.category ?? "") === t.value
             return (
               <Link
                 key={t.value}
-                href={t.value ? `/experiences?type=${t.value}` : "/experiences"}
+                href={t.value ? `/experiences?category=${t.value}` : "/experiences"}
                 style={{
                   padding: "var(--space-2) var(--space-4)",
                   borderRadius: "var(--radius-pill)",

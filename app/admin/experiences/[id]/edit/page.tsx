@@ -7,7 +7,10 @@ import Link from "next/link"
 
 export default async function EditExperiencePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const e = await db.experience.findUnique({ where: { id } })
+  const [e, categories] = await Promise.all([
+    db.experience.findUnique({ where: { id } }),
+    db.experienceCategory.findMany({ orderBy: { name: "asc" } }),
+  ])
   if (!e) notFound()
   const action = updateExperience.bind(null, id)
 
@@ -21,9 +24,10 @@ export default async function EditExperiencePage({ params }: { params: Promise<{
 
         <div style={F.grid2}>
           <div style={F.wrap}>
-            <label style={F.label}>Type</label>
-            <select name="experienceType" defaultValue={e.experienceType} style={F.sel}>
-              {["CULTURAL","VILLAGE","CONSERVATION","CUSTOM"].map(t => <option key={t}>{t}</option>)}
+            <label style={F.label}>Category</label>
+            <select name="categoryId" defaultValue={e.categoryId ?? ""} style={F.sel}>
+              <option value="">Uncategorized</option>
+              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div style={F.wrap}>

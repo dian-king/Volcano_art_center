@@ -23,6 +23,8 @@ export function dashboardPathForRole(role: string | null | undefined): string {
 }
 
 export const ADMIN_ROUTE_ROLES: Record<string, readonly string[]> = {
+  "/admin/categories": OPS_ROLES,
+  "/admin/experience-categories": OPS_ROLES,
   "/admin/products": OPS_ROLES,
   "/admin/orders": OPS_ROLES,
   "/admin/bookings": OPS_ROLES,

@@ -11,7 +11,7 @@ import {
   CalendarCheck, Package, Mail, Users, FileText, Clock, Heart,
   MessageSquare, Bell,
   Shield, Settings, Activity, AlertTriangle, DownloadCloud,
-  Globe, LogOut, ChevronLeft, Sun, Moon,
+  Globe, LogOut, ChevronLeft, Sun, Moon, Tags,
 } from "lucide-react"
 
 const CONTENT_LINKS = [
@@ -31,6 +31,8 @@ const OPS_LINKS = [
   { href: "/admin",                  label: "Dashboard",           icon: LayoutDashboard },
   { href: "/admin/notifications",    label: "Notifications",       icon: Bell },
   { href: "/admin/products",         label: "Art Catalog",         icon: Palette },
+  { href: "/admin/categories",       label: "Art Categories",      icon: Tags },
+  { href: "/admin/experience-categories", label: "Experience Categories", icon: Tags },
   { href: "/admin/bookings",         label: "Bookings",            icon: CalendarCheck },
   { href: "/admin/orders",           label: "Shipping Orders",     icon: Package },
   { href: "/admin/conservation/donations", label: "Donations",     icon: Heart },

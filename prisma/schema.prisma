@@ -85,6 +85,15 @@ model Category {
   products    Product[]
 }
 
+model ExperienceCategory {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  slug        String       @unique
+  description String?
+  createdAt   DateTime     @default(now())
+  experiences Experience[]
+}
+
 model Collection {
   id          String    @id @default(cuid())
   name        String    @unique
@@ -205,13 +214,14 @@ model Experience {
   included         String[]
   excluded         String[]
   whatToBring      String[]
-  experienceType   ExperienceType     @default(CULTURAL)
+  categoryId       String?
   bookingType      BookingType        @default(DIRECT)
   primaryImageUrl  String?
   status           ExperienceStatus   @default(DRAFT)
   featured         Boolean            @default(false)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
+  category         ExperienceCategory? @relation(fields: [categoryId], references: [id])
   slots            AvailabilitySlot[]
   bookings         Booking[]
   images           ExperienceImage[]
@@ -566,13 +576,6 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
   REFUNDED
-}
-
-enum ExperienceType {
-  CULTURAL
-  VILLAGE
-  CONSERVATION
-  CUSTOM
 }
 
 enum BookingType {
