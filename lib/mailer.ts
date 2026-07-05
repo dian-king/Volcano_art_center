@@ -12,7 +12,7 @@ export function getTransporter() {
   })
 }
 
-export const FROM = `"Volcano Arts Center Inc Rwanda" <${process.env.SMTP_USER ?? "hello@volcanoartsandhospes.com"}>`
+export const FROM = `"Volcano Arts Center Inc Rwanda" <${process.env.SMTP_USER ?? "info@volcanoartscenterinc.org.rw"}>`
 
 export async function sendMail(to: string, subject: string, html: string, replyTo?: string) {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {

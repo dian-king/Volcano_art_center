@@ -49,8 +49,8 @@ export default function ContactPage() {
               {
                 icon: "📧",
                 label: "Email",
-                value: "hello@volcanoartsandhospes.com",
-                href: "mailto:hello@volcanoartsandhospes.com",
+                value: "info@volcanoartscenterinc.org.rw",
+                href: "mailto:info@volcanoartscenterinc.org.rw",
               },
               {
                 icon: "📞",
