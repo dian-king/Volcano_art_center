@@ -101,7 +101,7 @@ export default async function AdminDashboard() {
       {isSuper && (
         <KpiGrid cards={[
           { icon: TrendingUp, label: "Revenue",   value: `${revenue.toLocaleString()} RWF`,   href: "/admin/orders",   green: true, sub: "confirmed orders" },
-          { icon: Heart,      label: "Donations", value: `${donations.toLocaleString()} RWF`, href: "/admin/inquiries", green: true, sub: "completed" },
+          { icon: Heart,      label: "Donations", value: `${donations.toLocaleString()} RWF`, href: "/admin/conservation/donations", green: true, sub: "completed" },
           { icon: UserPlus,   label: "Users",     value: newUsersThisWeek,                 href: "/admin/users",    amber: true, sub: "new this week" },
           { icon: AlertCircle,label: "Pending",   value: pendingTotal,                     href: "/admin/bookings", amber: true, sub: "needs action" },
         ]} />

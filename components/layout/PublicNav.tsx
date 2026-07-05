@@ -37,7 +37,7 @@ const NAV_ITEMS = [
         { label: "Tours & Excursions", href: "/experiences?category=tours-excursions" },
       ],
       features: [
-        { label: "Gorilla Trek", href: "/experiences/gorilla-trek-volcanoes", img: "/images/WhatsApp Image 2026-06-27 at 1.59.58 PM.jpeg" },
+        { label: "Heritage Immersion", href: "/experiences/traditional-rwandan-heritage-immersion", img: "/images/WhatsApp Image 2026-06-27 at 1.59.58 PM.jpeg" },
         { label: "Painting Workshop", href: "/experiences?category=arts-creative-experiences", img: "/images/WhatsApp Image 2026-06-27 at 1.59.57 PM.jpeg" },
         { label: "Village Life", href: "/experiences?category=local-lifestyle-experiences", img: "/images/WhatsApp Image 2026-06-27 at 1.59.58 PM (2).jpeg" },
       ],
