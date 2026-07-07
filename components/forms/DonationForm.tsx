@@ -8,22 +8,24 @@ import { createDonationAction } from "@/actions/donations"
 
 const schema = z.object({
   campaignId: z.string().min(1, "Please select a campaign"),
-  amount: z.number().min(1, "Minimum donation is $1"),
+  amount: z.number().min(1, "Please enter a donation amount"),
   donorName: z.string().min(2, "Name is required"),
   donorEmail: z.string().email("Valid email required"),
   message: z.string().optional(),
 })
 
 type FormData = z.infer<typeof schema>
-interface Campaign { id: string; name: string }
+interface Campaign { id: string; name: string; currency: string }
 
 export function DonationForm({ campaigns }: { campaigns: Campaign[] }) {
   const [reference, setReference] = useState<string | null>(null)
   const [serverError, setServerError] = useState<string | null>(null)
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
+  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { campaignId: campaigns[0]?.id ?? "" },
   })
+  const selectedCampaignId = watch("campaignId")
+  const currency = campaigns.find(c => c.id === selectedCampaignId)?.currency ?? "USD"
 
   async function onSubmit(data: FormData) {
     setServerError(null)
@@ -64,8 +66,8 @@ export function DonationForm({ campaigns }: { campaigns: Campaign[] }) {
       </div>
 
       <div className="field">
-        <label className="field__label" htmlFor="amount">Amount (RWF)</label>
-        <input id="amount" type="number" className="input" placeholder="e.g. 5000" {...register("amount", { valueAsNumber: true })} />
+        <label className="field__label" htmlFor="amount">Amount ({currency})</label>
+        <input id="amount" type="number" className="input" placeholder={currency === "USD" ? "e.g. 50" : "e.g. 5000"} {...register("amount", { valueAsNumber: true })} />
         {err(errors.amount?.message)}
       </div>
 

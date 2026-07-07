@@ -183,13 +183,13 @@ export default async function ExperienceDetailPage({ params }: { params: Promise
               <div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-2)" }}>
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-headline)", fontWeight: 700, color: "var(--green)" }}>
-                    {formatPrice(price, "USD")}
+                    {formatPrice(price, experience.currency as "USD" | "RWF")}
                   </span>
                   <span style={{ fontSize: "var(--text-small)", color: "var(--text-muted)" }}>per person</span>
                 </div>
                 {groupPrice != null && (
                   <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)", marginTop: "var(--space-1)" }}>
-                    Group rate: {formatPrice(groupPrice, "USD")}/person
+                    Group rate: {formatPrice(groupPrice, experience.currency as "USD" | "RWF")}/person
                   </p>
                 )}
               </div>

@@ -40,8 +40,17 @@ export default async function EditExperiencePage({ params }: { params: Promise<{
         </div>
 
         <div style={F.grid3}>
-          <div style={F.wrap}><label style={F.label}>Price/Person (USD)</label><input name="pricePerPerson" type="number" min="0" step="0.01" defaultValue={e.pricePerPerson ? String(Number(e.pricePerPerson)) : ""} style={F.inp} /></div>
+          <div style={F.wrap}><label style={F.label}>Price/Person</label><input name="pricePerPerson" type="number" min="0" step="0.01" defaultValue={e.pricePerPerson ? String(Number(e.pricePerPerson)) : ""} style={F.inp} /></div>
+          <div style={F.wrap}>
+            <label style={F.label}>Currency</label>
+            <select name="currency" defaultValue={e.currency} style={F.sel}>
+              <option value="USD">USD</option>
+              <option value="RWF">RWF</option>
+            </select>
+          </div>
           <div style={F.wrap}><label style={F.label}>Duration (h)</label><input name="durationHours" type="number" step="0.5" defaultValue={e.durationHours ? String(Number(e.durationHours)) : ""} style={F.inp} /></div>
+        </div>
+        <div style={F.grid3}>
           <div style={F.wrap}><label style={F.label}>Location</label><input name="location" defaultValue={e.location ?? ""} style={F.inp} /></div>
         </div>
 

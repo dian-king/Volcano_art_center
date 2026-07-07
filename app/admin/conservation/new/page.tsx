@@ -18,9 +18,16 @@ export default function NewCampaignPage() {
             { title: "Publish", description: "Set campaign status and featured placement." },
           ]}
         >
-          <div style={F.grid2}>
+          <div style={F.grid3}>
             <div style={F.wrap}><label style={F.label}>Name *</label><input name="name" required style={F.inp} /></div>
             <div style={F.wrap}><label style={F.label}>Goal Amount *</label><input name="goalAmount" type="number" step="0.01" required style={F.inp} /></div>
+            <div style={F.wrap}>
+              <label style={F.label}>Currency</label>
+              <select name="currency" style={F.sel} defaultValue="USD">
+                <option value="USD">USD</option>
+                <option value="RWF">RWF</option>
+              </select>
+            </div>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>

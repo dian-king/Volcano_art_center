@@ -31,7 +31,7 @@ export default async function ClientOrdersPage() {
                 <td style={{ ...td, fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--green)" }}>{o.reference}</td>
                 <td style={td}>{o.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</td>
                 <td style={td}>{o.items.map(i => i.product.name).join(", ")}</td>
-                <td style={{ ...td, fontFamily: "var(--font-mono)" }}>{formatPrice(o.total)}</td>
+                <td style={{ ...td, fontFamily: "var(--font-mono)" }}>{formatPrice(o.total, o.currency as "USD" | "RWF")}</td>
                 <td style={td}><span style={{ color: statusColor[o.status] ?? "var(--text-muted)", fontWeight: 600 }}>{o.status}</span></td>
               </tr>
             ))}</tbody>

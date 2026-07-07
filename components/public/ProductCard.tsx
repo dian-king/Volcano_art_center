@@ -17,6 +17,7 @@ interface ProductCardProps {
     artistName: string | null
     price: string | number | { toNumber: () => number }
     compareAtPrice?: string | number | { toNumber: () => number } | null
+    currency?: string
     primaryImageUrl: string | null
     inventoryType: string
     stockQuantity: number
@@ -94,7 +95,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </h3>
         {product.artistName && <p className="product-card__artist">by {product.artistName}</p>}
         <div className="product-card__foot">
-          <strong className="product-card__price">{formatPrice(product.price)}</strong>
+          <strong className="product-card__price">{formatPrice(product.price, (product.currency as "USD" | "RWF") ?? "USD")}</strong>
           <AddToCartButton productId={product.id} inStock={inStock} />
         </div>
       </div>

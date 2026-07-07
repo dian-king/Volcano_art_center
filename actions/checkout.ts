@@ -36,9 +36,13 @@ export async function createOrderAction(formData: FormData) {
   // Fetch cart
   const cart = await db.cart.findUnique({
     where: { userId: session.user.id },
-    include: { items: { include: { product: { select: { id: true, name: true, price: true, stockQuantity: true, inventoryType: true } } } } },
+    include: { items: { include: { product: { select: { id: true, name: true, price: true, currency: true, stockQuantity: true, inventoryType: true } } } } },
   })
   if (!cart || cart.items.length === 0) return { error: "Your cart is empty" }
+
+  const currencies = new Set(cart.items.map(i => i.product.currency))
+  if (currencies.size > 1) return { error: "Your cart has items in more than one currency. Checkout one currency at a time." }
+  const currency = cart.items[0].product.currency
 
   const subtotal = cart.items.reduce((s, i) => s + Number(i.product.price) * i.quantity, 0)
 
@@ -51,6 +55,7 @@ export async function createOrderAction(formData: FormData) {
         userId: session.user.id!,
         subtotal,
         total: subtotal, // shipping added manually by ops team
+        currency,
         recipientName: parsed.data.recipientName,
         addressLine1: parsed.data.addressLine1,
         addressLine2: parsed.data.addressLine2 ?? null,
@@ -64,6 +69,7 @@ export async function createOrderAction(formData: FormData) {
             productId: i.productId,
             quantity: i.quantity,
             unitPrice: i.product.price,
+            currency: i.product.currency,
           })),
         },
       },
@@ -96,6 +102,7 @@ export async function createOrderAction(formData: FormData) {
     customerEmail: order.user.email,
     recipientName: order.recipientName,
     total: Number(order.total),
+    currency: order.currency,
     status: order.status,
     items: order.items.map(item => item.product.name),
   })

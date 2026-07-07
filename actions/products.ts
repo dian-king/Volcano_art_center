@@ -15,6 +15,7 @@ export async function createProduct(formData: FormData) {
 
   const name = formData.get("name") as string
   const price = parseFloat(formData.get("price") as string)
+  const currency = (formData.get("currency") as string) || "USD"
   const categoryId = formData.get("categoryId") as string || undefined
   const artistName = formData.get("artistName") as string || null
   const description = formData.get("description") as string || null
@@ -33,7 +34,7 @@ export async function createProduct(formData: FormData) {
 
   await db.product.create({
     data: {
-      name, slug, price, artistName, description, primaryImageUrl,
+      name, slug, price, currency, artistName, description, primaryImageUrl,
       stockQuantity, inventoryType, status, featured, medium, dimensions,
       categoryId: categoryId || null,
     },
@@ -51,6 +52,7 @@ export async function updateProduct(id: string, formData: FormData) {
   const data = {
     name: formData.get("name") as string,
     price: parseFloat(formData.get("price") as string),
+    currency: (formData.get("currency") as string) || "USD",
     categoryId: (formData.get("categoryId") as string) || null,
     artistName: (formData.get("artistName") as string) || null,
     description: (formData.get("description") as string) || null,

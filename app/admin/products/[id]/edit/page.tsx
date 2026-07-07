@@ -47,8 +47,9 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           />
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-4)" }}>
-          {inp("Price (USD)", "price", String(Number(product.price)), "number", { min: "0", step: "0.01" })}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--space-4)" }}>
+          {inp("Price", "price", String(Number(product.price)), "number", { min: "0", step: "0.01" })}
+          {sel("Currency", "currency", [{ value: "USD", label: "USD" }, { value: "RWF", label: "RWF" }], product.currency)}
           {inp("Stock Quantity", "stockQuantity", String(product.stockQuantity), "number", { min: "0" })}
         </div>
 

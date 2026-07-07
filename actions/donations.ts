@@ -26,12 +26,17 @@ export async function createDonationAction(raw: unknown) {
   const session = await auth()
   const reference = generateDonationRef()
 
+  const campaign = parsed.data.campaignId
+    ? await db.conservationCampaign.findUnique({ where: { id: parsed.data.campaignId }, select: { currency: true } })
+    : null
+
   await db.donation.create({
     data: {
       reference,
       userId: session?.user?.id,
       campaignId: parsed.data.campaignId,
       amount: parsed.data.amount,
+      currency: campaign?.currency ?? "USD",
       purpose: parsed.data.purpose,
       frequency: parsed.data.frequency,
       donorName: parsed.data.anonymous ? null : parsed.data.donorName,
@@ -62,6 +67,7 @@ export async function createDonationAction(raw: unknown) {
     donorName: parsed.data.anonymous ? null : parsed.data.donorName ?? null,
     donorEmail: parsed.data.donorEmail,
     amount: parsed.data.amount,
+    currency: campaign?.currency ?? "USD",
     purpose: parsed.data.purpose,
     frequency: parsed.data.frequency,
     anonymous: parsed.data.anonymous,
@@ -95,6 +101,7 @@ export async function approveDonationAction(donationId: string) {
     donorName: donation.anonymous ? null : donation.donorName,
     donorEmail: donation.donorEmail,
     amount: Number(donation.amount),
+    currency: donation.currency,
   })
 
   revalidatePath("/admin/conservation/donations")

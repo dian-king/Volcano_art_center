@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { formatPrice } from "@/lib/utils"
 import Link from "next/link"
 import { DonationForm } from "@/components/forms/DonationForm"
 import Image from "next/image"
@@ -71,7 +72,7 @@ export default async function ConservationPage() {
 
                       <div className="campaign-card__stats" style={{ marginTop: "var(--space-2)" }}>
                         <span><strong style={{ fontFamily: "var(--font-mono)", color: "var(--green)" }}>{pct}%</strong> funded</span>
-                        {goal > 0 && <span>Goal: {goal.toLocaleString()} RWF</span>}
+                        {goal > 0 && <span>Goal: {formatPrice(goal, c.currency as "USD" | "RWF")}</span>}
                       </div>
                       <p style={{ marginTop: "var(--space-3)", fontSize: "var(--text-caption)", color: "var(--green)", fontFamily: "var(--font-ui)", fontWeight: 600 }}>
                         Learn more →
@@ -92,7 +93,7 @@ export default async function ConservationPage() {
           <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-body)", marginBottom: "var(--space-6)" }}>
             Your contribution directly funds conservation efforts on the ground.
           </p>
-          <DonationForm campaigns={campaigns.map((c) => ({ id: c.id, name: c.name }))} />
+          <DonationForm campaigns={campaigns.map((c) => ({ id: c.id, name: c.name, currency: c.currency }))} />
         </div>
       </div>
     </div>

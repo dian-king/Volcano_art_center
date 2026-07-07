@@ -32,8 +32,15 @@ export default async function NewProductPage() {
           </div>
 
           <div>
-            <div style={F.grid2}>
-              <div style={F.wrap}><label style={F.label}>Price (USD) *</label><input name="price" type="number" min="0" step="0.01" required style={F.inp} /></div>
+            <div style={F.grid3}>
+              <div style={F.wrap}><label style={F.label}>Price *</label><input name="price" type="number" min="0" step="0.01" required style={F.inp} /></div>
+              <div style={F.wrap}>
+                <label style={F.label}>Currency</label>
+                <select name="currency" style={F.sel} defaultValue="USD">
+                  <option value="USD">USD</option>
+                  <option value="RWF">RWF</option>
+                </select>
+              </div>
               <div style={F.wrap}><label style={F.label}>Stock Quantity</label><input name="stockQuantity" type="number" min="0" defaultValue="1" style={F.inp} /></div>
             </div>
             <div style={{ ...F.grid2, marginTop: "var(--space-4)" }}>

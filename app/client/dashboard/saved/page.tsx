@@ -40,7 +40,7 @@ export default async function ClientSavedPage() {
               <div style={{ padding: "var(--space-3)" }}>
                 <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{product.category?.name}</p>
                 <p style={{ fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: "var(--text-small)", color: "var(--text-primary)" }}>{product.name}</p>
-                <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-small)", color: "var(--green)", marginTop: "var(--space-1)" }}>{formatPrice(product.price)}</p>
+                <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-small)", color: "var(--green)", marginTop: "var(--space-1)" }}>{formatPrice(product.price, product.currency as "USD" | "RWF")}</p>
               </div>
             </div>
           ))}

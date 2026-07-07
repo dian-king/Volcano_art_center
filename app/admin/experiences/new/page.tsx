@@ -45,8 +45,17 @@ export default async function NewExperiencePage() {
               </div>
             </div>
             <div style={{ ...F.grid3, marginTop: "var(--space-4)" }}>
-              <div style={F.wrap}><label style={F.label}>Price per Person (USD)</label><input name="pricePerPerson" type="number" min="0" step="0.01" style={F.inp} /></div>
+              <div style={F.wrap}><label style={F.label}>Price per Person</label><input name="pricePerPerson" type="number" min="0" step="0.01" style={F.inp} /></div>
+              <div style={F.wrap}>
+                <label style={F.label}>Currency</label>
+                <select name="currency" style={F.sel} defaultValue="USD">
+                  <option value="USD">USD</option>
+                  <option value="RWF">RWF</option>
+                </select>
+              </div>
               <div style={F.wrap}><label style={F.label}>Duration (hours)</label><input name="durationHours" type="number" min="0" step="0.5" style={F.inp} /></div>
+            </div>
+            <div style={{ ...F.grid2, marginTop: "var(--space-4)" }}>
               <div style={F.wrap}><label style={F.label}>Location</label><input name="location" style={F.inp} /></div>
             </div>
             <div style={{ ...F.grid2, marginTop: "var(--space-4)" }}>

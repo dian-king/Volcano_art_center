@@ -9,7 +9,7 @@ export async function fetchProductsByIds(ids: string[]) {
   if (!ids.length) return []
   const products = await db.product.findMany({
     where: { id: { in: ids }, status: "PUBLISHED" },
-    select: { id: true, name: true, price: true, primaryImageUrl: true, slug: true },
+    select: { id: true, name: true, price: true, currency: true, primaryImageUrl: true, slug: true },
   })
   return products.map(p => ({ ...p, price: Number(p.price) }))
 }
@@ -23,7 +23,7 @@ export async function fetchCartAction() {
     include: {
       items: {
         include: {
-          product: { select: { name: true, price: true, primaryImageUrl: true, slug: true } },
+          product: { select: { name: true, price: true, currency: true, primaryImageUrl: true, slug: true } },
         },
       },
     },
@@ -35,6 +35,7 @@ export async function fetchCartAction() {
     slug: i.product.slug,
     name: i.product.name,
     price: Number(i.product.price),
+    currency: i.product.currency,
     image: i.product.primaryImageUrl,
     quantity: i.quantity,
   }))

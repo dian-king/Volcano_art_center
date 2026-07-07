@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { formatPrice } from "@/lib/utils"
 import { DonationForm } from "@/components/forms/DonationForm"
 import { notFound } from "next/navigation"
 import Image from "next/image"
@@ -66,9 +67,9 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
               </div>
               <div style={{ textAlign: "right" }}>
                 <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-title)", fontWeight: 700, color: "var(--text-primary)" }}>
-                  {raised.toLocaleString()} <span style={{ fontSize: "var(--text-small)", fontWeight: 400, color: "var(--text-muted)" }}>RWF</span>
+                  {formatPrice(raised, campaign.currency as "USD" | "RWF")}
                 </p>
-                <p style={{ fontSize: "var(--text-small)", color: "var(--text-muted)" }}>raised of {goal.toLocaleString()} RWF goal</p>
+                <p style={{ fontSize: "var(--text-small)", color: "var(--text-muted)" }}>raised of {formatPrice(goal, campaign.currency as "USD" | "RWF")} goal</p>
               </div>
             </div>
             <div className="progress" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ height: "12px" }}>
@@ -108,7 +109,7 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
             <p style={{ fontSize: "var(--text-small)", color: "var(--text-secondary)", lineHeight: 1.6 }}>
               Your contribution goes directly to conservation efforts on the ground.
             </p>
-            <DonationForm campaigns={[{ id: campaign.id, name: campaign.name }]} />
+            <DonationForm campaigns={[{ id: campaign.id, name: campaign.name, currency: campaign.currency }]} />
           </div>
         </div>
       </div>

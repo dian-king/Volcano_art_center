@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { formatPrice } from "@/lib/utils"
 import { ProductCard } from "@/components/public/ProductCard"
 import { ExperienceCard } from "@/components/public/ExperienceCard"
 import { StoryCard } from "@/components/public/StoryCard"
@@ -293,7 +294,7 @@ export default async function HomePage() {
                     <div className="progress__fill" style={{ "--pct": `${Math.min(100, (Number(campaign.raisedAmount) / Number(campaign.goalAmount)) * 100)}%` } as React.CSSProperties} />
                   </div>
                   <p className="progress-note">
-                    <strong>{Number(campaign.raisedAmount).toLocaleString()} RWF</strong> raised of {Number(campaign.goalAmount).toLocaleString()} RWF goal · {campaign.donorCount} donors
+                    <strong>{formatPrice(Number(campaign.raisedAmount), campaign.currency as "USD" | "RWF")}</strong> raised of {formatPrice(Number(campaign.goalAmount), campaign.currency as "USD" | "RWF")} goal · {campaign.donorCount} donors
                   </p>
                   <div className="conservation__actions">
                     <Link href="/conservation" className="btn btn--primary">Support This Campaign</Link>

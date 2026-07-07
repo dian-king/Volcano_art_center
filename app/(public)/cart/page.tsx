@@ -6,21 +6,29 @@ import { fetchCartAction, removeFromCartAction, fetchProductsByIds } from "@/act
 import Image from "next/image"
 import Link from "next/link"
 import { ShoppingBag, Trash2 } from "lucide-react"
+import { formatPrice } from "@/lib/utils"
 
 interface DbItem {
   productId: string
   slug: string
   name: string
   price: number
+  currency: string
   image: string | null
   quantity: number
+}
+
+function subtotalsByCurrency(items: { price: number; currency: string; quantity: number }[]) {
+  const totals: Record<string, number> = {}
+  for (const i of items) totals[i.currency] = (totals[i.currency] ?? 0) + i.price * i.quantity
+  return totals
 }
 
 export default function CartPage() {
   const { data: session, status } = useSession()
   const { guestItems, count, removeGuestItem, setCount } = useCartStore()
   const [dbItems, setDbItems] = useState<DbItem[]>([])
-  const [guestDetails, setGuestDetails] = useState<Record<string, { name: string; price: number; image: string | null; slug: string }>>({})
+  const [guestDetails, setGuestDetails] = useState<Record<string, { name: string; price: number; currency: string; image: string | null; slug: string }>>({})
   const [loading, setLoading] = useState(true)
   const [removing, setRemoving] = useState<string | null>(null)
 
@@ -37,8 +45,8 @@ export default function CartPage() {
       const ids = guestItems.map(i => i.productId)
       if (ids.length) {
         fetchProductsByIds(ids).then(products => {
-          const map: Record<string, { name: string; price: number; image: string | null; slug: string }> = {}
-          products.forEach(p => { map[p.id] = { name: p.name, price: p.price, image: p.primaryImageUrl, slug: p.slug } })
+          const map: Record<string, { name: string; price: number; currency: string; image: string | null; slug: string }> = {}
+          products.forEach(p => { map[p.id] = { name: p.name, price: p.price, currency: p.currency, image: p.primaryImageUrl, slug: p.slug } })
           setGuestDetails(map)
           setLoading(false)
         })
@@ -49,9 +57,10 @@ export default function CartPage() {
   }, [status, session?.user, guestItems.length]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const items = session?.user ? dbItems : guestItems
-  const subtotal = session?.user
-    ? dbItems.reduce((s, i) => s + i.price * i.quantity, 0)
-    : guestItems.reduce((s, i) => s + (guestDetails[i.productId]?.price ?? 0) * i.quantity, 0)
+  const subtotals = session?.user
+    ? subtotalsByCurrency(dbItems)
+    : subtotalsByCurrency(guestItems.map(i => ({ price: guestDetails[i.productId]?.price ?? 0, currency: guestDetails[i.productId]?.currency ?? "USD", quantity: i.quantity })))
+  const currencies = Object.keys(subtotals)
   const itemCount = items.reduce((s, i) => s + i.quantity, 0)
 
   async function handleRemove(productId: string) {
@@ -119,10 +128,10 @@ export default function CartPage() {
                     <Link href={`/art-store/${item.slug}`} style={{ color: "inherit" }}>{item.name}</Link>
                   </p>
                   <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-small)", color: "var(--green)", marginTop: "var(--space-1)" }}>
-                    {item.price.toLocaleString()} RWF × {item.quantity}
+                    {formatPrice(item.price, item.currency as "USD" | "RWF")} × {item.quantity}
                   </p>
                   <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-caption)", color: "var(--text-muted)", marginTop: 2 }}>
-                    Line total: {(item.price * item.quantity).toLocaleString()} RWF
+                    Line total: {formatPrice(item.price * item.quantity, item.currency as "USD" | "RWF")}
                   </p>
                 </div>
                 <button
@@ -148,7 +157,7 @@ export default function CartPage() {
                   <p style={{ fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: "var(--text-body)", color: "var(--text-primary)" }}>
                     {p ? <Link href={`/art-store/${p.slug}`} style={{ color: "inherit" }}>{p.name}</Link> : `Item #${item.productId.slice(-8)}`}
                   </p>
-                  {p && <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-small)", color: "var(--green)", marginTop: "var(--space-1)" }}>{p.price.toLocaleString()} RWF × {item.quantity}</p>}
+                  {p && <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-small)", color: "var(--green)", marginTop: "var(--space-1)" }}>{formatPrice(p.price, p.currency as "USD" | "RWF")} × {item.quantity}</p>}
                   <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)", marginTop: 2 }}>
                     <Link href="/login?next=/cart" style={{ color: "var(--green)" }}>Sign in</Link> to checkout
                   </p>
@@ -169,7 +178,9 @@ export default function CartPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)", marginBottom: "var(--space-5)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "var(--text-small)", color: "var(--text-secondary)" }}>
               <span>Subtotal ({itemCount} {itemCount === 1 ? "item" : "items"})</span>
-              <span style={{ fontFamily: "var(--font-mono)" }}>{subtotal > 0 ? `${subtotal.toLocaleString()} RWF` : "—"}</span>
+              <span style={{ fontFamily: "var(--font-mono)" }}>
+                {currencies.length === 0 ? "—" : currencies.map(c => formatPrice(subtotals[c], c as "USD" | "RWF")).join(" + ")}
+              </span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "var(--text-small)", color: "var(--text-muted)" }}>
               <span>Shipping</span>
@@ -178,13 +189,23 @@ export default function CartPage() {
             <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "var(--space-3)", display: "flex", justifyContent: "space-between", fontWeight: 700 }}>
               <span style={{ fontFamily: "var(--font-ui)" }}>Total</span>
               <span style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontSize: "var(--text-lead)" }}>
-                {subtotal > 0 ? `${subtotal.toLocaleString()} RWF` : "—"}
+                {currencies.length === 0 ? "—" : currencies.map(c => formatPrice(subtotals[c], c as "USD" | "RWF")).join(" + ")}
               </span>
             </div>
+            {currencies.length > 1 && (
+              <p style={{ fontSize: "var(--text-caption)", color: "var(--color-warning)" }}>
+                Your cart has items in more than one currency — checkout one currency at a time.
+              </p>
+            )}
           </div>
 
           {session?.user ? (
-            <Link href="/checkout" className="btn btn--primary" style={{ display: "block", textAlign: "center", width: "100%" }}>
+            <Link
+              href="/checkout"
+              className="btn btn--primary"
+              style={{ display: "block", textAlign: "center", width: "100%", pointerEvents: currencies.length > 1 ? "none" : "auto", opacity: currencies.length > 1 ? 0.5 : 1 }}
+              aria-disabled={currencies.length > 1}
+            >
               Proceed to Checkout
             </Link>
           ) : (

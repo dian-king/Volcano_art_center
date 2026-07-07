@@ -1,5 +1,6 @@
 import { db } from "@/lib/db"
 import { auth } from "@/lib/auth"
+import { formatPrice } from "@/lib/utils"
 import { redirect } from "next/navigation"
 import { hasRole, ADMIN_ROLES, OPS_ROLES } from "@/lib/permissions"
 import { AdminPageHeader } from "@/components/admin/AdminPageChrome"
@@ -73,7 +74,7 @@ export default async function AdminDonationsPage() {
                       {!d.anonymous && <div style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>{d.donorEmail}</div>}
                     </td>
                     <td style={{ padding: "var(--space-3)", fontSize: "var(--text-small)" }}>{d.campaign?.name ?? "—"}</td>
-                    <td style={{ padding: "var(--space-3)", fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--green)", whiteSpace: "nowrap" }}>{Number(d.amount).toLocaleString()} RWF</td>
+                    <td style={{ padding: "var(--space-3)", fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--green)", whiteSpace: "nowrap" }}>{formatPrice(Number(d.amount), d.currency as "USD" | "RWF")}</td>
                     <td style={{ padding: "var(--space-3)" }}><span className={`chip ${STATUS_CHIP[d.status] ?? "chip--neutral"}`}>{d.status}</span></td>
                     <td style={{ padding: "var(--space-3)" }}>
                       {canManage && isCounted ? (

@@ -30,7 +30,7 @@ export default async function ClientDonationsPage() {
               <tr key={d.id}>
                 <td style={{ ...td, fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--green)" }}>{d.reference}</td>
                 <td style={td}>{d.campaign?.name ?? "General"}</td>
-                <td style={{ ...td, fontFamily: "var(--font-mono)" }}>{formatPrice(d.amount)}</td>
+                <td style={{ ...td, fontFamily: "var(--font-mono)" }}>{formatPrice(d.amount, d.currency as "USD" | "RWF")}</td>
                 <td style={td}>{d.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</td>
                 <td style={td}><span style={{ color: statusColor[d.status] ?? "var(--text-muted)", fontWeight: 600 }}>{d.status}</span></td>
               </tr>

@@ -49,7 +49,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             offers: {
               "@type": "Offer",
               price: Number(product.price),
-              priceCurrency: "USD",
+              priceCurrency: product.currency,
               availability: product.stockQuantity > 0
                 ? "https://schema.org/InStock"
                 : "https://schema.org/OutOfStock",
@@ -98,7 +98,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           {/* Price */}
           <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-3)" }}>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-title)", fontWeight: 700, color: "var(--green)" }}>
-              {formatPrice(price)}
+              {formatPrice(price, product.currency as "USD" | "RWF")}
             </span>
             {!inStock && <span className="chip chip--neutral">Sold Out</span>}
           </div>

@@ -16,7 +16,7 @@ export default async function EditCampaignPage({ params }: { params: Promise<{ i
     <div style={{ maxWidth: 640 }}>
       <h1 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: 600, marginBottom: "var(--space-6)" }}>Edit: {c.name}</h1>
       <form action={action} style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-        <div style={F.grid2}>
+        <div style={F.grid3}>
           <div style={F.wrap}>
             <label style={F.label}>Name *</label>
             <input name="name" required defaultValue={c.name} style={F.inp} />
@@ -24,6 +24,13 @@ export default async function EditCampaignPage({ params }: { params: Promise<{ i
           <div style={F.wrap}>
             <label style={F.label}>Goal Amount *</label>
             <input name="goalAmount" type="number" step="0.01" required defaultValue={Number(c.goalAmount)} style={F.inp} />
+          </div>
+          <div style={F.wrap}>
+            <label style={F.label}>Currency</label>
+            <select name="currency" defaultValue={c.currency} style={F.sel}>
+              <option value="USD">USD</option>
+              <option value="RWF">RWF</option>
+            </select>
           </div>
         </div>
         <ImageUploadField name="imageUrl" folder="conservation" label="Campaign Image" defaultUrl={c.imageUrl ?? undefined} />

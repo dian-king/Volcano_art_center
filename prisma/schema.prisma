@@ -112,6 +112,7 @@ model Product {
   artistBio       String?
   price           Decimal        @db.Decimal(10, 2)
   compareAtPrice  Decimal?       @db.Decimal(10, 2)
+  currency        String         @default("USD")
   categoryId      String?
   collectionId    String?
   medium          String?
@@ -170,6 +171,7 @@ model Order {
   subtotal       Decimal     @db.Decimal(10, 2)
   shippingCost   Decimal?    @db.Decimal(10, 2)
   total          Decimal     @db.Decimal(10, 2)
+  currency       String      @default("USD")
   recipientName  String
   addressLine1   String
   addressLine2   String?
@@ -193,6 +195,7 @@ model OrderItem {
   productId String
   quantity  Int
   unitPrice Decimal @db.Decimal(10, 2)
+  currency  String  @default("USD")
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product @relation(fields: [productId], references: [id])
 }
@@ -207,6 +210,7 @@ model Experience {
   durationHours    Decimal?           @db.Decimal(5, 2)
   pricePerPerson   Decimal?           @db.Decimal(10, 2)
   groupPrice       Decimal?           @db.Decimal(10, 2)
+  currency         String             @default("USD")
   minGroupSize     Int                @default(1)
   maxGroupSize     Int                @default(10)
   languages        String[]
@@ -285,6 +289,7 @@ model ConservationCampaign {
   impactStatement String?
   goalAmount      Decimal        @db.Decimal(12, 2)
   raisedAmount    Decimal        @default(0) @db.Decimal(12, 2)
+  currency        String         @default("USD")
   donorCount      Int            @default(0)
   imageUrl        String?
   status          CampaignStatus @default(ACTIVE)

@@ -9,8 +9,9 @@ import { useToastStore } from "@/store/toast-store"
 import Image from "next/image"
 import Link from "next/link"
 import { CountrySelect } from "@/components/ui/CountrySelect"
+import { formatPrice } from "@/lib/utils"
 
-interface DbItem { productId: string; slug: string; name: string; price: number; image: string | null; quantity: number }
+interface DbItem { productId: string; slug: string; name: string; price: number; currency: string; image: string | null; quantity: number }
 
 const inp: React.CSSProperties = { height: "44px", padding: "0 var(--space-4)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", background: "var(--surface-base)", color: "var(--text-primary)", fontSize: "var(--text-small)", fontFamily: "var(--font-ui)", width: "100%" }
 const lbl: React.CSSProperties = { fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text-muted)", fontFamily: "var(--font-ui)", marginBottom: "var(--space-1)", display: "block" }
@@ -30,13 +31,20 @@ export default function CheckoutPage() {
     if (status === "unauthenticated") { router.replace("/login?next=/checkout"); return }
     if (status === "loading") return
     fetchCartAction().then(r => {
-      setItems(r.items as DbItem[])
+      const fetchedItems = r.items as DbItem[]
+      if (new Set(fetchedItems.map(i => i.currency)).size > 1) {
+        addToast("Your cart has items in more than one currency — checkout one currency at a time.", "error")
+        router.replace("/cart")
+        return
+      }
+      setItems(fetchedItems)
       setCount(r.count)
       if (r.count === 0) router.replace("/cart")
       setLoading(false)
     })
   }, [status, count]) // re-fetch when count changes (e.g. item removed from drawer) // eslint-disable-line react-hooks/exhaustive-deps
 
+  const currency = (items[0]?.currency ?? "USD") as "USD" | "RWF"
   const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -136,7 +144,7 @@ export default function CheckoutPage() {
           </div>
 
           <button type="submit" className="btn btn--primary" style={{ width: "100%", justifyContent: "center", height: "52px", fontSize: "var(--text-body)" }} disabled={submitting}>
-            {submitting ? "Placing order…" : `Place Order · ${subtotal.toLocaleString()} RWF`}
+            {submitting ? "Placing order…" : `Place Order · ${formatPrice(subtotal, currency)}`}
           </button>
         </form>
 
@@ -154,7 +162,7 @@ export default function CheckoutPage() {
                   <p style={{ fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: "var(--text-small)", color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</p>
                   <p style={{ fontSize: "var(--text-caption)", color: "var(--text-muted)" }}>Qty: {item.quantity}</p>
                 </div>
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-small)", color: "var(--text-primary)", flexShrink: 0 }}>{(item.price * item.quantity).toLocaleString()} RWF</span>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-small)", color: "var(--text-primary)", flexShrink: 0 }}>{formatPrice(item.price * item.quantity, item.currency as "USD" | "RWF")}</span>
               </div>
             ))}
           </div>
@@ -162,7 +170,7 @@ export default function CheckoutPage() {
           <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "var(--text-small)", color: "var(--text-secondary)" }}>
               <span>Subtotal</span>
-              <span style={{ fontFamily: "var(--font-mono)" }}>{subtotal.toLocaleString()} RWF</span>
+              <span style={{ fontFamily: "var(--font-mono)" }}>{formatPrice(subtotal, currency)}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "var(--text-small)", color: "var(--text-muted)" }}>
               <span>Shipping</span>
@@ -170,7 +178,7 @@ export default function CheckoutPage() {
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 700, borderTop: "1px solid var(--border-subtle)", paddingTop: "var(--space-3)" }}>
               <span style={{ fontFamily: "var(--font-ui)" }}>Total</span>
-              <span style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontSize: "var(--text-lead)" }}>{subtotal.toLocaleString()} RWF</span>
+              <span style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontSize: "var(--text-lead)" }}>{formatPrice(subtotal, currency)}</span>
             </div>
           </div>
         </div>

@@ -7,12 +7,14 @@ import { X, Trash2 } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useCartStore } from "@/store/cart-store"
 import { fetchCartAction, removeFromCartAction, mergeGuestCartAction } from "@/actions/cart"
+import { formatPrice } from "@/lib/utils"
 
 interface DbItem {
   productId: string
   slug: string
   name: string
   price: number
+  currency: string
   image: string | null
   quantity: number
 }
@@ -58,9 +60,11 @@ export function CartDrawer() {
   }, [isOpen])
 
   const items = session?.user ? dbItems : guestItems
-  const subtotal = session?.user
+  const cartCurrencies = new Set(dbItems.map(i => i.currency))
+  const subtotal = session?.user && cartCurrencies.size <= 1
     ? dbItems.reduce((s, i) => s + i.price * i.quantity, 0)
     : 0
+  const subtotalCurrency = (dbItems[0]?.currency ?? "USD") as "USD" | "RWF"
 
   async function handleRemove(productId: string) {
     setRemoving(productId)
@@ -106,7 +110,7 @@ export function CartDrawer() {
                         <Link href={`/art-store/${item.slug}`} onClick={close} style={{ color: "inherit" }}>{item.name}</Link>
                       </p>
                       <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-caption)", color: "var(--green)", marginTop: 2 }}>
-                        {item.price.toLocaleString()} RWF × {item.quantity}
+                        {formatPrice(item.price, item.currency as "USD" | "RWF")} × {item.quantity}
                       </p>
                     </div>
                     <button
@@ -135,7 +139,7 @@ export function CartDrawer() {
               {subtotal > 0 && (
                 <div className="cart-drawer__subtotal">
                   <span>Subtotal</span>
-                  <span style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontWeight: 700 }}>{subtotal.toLocaleString()} RWF</span>
+                  <span style={{ fontFamily: "var(--font-mono)", color: "var(--green)", fontWeight: 700 }}>{formatPrice(subtotal, subtotalCurrency)}</span>
                 </div>
               )}
               <Link href="/cart" className="btn btn--primary cart-drawer__checkout" onClick={close}>

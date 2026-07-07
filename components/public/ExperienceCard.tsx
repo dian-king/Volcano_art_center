@@ -12,6 +12,7 @@ interface ExperienceCardProps {
     location: string | null
     durationHours: string | number | { toString: () => string } | null
     pricePerPerson: string | number | { toString: () => string } | null
+    currency?: string
     category: { name: string } | null
     primaryImageUrl: string | null
     featured: boolean
@@ -47,7 +48,7 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
         <div className="exp-card__foot">
           {experience.pricePerPerson != null && (
             <div>
-              <strong>{formatPrice(String(experience.pricePerPerson), "USD")}</strong>
+              <strong>{formatPrice(String(experience.pricePerPerson), (experience.currency as "USD" | "RWF") ?? "USD")}</strong>
               <small> / person</small>
             </div>
           )}
