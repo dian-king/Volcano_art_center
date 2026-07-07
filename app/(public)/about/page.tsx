@@ -4,8 +4,8 @@ import type { Metadata } from "next"
 import { TeamCard, type TeamMember } from "@/components/public/TeamCard"
 
 const TEAM: TeamMember[] = [
-  { name: "NTIHEMUKA Jean d'Amour", role: "Director Manager", email: "ntihemuka@volcanoartscenterinc.org.rw", whatsapp: "250788945163", initial: "N", color: "var(--green-deep)" },
-  { name: "Olive Niyizigihe", role: "Operations Manager", email: "Oliveni@volcanoartscenterinc.org.rw", whatsapp: "250788945163", initial: "O", color: "#1C4A30" },
+  { name: "NTIHEMUKA Jean d'Amour", role: "Director Manager", email: "ntihemuka@volcanoartscenterinc.org.rw", initial: "N", color: "var(--green-deep)" },
+  { name: "Olive Niyizigihe", role: "Operations Manager", email: "Oliveni@volcanoartscenterinc.org.rw", initial: "O", color: "#1C4A30" },
   { name: "Imanizabayo Jean Marie Vianey", role: "Marketing Manager", email: "Danken@volcanoartscenterinc.org.rw", whatsapp: "250787898630", initial: "I", color: "#3D1F00" },
 ]
 
@@ -31,10 +31,10 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* Mission */}
+      {/* About Us */}
       <div className="container split-2" style={{ paddingBlock: "var(--space-8)" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-          <span className="eyebrow">Our Mission</span>
+          <span className="eyebrow">About Us</span>
           <h2 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title)", fontWeight: 600 }}>
             Rwanda's Creative Heart
           </h2>
@@ -42,11 +42,13 @@ export default function AboutPage() {
             The Volcano Arts Center (VAC) is a cultural hub nestled at the base of the Virunga volcanoes in northern Rwanda. We exist to celebrate Rwandan creativity, connect artists with global audiences, and support the conservation of the extraordinary natural landscapes that inspire our community.
           </p>
           <p style={{ color: "var(--text-secondary)", lineHeight: 1.8 }}>
-            Founded in Musanze District — gateway to Volcanoes National Park — everything we create is shaped by the dramatic volcanic landscape and the living culture of the people who call it home.
+            Founded in Musanze District — gateway to Volcanoes National Park — VAC is a Musanze-based social enterprise and community development initiative. Everything we create is shaped by the dramatic volcanic landscape and the living culture of the people who call it home, and every visit, purchase, and booking directly supports the artists and families behind it.
           </p>
-          <p style={{ color: "var(--text-secondary)", lineHeight: 1.8 }}>
-            We are a social enterprise and community development initiative dedicated to empowering vulnerable groups while preserving culture, promoting creativity, and creating sustainable economic opportunities — built on the belief that communities thrive when every individual can learn, create, participate, and contribute, regardless of age, gender, social status, or physical ability.
-          </p>
+          <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap", marginTop: "var(--space-2)" }}>
+            {["🏔 Est. in Musanze", "🤝 Community-Owned", "🌍 Trusted by Travelers Worldwide"].map(t => (
+              <span key={t} className="chip chip--neutral" style={{ fontSize: "var(--text-caption)" }}>{t}</span>
+            ))}
+          </div>
         </div>
         <div style={{ borderRadius: "var(--radius-lg)", overflow: "hidden", aspectRatio: "4/3" }}>
           <img
@@ -54,6 +56,24 @@ export default function AboutPage() {
             alt="Volcano Arts Center courtyard"
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
+        </div>
+      </div>
+
+      {/* Our Mission — visually distinct banner treatment */}
+      <div style={{ position: "relative", background: "var(--green-deep)", overflow: "hidden", paddingBlock: "var(--space-9)" }}>
+        <img
+          src="/images/WhatsApp Image 2026-06-30 at 8.51.42 PM.jpeg"
+          aria-hidden
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.18 }}
+        />
+        <div className="container" style={{ position: "relative", zIndex: 1, maxWidth: "820px", textAlign: "center", marginInline: "auto" }}>
+          <span className="eyebrow" style={{ color: "rgba(255,255,255,0.65)" }}>Our Mission</span>
+          <p style={{
+            fontFamily: "var(--font-display)", fontStyle: "italic", fontWeight: 600,
+            fontSize: "var(--text-title)", lineHeight: 1.5, color: "#fff", marginTop: "var(--space-4)",
+          }}>
+            "To empower communities through arts, education, cultural preservation, social inclusion, entrepreneurship, and community-based tourism — creating sustainable pathways for personal and economic growth."
+          </p>
         </div>
       </div>
 
@@ -79,6 +99,30 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Key Areas of Work */}
+      <div className="container" style={{ paddingBlock: "var(--space-8)" }}>
+        <div style={{ textAlign: "center", marginBottom: "var(--space-8)" }}>
+          <span className="eyebrow">Key Areas of Work</span>
+          <h2 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title)", fontWeight: 600, marginTop: "var(--space-2)" }}>
+            How We Create Impact
+          </h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "var(--space-6)" }}>
+          {[
+            { title: "Arts & Creative Development", desc: "Using visual arts, performance, storytelling, and cultural expression as tools for education, empowerment, and social transformation." },
+            { title: "Community Empowerment", desc: "Designing programs that strengthen resilience, self-reliance, leadership, and social inclusion within local communities." },
+            { title: "Cultural Preservation", desc: "Documenting, celebrating, and sharing Rwanda's rich cultural heritage while creating opportunities for cultural exchange and learning." },
+            { title: "Community-Based Tourism", desc: "Developing authentic tourism experiences that connect visitors with local communities while generating income and supporting sustainable development." },
+            { title: "Environmental Stewardship", desc: "Promoting community awareness and responsible practices that support conservation and long-term environmental sustainability." },
+          ].map(({ title, desc }) => (
+            <div key={title} style={{ background: "var(--surface-raised)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", padding: "var(--space-5)" }}>
+              <h3 style={{ fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: "var(--text-body)", marginBottom: "var(--space-2)", color: "var(--green)" }}>{title}</h3>
+              <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-small)", lineHeight: 1.7 }}>{desc}</p>
+            </div>
+          ))}
         </div>
       </div>
 

@@ -7,7 +7,7 @@ export interface TeamMember {
   name: string
   role: string
   email: string
-  whatsapp: string
+  whatsapp?: string
   initial: string
   color: string
 }
@@ -36,10 +36,12 @@ export function TeamCard({ member, index }: { member: TeamMember; index: number 
           <Mail size={14} />
           <span>{member.email}</span>
         </a>
-        <a href={`https://wa.me/${member.whatsapp}`} target="_blank" rel="noopener noreferrer" className="team-card__whatsapp">
-          <MessageCircle size={14} />
-          WhatsApp
-        </a>
+        {member.whatsapp && (
+          <a href={`https://wa.me/${member.whatsapp}`} target="_blank" rel="noopener noreferrer" className="team-card__whatsapp">
+            <MessageCircle size={14} />
+            WhatsApp
+          </a>
+        )}
       </div>
     </motion.div>
   )
