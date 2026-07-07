@@ -6,7 +6,7 @@ import { TeamCard, type TeamMember } from "@/components/public/TeamCard"
 const TEAM: TeamMember[] = [
   { name: "NTIHEMUKA Jean d'Amour", role: "Director Manager", email: "ntihemuka@volcanoartscenterinc.org.rw", whatsapp: "250788945163", initial: "N", color: "var(--green-deep)" },
   { name: "Olive Niyizigihe", role: "Operations Manager", email: "Oliveni@volcanoartscenterinc.org.rw", whatsapp: "250788945163", initial: "O", color: "#1C4A30" },
-  { name: "Imanizabayo Jean Marie Vianey", role: "Marketing Manager", email: "Danken@volcanoartscenterinc.org.rw", whatsapp: "250788945163", initial: "I", color: "#3D1F00" },
+  { name: "Imanizabayo Jean Marie Vianey", role: "Marketing Manager", email: "Danken@volcanoartscenterinc.org.rw", whatsapp: "250787898630", initial: "I", color: "#3D1F00" },
 ]
 
 export const metadata: Metadata = {
@@ -44,6 +44,9 @@ export default function AboutPage() {
           <p style={{ color: "var(--text-secondary)", lineHeight: 1.8 }}>
             Founded in Musanze District — gateway to Volcanoes National Park — everything we create is shaped by the dramatic volcanic landscape and the living culture of the people who call it home.
           </p>
+          <p style={{ color: "var(--text-secondary)", lineHeight: 1.8 }}>
+            We are a social enterprise and community development initiative dedicated to empowering vulnerable groups while preserving culture, promoting creativity, and creating sustainable economic opportunities — built on the belief that communities thrive when every individual can learn, create, participate, and contribute, regardless of age, gender, social status, or physical ability.
+          </p>
         </div>
         <div style={{ borderRadius: "var(--radius-lg)", overflow: "hidden", aspectRatio: "4/3" }}>
           <img
@@ -51,6 +54,31 @@ export default function AboutPage() {
             alt="Volcano Arts Center courtyard"
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
+        </div>
+      </div>
+
+      {/* Who We Serve */}
+      <div style={{ background: "var(--surface)", paddingBlock: "var(--space-8)" }}>
+        <div className="container">
+          <div style={{ textAlign: "center", marginBottom: "var(--space-8)" }}>
+            <span className="eyebrow">Who We Serve</span>
+            <h2 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title)", fontWeight: 600, marginTop: "var(--space-2)" }}>
+              Empowering Every Member of Our Community
+            </h2>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "var(--space-6)" }}>
+            {[
+              { title: "People Living with Disabilities", desc: "Inclusive programs that encourage participation, creativity, skills development, and economic empowerment." },
+              { title: "Children and Youth", desc: "Safe and engaging spaces where young people can learn, explore creativity, develop life skills, and discover their potential beyond the classroom." },
+              { title: "Single Mothers", desc: "Skills development, entrepreneurship opportunities, mentorship, and income-generating activities that strengthen family livelihoods." },
+              { title: "Elderly Community Members", desc: "Cultural storytelling, social participation, intergenerational learning, and community-based activities that preserve knowledge and heritage." },
+            ].map(({ title, desc }) => (
+              <div key={title} style={{ background: "var(--surface-raised)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", padding: "var(--space-5)" }}>
+                <h3 style={{ fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: "var(--text-body)", marginBottom: "var(--space-2)" }}>{title}</h3>
+                <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-small)", lineHeight: 1.7 }}>{desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -103,6 +131,28 @@ export default function AboutPage() {
         <h2 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title)", fontWeight: 600, marginTop: "var(--space-2)", marginBottom: "var(--space-7)" }}>The Team</h2>
         <div className="team-grid">
           {TEAM.map((member, i) => <TeamCard key={member.email} member={member} index={i} />)}
+        </div>
+      </div>
+
+      {/* Vision & Partnerships */}
+      <div className="container split-2" style={{ paddingBlock: "var(--space-8)" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+          <span className="eyebrow">Our Vision</span>
+          <h2 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title)", fontWeight: 600 }}>
+            A Thriving, Inclusive Society
+          </h2>
+          <p style={{ color: "var(--text-secondary)", lineHeight: 1.8 }}>
+            A thriving and inclusive society where culture, creativity, conservation, and community development work together to improve lives and create sustainable opportunities for future generations.
+          </p>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+          <span className="eyebrow">Partnership Opportunities</span>
+          <h2 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title)", fontWeight: 600 }}>
+            Collaborate With Us
+          </h2>
+          <p style={{ color: "var(--text-secondary)", lineHeight: 1.8 }}>
+            We welcome collaboration with foundations, conservation organizations, tourism partners, educational institutions, corporations, development agencies, and individuals who share our commitment to inclusive community development and sustainable impact.
+          </p>
         </div>
       </div>
 
