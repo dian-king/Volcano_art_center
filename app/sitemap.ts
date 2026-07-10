@@ -16,6 +16,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/contact`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE_URL}/tour-operators/apply`, changeFrequency: "monthly", priority: 0.4 },
     { url: `${BASE_URL}/talent/apply`, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE_URL}/privacy`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${BASE_URL}/terms`, changeFrequency: "yearly", priority: 0.3 },
   ]
 
   const [products, experiences, campaigns, posts, talentProfiles] = await Promise.all([

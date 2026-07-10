@@ -130,8 +130,8 @@ export function PublicFooter() {
         <div className="container site-footer__bar-inner">
           <p>© 2026 <Link href="/" className="footer-brand">Volcano Arts Center Inc Rwanda</Link>. All rights reserved.</p>
           <div className="site-footer__legal">
-            <Link href="/contact">Privacy</Link>
-            <Link href="/contact">Terms</Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/terms">Terms</Link>
             <span style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.75rem", marginLeft: "var(--space-2)" }}>
               Created by{" "}
               <a href="https://www.codafriqa.rw/" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.6)", fontWeight: 700 }}>CODAFRIQA</a>

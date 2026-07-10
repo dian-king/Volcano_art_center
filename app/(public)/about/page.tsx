@@ -5,7 +5,7 @@ import { TeamCard, type TeamMember } from "@/components/public/TeamCard"
 
 const TEAM: TeamMember[] = [
   { name: "NTIHEMUKA Jean d'Amour", role: "Director Manager", email: "ntihemuka@volcanoartscenterinc.org.rw", whatsapp: "250788945163", initial: "N", color: "var(--green-deep)" },
-  { name: "Olive Niyizigihe", role: "Operations Manager", email: "Oliveni@volcanoartscenterinc.org.rw", initial: "O", color: "#1C4A30" },
+  { name: "Olive Niyizigihe", role: "Operations Manager", email: "Oliveni@volcanoartscenterinc.org.rw", whatsapp: "250792673050", initial: "O", color: "#1C4A30" },
   { name: "Imanizabayo Jean Marie Vianey", role: "Marketing Manager", email: "Danken@volcanoartscenterinc.org.rw", whatsapp: "250787898630", initial: "I", color: "#3D1F00" },
 ]
 
