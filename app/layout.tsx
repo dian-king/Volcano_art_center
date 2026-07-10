@@ -33,6 +33,9 @@ export const metadata: Metadata = {
   title: { default: "Volcano Arts Center Inc Rwanda", template: "%s | Volcano Arts Center Inc Rwanda" },
   description: "Premium Rwandan art, culture, and conservation platform.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+  verification: {
+    google: "vBXVxIrieHjTl7K62EJxUdicJVJrl84pNGrk69ZHxwo",
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
