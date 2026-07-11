@@ -345,13 +345,42 @@ export default async function HomePage() {
         </RevealSection>
       )}
 
-      {/* ── 11. LEAVE A REVIEW ── */}
+      {/* ── 11. LEAVE A REVIEW + ABOUT ── */}
       <RevealSection>
         <section className="section review-form-section">
-          <div className="container" style={{ maxWidth: 680 }}>
-            <SH eyebrow="Share Your Story" title="Had an experience with us?" center
-              subtitle="Approved reviews appear on our website. We read every single one." />
-            <ReviewForm />
+          <div className="container">
+            <div className="why-grid" style={{ alignItems: "start" }}>
+              {/* Left: review form */}
+              <div>
+                <SH eyebrow="Share Your Story" title="Had an experience with us?"
+                  subtitle="Approved reviews appear on our website. We read every single one." />
+                <ReviewForm />
+              </div>
+
+              {/* Right: about us */}
+              <div className="why-copy">
+                <SH eyebrow="About Us" title="Rwanda's Creative Heart" />
+                <p style={{ color: "var(--text-secondary)", lineHeight: 1.8 }}>
+                  The Volcano Arts Center (VAC) is a cultural hub nestled at the base of the Virunga
+                  volcanoes in northern Rwanda. We exist to celebrate Rwandan creativity, connect
+                  artists with global audiences, and support the conservation of the extraordinary
+                  natural landscapes that inspire our community.
+                </p>
+                <p style={{ color: "var(--text-secondary)", lineHeight: 1.8 }}>
+                  Founded in Musanze District — gateway to Volcanoes National Park — VAC is a
+                  community-owned social enterprise. Every visit, purchase, and booking directly
+                  supports the artists and families behind it.
+                </p>
+                <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap", marginTop: "var(--space-2)" }}>
+                  {["🏔 Est. in Musanze", "🤝 Community-Owned", "🌍 Trusted Worldwide"].map(t => (
+                    <span key={t} className="chip chip--neutral" style={{ fontSize: "var(--text-caption)" }}>{t}</span>
+                  ))}
+                </div>
+                <Link href="/about" className="btn btn--secondary" style={{ alignSelf: "flex-start", marginTop: "var(--space-4)" }}>
+                  Our Story
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
       </RevealSection>
