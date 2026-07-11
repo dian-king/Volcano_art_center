@@ -44,9 +44,16 @@ export default function AboutPage() {
           <p style={{ color: "var(--text-secondary)", lineHeight: 1.8 }}>
             Founded in Musanze District — gateway to Volcanoes National Park — VAC is a Musanze-based social enterprise and community development initiative. Everything we create is shaped by the dramatic volcanic landscape and the living culture of the people who call it home, and every visit, purchase, and booking directly supports the artists and families behind it.
           </p>
-          <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap", marginTop: "var(--space-2)" }}>
-            {["🏔 Est. in Musanze", "🤝 Community-Owned", "🌍 Trusted by Travelers Worldwide"].map(t => (
-              <span key={t} className="chip chip--neutral" style={{ fontSize: "var(--text-caption)" }}>{t}</span>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-5)", marginTop: "var(--space-3)", paddingTop: "var(--space-4)", borderTop: "1px solid var(--border-subtle)" }}>
+            {[
+              { val: "Musanze", label: "Where we're rooted" },
+              { val: "100%", label: "Community-owned" },
+              { val: "50+", label: "Countries served" },
+            ].map(f => (
+              <div key={f.label}>
+                <div style={{ fontFamily: "var(--font-ui)", fontSize: "1.375rem", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>{f.val}</div>
+                <div style={{ fontFamily: "var(--font-ui)", fontSize: "var(--text-caption)", color: "var(--text-muted)", letterSpacing: "0.02em" }}>{f.label}</div>
+              </div>
             ))}
           </div>
         </div>
